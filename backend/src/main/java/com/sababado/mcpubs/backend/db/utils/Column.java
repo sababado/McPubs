@@ -12,4 +12,6 @@ public @interface Column {
     public static final String ID = "id";
 
     String value();
+
+    boolean ignoreInInsert() default false;
 }

@@ -1,6 +1,7 @@
 package com.sababado.mcpubs.backend.db.utils;
 
 import com.google.appengine.api.utils.SystemProperty;
+import com.sababado.mcpubs.backend.utils.ConnectionStrings;
 import com.sababado.mcpubs.backend.utils.ModelFactory;
 import com.sababado.mcpubs.backend.utils.StringUtils;
 
@@ -26,18 +27,14 @@ public class DbUtils {
     public static Connection openConnection() {
         String url = null;
         try {
-            if (SystemProperty.environment.value() ==
-                    SystemProperty.Environment.Value.Production) {
+            if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
                 // Load the class that provides the new "jdbc:google:mysql://" prefix.
                 Class.forName("com.mysql.jdbc.GoogleDriver");
-                url = "jdbc:google:mysql://erudite-bonbon-106721:iron-mike/ironmikedb?user=root";
+                url = ConnectionStrings.PROD_DB;
             } else {
                 // Local MySQL instance to use during development.
                 Class.forName("com.mysql.jdbc.Driver");
-                url = "jdbc:mysql://127.0.0.1:8889/ironmikedb?user=root";
-
-                // Alternatively, connect to a Google Cloud SQL instance using:
-                // jdbc:mysql://ip-address-of-google-cloud-sql-instance:3306/guestbook?user=root
+                url = ConnectionStrings.DEV_DB;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -121,7 +118,7 @@ public class DbUtils {
 
     static String buildQuery(Class cls) {
         TableName tableName = getTableName(cls);
-        String selectColumns = getSelectColumns(cls, false, tableName.value());
+        String selectColumns = getSelectColumns(cls, false, tableName.value(), true);
         String query = "select " + selectColumns +
                 " from " + tableName.value();
         if (!StringUtils.isEmptyOrWhitespace(tableName.joinTable())) {
@@ -135,17 +132,17 @@ public class DbUtils {
                 " where " + tableName.value() + "." + tableName.joinTable().toLowerCase() + "Id = " + tableName.joinTable() + ".id";
     }
 
-    static String getSelectColumns(Class cls, boolean isFk, String tableName) {
+    static String getSelectColumns(Class cls, boolean isFk, String tableName, boolean allowIgnores) {
         String columns = "";
         Field[] fields = cls.getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
-            String columnValue = getColumnValue(field, isFk, tableName);
+            String columnValue = getColumnValue(field, isFk, tableName, allowIgnores);
             if (columnValue != null) {
                 if (columnValue.equals(Column.FK_COL_NAME)) {
                     String foreignTableName = getTableName(field.getType()).value();
                     columns += tableName + "." + foreignTableName.toLowerCase() + "Id,";
-                    columns += getSelectColumns(field.getType(), true, foreignTableName) + ",";
+                    columns += getSelectColumns(field.getType(), true, foreignTableName, true) + ",";
                 } else {
                     columns += columnValue + ",";
                 }
@@ -163,20 +160,25 @@ public class DbUtils {
      * @param field
      * @param fromFk
      * @param tableName
+     * @param allowIgnores if false, any ignore flag will render this column value null.
      * @return
      */
-    static String getColumnValue(Field field, boolean fromFk, String tableName) {
+    static String getColumnValue(Field field, boolean fromFk, String tableName, boolean allowIgnores) {
         String columnName = null;
         Annotation[] annotations = field.getDeclaredAnnotations();
         if (annotations != null) {
             for (int i = 0; i < annotations.length; i++) {
                 Annotation annotation = annotations[i];
                 if (annotation.annotationType().equals(Column.class)) {
-                    columnName = ((Column) annotation).value();
-                    if (fromFk && columnName.equals(Column.ID)) {
-                        columnName = null;
-                    } else {
-                        columnName = tableName + "." + columnName;
+                    Column column = (Column) annotation;
+                    columnName = null;
+                    if (allowIgnores || !column.ignoreInInsert()) {
+                        columnName = column.value();
+                        if (fromFk && columnName.equals(Column.ID)) {
+                            columnName = null;
+                        } else {
+                            columnName = tableName + "." + columnName;
+                        }
                     }
                     break;
                 } else if (annotation.annotationType().equals(Fk.class)) {

@@ -16,33 +16,37 @@ public abstract class QueryHelper {
         return where;
     }
 
-    static String appendValue(String where, String columnName, String columnValue) {
-        if (columnValue != null) {
-            where = where == null ? "where" : where + " and";
-            where += String.format(" %s = '%s'", columnName, columnValue);
-        }
-        return where;
-    }
-
-    static String appendValue(String where, String columnName, Long columnValue) {
-        if (columnValue != null) {
-            where = where == null ? "where" : where + " and";
-            where += String.format(" %s = %d", columnName, columnValue);
-        }
-        return where;
-    }
-
-    static String appendValue(String where, String columnName, Integer columnValue) {
-        if (columnValue != null) {
-            where = where == null ? "where" : where + " and";
-            where += String.format(" %s = %d", columnName, columnValue);
-        }
+    static String appendValue(String where, String columnName, String columnValue, boolean isString) {
+        assert columnValue != null;
+        where = where == null ? "where" : where + " and";
+        String clause = isString ? " %s = '%s'" : " %s = %s";
+        where += String.format(clause, columnName, columnValue);
         return where;
     }
 
     static String limitOne(String where) {
-        if (where != null) {
-            where += " limit 1";
+        if (where == null) {
+            where = "";
+        }
+        return where + " limit 1";
+    }
+
+    protected static String buildRecordQuery(String[] columnNames, Object[] values, boolean limitOne) {
+        assert columnNames.length == values.length;
+        if (columnNames.length < 1) {
+            return null;
+        }
+        String where = null;
+        for (int i = 0; i < columnNames.length; i++) {
+            Object obj = values[i];
+            if (obj != null) {
+                String value = String.valueOf(obj);
+                boolean isString = obj.getClass().equals(String.class);
+                where = appendValue(where, columnNames[i], value, isString);
+            }
+        }
+        if (limitOne) {
+            where = limitOne(where);
         }
         return where;
     }

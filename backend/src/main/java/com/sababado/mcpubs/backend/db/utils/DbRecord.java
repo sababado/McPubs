@@ -36,7 +36,7 @@ public abstract class DbRecord {
         }
 
         String tableName = DbUtils.getTableName(cls).value();
-        String fields = DbUtils.getSelectColumns(cls, isFk, tableName).replace("Pub.id,", "");
+        String fields = DbUtils.getSelectColumns(cls, isFk, tableName, false).replace("Pub.id,", "");
         int numFields = fields.split(",").length;
         statement = "INSERT INTO " + tableName +
                 " (" + fields + ") " +

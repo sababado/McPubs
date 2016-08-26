@@ -18,9 +18,9 @@ public class Pub extends DbRecord {
     public static final String CODE = "code";
     public static final String VERSION = "version";
     public static final String IS_ACTIVE = "isActive";
-    public static final String LAST_UPDATED = "lastUpdated";
     public static final String TITLE = "title";
     public static final String READABLE_TITLE = "readableTitle";
+    public static final String LAST_UPDATED = "lastUpdated";
 
     @Id
     @Column(Column.ID)
@@ -35,12 +35,12 @@ public class Pub extends DbRecord {
     String version;
     @Column(IS_ACTIVE)
     boolean isActive;
-    @Column(LAST_UPDATED)
-    long lastUpdated;
     @Column(TITLE)
     String title;
     @Column(READABLE_TITLE)
     String readableTitle;
+    @Column(value = LAST_UPDATED, ignoreInInsert = true)
+    long lastUpdated;
 
     public Pub() {
     }
@@ -53,9 +53,9 @@ public class Pub extends DbRecord {
         code = resultSet.getInt(CODE);
         version = resultSet.getString(VERSION);
         isActive = resultSet.getBoolean(IS_ACTIVE);
-        lastUpdated = resultSet.getDate(LAST_UPDATED).getTime();
         title = resultSet.getString(TITLE);
         readableTitle = resultSet.getString(READABLE_TITLE);
+        lastUpdated = resultSet.getDate(LAST_UPDATED).getTime();
     }
 
     @Override
@@ -112,14 +112,6 @@ public class Pub extends DbRecord {
         isActive = active;
     }
 
-    public long getLastUpdated() {
-        return lastUpdated;
-    }
-
-    public void setLastUpdated(long lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
-
     public String getTitle() {
         return title;
     }
@@ -138,6 +130,14 @@ public class Pub extends DbRecord {
 
     public static String getInsertQuery() {
         return getInsertQuery(Pub.class, false);
+    }
+
+    public long getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(long lastUpdated) {
+        this.lastUpdated = lastUpdated;
     }
 
     @Override
@@ -182,9 +182,9 @@ public class Pub extends DbRecord {
                 ", code=" + code +
                 ", version='" + version + '\'' +
                 ", isActive=" + isActive +
-                ", lastUpdated=" + lastUpdated +
                 ", title='" + title + '\'' +
                 ", readableTitle='" + readableTitle + '\'' +
+                ", lastUpdated=" + lastUpdated +
                 "} " + super.toString();
     }
 }

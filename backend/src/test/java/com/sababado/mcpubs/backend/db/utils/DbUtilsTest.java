@@ -22,12 +22,17 @@ public class DbUtilsTest {
     @Test
     public void testGetColumnValue() throws NoSuchFieldException {
         Field field = Pub.class.getDeclaredField("id");
-        String actual = DbUtils.getColumnValue(field, false, DbUtils.getTableName(Pub.class).value());
+        String actual = DbUtils.getColumnValue(field, false, DbUtils.getTableName(Pub.class).value(), true);
         String expected = "Pub.id";
         assertEquals(expected, actual);
 
         field = Pub.class.getDeclaredField("id");
-        actual = DbUtils.getColumnValue(field, true, DbUtils.getTableName(Pub.class).value());
+        actual = DbUtils.getColumnValue(field, true, DbUtils.getTableName(Pub.class).value(), true);
+        expected = null;
+        assertEquals(expected, actual);
+
+        field = Pub.class.getDeclaredField(Pub.LAST_UPDATED);
+        actual = DbUtils.getColumnValue(field, true, DbUtils.getTableName(Pub.class).value(), false);
         expected = null;
         assertEquals(expected, actual);
 //
@@ -40,8 +45,8 @@ public class DbUtilsTest {
 
     @Test
     public void testGetSelectColumns() {
-        String expected = "Pub.id,Pub.fullCode,Pub.rootCode,Pub.code,Pub.version,Pub.isActive,Pub.lastUpdated,Pub.title,Pub.readableTitle".toLowerCase();
-        String actual = DbUtils.getSelectColumns(Pub.class, false, DbUtils.getTableName(Pub.class).value()).trim().toLowerCase();
+        String expected = "Pub.id,Pub.fullCode,Pub.rootCode,Pub.code,Pub.version,Pub.isActive,Pub.title,Pub.readableTitle,Pub.lastUpdated".toLowerCase();
+        String actual = DbUtils.getSelectColumns(Pub.class, false, DbUtils.getTableName(Pub.class).value(), true).trim().toLowerCase();
         assertEquals(expected, actual);
     }
 
