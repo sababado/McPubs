@@ -69,7 +69,7 @@ public class PubQueryHelperTest {
     @After
     public void cleanup() {
         try {
-//            connection.prepareStatement("DELETE FROM PUB WHERE " + Pub.FULL_CODE + " in ('" + DUMMY_NAME + "', '3-12');").execute();
+            connection.prepareStatement("DELETE FROM PUB WHERE " + Pub.FULL_CODE + " in ('" + DUMMY_NAME + "', '3-12');").execute();
         } catch (Exception e) {
             DbUtils.closeConnection(connection);
             throw new RuntimeException(e);
