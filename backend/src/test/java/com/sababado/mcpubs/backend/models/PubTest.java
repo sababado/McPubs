@@ -68,6 +68,22 @@ public class PubTest {
     }
 
     @Test
+    public void parseDirectives() {
+        try {
+            Pub pub = new Pub("NAVMC DIR 3500.104", "AH-1Z TRAINING AND READINESS MANUAL", true);
+            assertEquals(pub.getTitle(), "NAVMC DIR 3500.104");
+            assertEquals(pub.getReadableTitle(), "AH-1Z TRAINING AND READINESS MANUAL");
+            assertEquals(pub.isActive(), true);
+            assertEquals(pub.getFullCode(), "3500.104");
+            assertEquals(pub.getRootCode(), "3500");
+            assertEquals(pub.getCode(), 104);
+            assertEquals(pub.getVersion(), null);
+        } catch (UnrecognizedPubException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
     public void unrecognizedPubParseTest() {
         try {
             new Pub("U.S. MARINES IN THE KOREAN WAR PT 12", "U.S. MARINES IN THE KOREAN WAR", true);

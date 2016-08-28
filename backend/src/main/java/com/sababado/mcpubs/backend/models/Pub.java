@@ -57,12 +57,17 @@ public class Pub extends DbRecord {
         String[] titleParts = title.split("\\s");
         if (titleParts.length > 1) {
             fullCode = titleParts[1];
-            if (fullCode.contains(".")) {
+            String secondLine = titleParts[1];
+            if (secondLine.contains(".")) {
                 //MCOs
+                fullCode = secondLine;
                 parseMcoTitle(fullCode);
-            } else if (fullCode.contains("-") || StringUtils.isNumber(fullCode)) {
+            } else if (secondLine.contains("-") || StringUtils.isNumber(secondLine)) {
                 //Doctrine document
-                rootCode = fullCode;
+                rootCode = fullCode = secondLine;
+            } else if (secondLine.equalsIgnoreCase("DIR")) {
+                fullCode = titleParts[2];
+                parseMcoTitle(fullCode);
             } else {
                 throw new UnrecognizedPubException(title);
             }
@@ -178,6 +183,9 @@ public class Pub extends DbRecord {
         String temp = parts[1].split(StringUtils.REGEX_ANY_LETTER)[0];
         code = Integer.parseInt(temp);
         version = parts[1].replace(temp, "");
+        if (version.length() == 0) {
+            version = null;
+        }
 
         this.fullCode = rootCode + "." + code;
     }
