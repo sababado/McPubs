@@ -32,6 +32,8 @@ public class PubCheckTest {
         //checking inequality of random elements in list.
         assertNotSame(pubs.get(0), pubs.get(25));
         assertNotSame(pubs.get(22), pubs.get(51));
+
+        // test sort
     }
 
     @After

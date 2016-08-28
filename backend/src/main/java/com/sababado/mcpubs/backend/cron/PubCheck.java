@@ -1,14 +1,17 @@
 package com.sababado.mcpubs.backend.cron;
 
+import com.sababado.mcpubs.backend.db.PubQueryHelper;
+import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.factory.Factory;
 import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.rss.PubCheckParser;
+import com.sababado.mcpubs.backend.utils.PubSorter;
 import com.sababado.mcpubs.backend.utils.StringUtils;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -33,7 +36,18 @@ public class PubCheck extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Connection connection = DbUtils.openConnection();
 
+        List<String> distinctRootCodes = PubQueryHelper.getDistinctRootCodes(connection);
+
+        int count = distinctRootCodes == null ? 0 : distinctRootCodes.size();
+        for (int i = 0; i < count; i++) {
+            String rootCode = distinctRootCodes.get(i);
+            List<Pub> pubs = getPubsFromSearch(rootCode);
+            ///TODO
+        }
+
+        DbUtils.closeConnection(connection);
     }
 
     // TODO only check pubs that haven't been checked in the past month.
@@ -66,6 +80,9 @@ public class PubCheck extends HttpServlet {
                 _logger.severe(e.getMessage());
             }
         } while (!StringUtils.isEmptyOrWhitespace(searchUrl));
+
+        // sort pubs by fullCode
+        PubSorter.sortByFullCode(pubList);
 
         return pubList;
     }
