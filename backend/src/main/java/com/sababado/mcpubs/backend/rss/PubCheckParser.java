@@ -23,9 +23,10 @@ public class PubCheckParser {
      * Send the document for the HTML page that has a list of pubs in it.
      *
      * @param document Document of the HTML page.
+     * @param pubType  Type of pubs we're looking at.
      * @return A list of pubs, or none if none exist or none were recognized.
      */
-    public static List<Pub> parseSearchResults(Document document) {
+    public static List<Pub> parseSearchResults(Document document, int pubType) {
         Elements pubList = document.getElementsByClass("alist-pub")
                 .first()
                 .getAllElements();
@@ -46,7 +47,7 @@ public class PubCheckParser {
                 String readableTitle = element.getElementsByTag("p").text();
                 try {
                     //Try adding this newly parsed pub
-                    pubs.add(new Pub(title, readableTitle, isActive));
+                    pubs.add(new Pub(title, readableTitle, isActive, pubType));
                 } catch (UnrecognizedPubException e) {
                     _logger.warning(e.getMessage());
                 }

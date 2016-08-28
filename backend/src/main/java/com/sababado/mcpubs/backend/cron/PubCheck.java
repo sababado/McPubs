@@ -52,7 +52,7 @@ public class PubCheck extends HttpServlet {
 
     // TODO only check pubs that haven't been checked in the past month.
 
-    List<Pub> getPubsFromSearch(String pubRootCode) {
+    List<Pub> getPubsFromSearch(String pubRootCode, int pubType) {
         String searchUrl = String.format(SEARCH_URL, pubRootCode);
         List<Pub> pubList = new ArrayList<>();
         String[] searchPages = null;
@@ -66,7 +66,7 @@ public class PubCheck extends HttpServlet {
                 }
 
                 // Get all the pubs on this page.
-                List<Pub> newPubList = PubCheckParser.parseSearchResults(document);
+                List<Pub> newPubList = PubCheckParser.parseSearchResults(document, pubType);
                 pubList.addAll(newPubList);
 
                 if (searchPages != null && pageCounter + 1 < searchPages.length) {

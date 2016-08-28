@@ -7,6 +7,7 @@ CREATE SCHEMA `MCPUBS` ;
     `code` int(11) DEFAULT NULL COMMENT '43 or null',
     `version` varchar(5) DEFAULT NULL COMMENT 'B or null',
     `isActive` tinyint(1) DEFAULT '1' COMMENT 'true or false',
+    `pubType` INT(4) UNSIGNED NOT NULL COMMENT 'Int type of the pub, ex MCO is 2005',
     `title` text COMMENT 'MCWP 3-12',
     `readableTitle` text COMMENT 'Marine Corps Tank Employment',
     `lastUpdated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last time this pub was updated.',

@@ -45,7 +45,7 @@ public class DbUtilsTest {
 
     @Test
     public void testGetSelectColumns() {
-        String expected = "Pub.id,Pub.fullCode,Pub.rootCode,Pub.code,Pub.version,Pub.isActive,Pub.title,Pub.readableTitle,Pub.lastUpdated".toLowerCase();
+        String expected = "Pub.id,Pub.fullCode,Pub.rootCode,Pub.code,Pub.version,Pub.isActive,Pub.pubType,Pub.title,Pub.readableTitle,Pub.lastUpdated".toLowerCase();
         String actual = DbUtils.getSelectColumns(Pub.class, false, DbUtils.getTableName(Pub.class).value(), true).trim().toLowerCase();
         assertEquals(expected, actual);
     }

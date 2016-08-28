@@ -19,6 +19,8 @@ import java.util.logging.Logger;
  */
 public class PubQueryHelper extends QueryHelper {
     private static final Logger _logger = Logger.getLogger(PubQueryHelper.class.getName());
+    public static final String ACTIVE_PUB_WHERE_CLAUSE = Pub.IS_ACTIVE + "=true ";
+
     static String[] SHORT_PUB_QUERY_WHERE_COLUMNS = {Column.ID, Pub.FULL_CODE, Pub.IS_ACTIVE};
 
     public static Pub insertRecordIfNonExistent(Connection connection, Pub pub) {
@@ -33,8 +35,9 @@ public class PubQueryHelper extends QueryHelper {
             statement.setInt(3, pub.getCode());
             statement.setString(4, pub.getVersion());
             statement.setBoolean(5, pub.isActive());
-            statement.setString(6, pub.getTitle());
-            statement.setString(7, pub.getReadableTitle());
+            statement.setInt(6, pub.getPubType());
+            statement.setString(7, pub.getTitle());
+            statement.setString(8, pub.getReadableTitle());
 
             int affectedRows = statement.executeUpdate();
 
@@ -69,9 +72,11 @@ public class PubQueryHelper extends QueryHelper {
         return null;
     }
 
-    public static List<String> getDistinctRootCodes(Connection connection, String where) {
+    public static List<String> getDistinctRootCodes(Connection connection, int pubType, String where) {
         where = where == null ? "" : "and " + where;
-        where = "where " + Pub.IS_ACTIVE + "=true " + where;
+        where = "where " + ACTIVE_PUB_WHERE_CLAUSE +
+                " and " + Pub.PUB_TYPE + "=" + pubType + " " +
+                where;
 
         List<Object> distinctValues = DbUtils.getDistinctList(connection, Pub.class,
                 Pub.ROOT_CODE,
@@ -83,7 +88,7 @@ public class PubQueryHelper extends QueryHelper {
         return (ArrayList<String>) (ArrayList<?>) distinctValues;
     }
 
-    public static List<String> getDistinctRootCodes(Connection connection) {
-        return getDistinctRootCodes(connection, null);
+    public static List<String> getDistinctRootCodes(Connection connection, int pubType) {
+        return getDistinctRootCodes(connection, pubType, null);
     }
 }

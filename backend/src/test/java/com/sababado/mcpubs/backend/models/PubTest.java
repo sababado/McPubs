@@ -16,7 +16,7 @@ public class PubTest {
     public void parsePubTest() {
         //Doctrine pub
         try {
-            Pub pub = new Pub("FMFRP 12-27", "THE PATTERN OF WAR", true);
+            Pub pub = new Pub("FMFRP 12-27", "THE PATTERN OF WAR", true, 2002);
             assertEquals(pub.getTitle(), "FMFRP 12-27");
             assertEquals(pub.getReadableTitle(), "THE PATTERN OF WAR");
             assertEquals(pub.isActive(), true);
@@ -30,7 +30,7 @@ public class PubTest {
 
         // MCO
         try {
-            Pub pub = new Pub("MCO 3500.24A", "POLICY FOR THE FEDERAL BUREAU OF INVESTIGATION (FBI) TRAINING ASSISTANCE TO THE MARINE CORPS", false);
+            Pub pub = new Pub("MCO 3500.24A", "POLICY FOR THE FEDERAL BUREAU OF INVESTIGATION (FBI) TRAINING ASSISTANCE TO THE MARINE CORPS", false, Pub.MCO);
             assertEquals(pub.getFullCode(), "3500.24");
             assertEquals(pub.getRootCode(), "3500");
             assertEquals(pub.getCode(), 24);
@@ -41,7 +41,7 @@ public class PubTest {
 
         // MCO P
         try {
-            Pub pub = new Pub("MCO P10110.42B", "ARMED FORCES RECIPE SERVICE (THE COMPLETE COLLECTION)", true);
+            Pub pub = new Pub("MCO P10110.42B", "ARMED FORCES RECIPE SERVICE (THE COMPLETE COLLECTION)", true, Pub.MCO_P);
             assertEquals(pub.getFullCode(), "P10110.42");
             assertEquals(pub.getRootCode(), "P10110");
             assertEquals(pub.getCode(), 42);
@@ -54,7 +54,7 @@ public class PubTest {
     @Test
     public void parseDoctrine() {
         try {
-            Pub pub = new Pub("MCDP 1", "WARFIGHTING", true);
+            Pub pub = new Pub("MCDP 1", "WARFIGHTING", true, 2002);
             assertEquals(pub.getTitle(), "MCDP 1");
             assertEquals(pub.getReadableTitle(), "WARFIGHTING");
             assertEquals(pub.isActive(), true);
@@ -70,7 +70,7 @@ public class PubTest {
     @Test
     public void parseDirectives() {
         try {
-            Pub pub = new Pub("NAVMC DIR 3500.104", "AH-1Z TRAINING AND READINESS MANUAL", true);
+            Pub pub = new Pub("NAVMC DIR 3500.104", "AH-1Z TRAINING AND READINESS MANUAL", true, Pub.NAVMC_DIR);
             assertEquals(pub.getTitle(), "NAVMC DIR 3500.104");
             assertEquals(pub.getReadableTitle(), "AH-1Z TRAINING AND READINESS MANUAL");
             assertEquals(pub.isActive(), true);
@@ -86,7 +86,7 @@ public class PubTest {
     @Test
     public void unrecognizedPubParseTest() {
         try {
-            new Pub("U.S. MARINES IN THE KOREAN WAR PT 12", "U.S. MARINES IN THE KOREAN WAR", true);
+            new Pub("U.S. MARINES IN THE KOREAN WAR PT 12", "U.S. MARINES IN THE KOREAN WAR", true, 2003);
             fail("This pub should not have passed.");
         } catch (UnrecognizedPubException e) {
             assertTrue(true);

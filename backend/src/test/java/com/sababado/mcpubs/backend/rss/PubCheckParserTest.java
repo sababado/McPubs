@@ -22,7 +22,7 @@ public class PubCheckParserTest {
     public void parseMcoPubs() {
         try {
             Document document = Jsoup.parse(FileUtils.readFile("mco_results.html"), "UTF-8");
-            List<Pub> pubs = PubCheckParser.parseSearchResults(document);
+            List<Pub> pubs = PubCheckParser.parseSearchResults(document, Pub.MCO);
             assertNotNull(pubs);
             assertEquals(25, pubs.size());
             assertEquals("MCO 3500.24A", pubs.get(0).getTitle());
@@ -37,7 +37,7 @@ public class PubCheckParserTest {
     public void parseMcopPubs() {
         try {
             Document document = Jsoup.parse(FileUtils.readFile("mcop_results.html"), "UTF-8");
-            List<Pub> pubs = PubCheckParser.parseSearchResults(document);
+            List<Pub> pubs = PubCheckParser.parseSearchResults(document, Pub.MCO_P);
             Pub pub = pubs.get(1);
             assertNotNull(pubs);
             assertEquals(25, pubs.size());
@@ -53,7 +53,7 @@ public class PubCheckParserTest {
     public void parseDoctrinePubs() {
         try {
             Document document = Jsoup.parse(FileUtils.readFile("doctrine_results.html"), "UTF-8");
-            List<Pub> pubs = PubCheckParser.parseSearchResults(document);
+            List<Pub> pubs = PubCheckParser.parseSearchResults(document, Pub.DOCTRINE_UNSUPPORTED);
             assertNotNull(pubs);
             assertEquals(25, pubs.size());
             assertEquals("MCIP 3-03Di (Formerly MCIP 3-33.03)", pubs.get(0).getTitle());
@@ -68,7 +68,7 @@ public class PubCheckParserTest {
     public void parseNoPubs() {
         try {
             Document document = Jsoup.parse(FileUtils.readFile("no_items_results.html"), "UTF-8");
-            List<Pub> pubs = PubCheckParser.parseSearchResults(document);
+            List<Pub> pubs = PubCheckParser.parseSearchResults(document, Pub.NAVMC);
             assertNotNull(pubs);
             assertEquals(0, pubs.size());
         } catch (IOException e) {

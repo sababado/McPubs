@@ -20,9 +20,16 @@ public class Pub extends DbRecord {
     public static final String CODE = "code";
     public static final String VERSION = "version";
     public static final String IS_ACTIVE = "isActive";
+    public static final String PUB_TYPE = "pubType";
     public static final String TITLE = "title";
     public static final String READABLE_TITLE = "readableTitle";
     public static final String LAST_UPDATED = "lastUpdated";
+
+    public static final int DOCTRINE_UNSUPPORTED = 2002;
+    public static final int MCO = 2005;
+    public static final int MCO_P = 2006;
+    public static final int NAVMC = 2008;
+    public static final int NAVMC_DIR = 2009;
 
     @Id
     @Column(Column.ID)
@@ -37,6 +44,8 @@ public class Pub extends DbRecord {
     String version;
     @Column(IS_ACTIVE)
     boolean isActive;
+    @Column(PUB_TYPE)
+    int pubType;
     @Column(TITLE)
     String title;
     @Column(READABLE_TITLE)
@@ -48,26 +57,28 @@ public class Pub extends DbRecord {
         code = -1;
     }
 
-    public Pub(String title, String readableTitle, boolean isActive) throws UnrecognizedPubException {
+    public Pub(String title, String readableTitle, boolean isActive, int pubType) throws UnrecognizedPubException {
         this();
         this.isActive = isActive;
         this.readableTitle = readableTitle;
         this.title = title;
+        this.pubType = pubType;
 
         String[] titleParts = title.split("\\s");
         if (titleParts.length > 1) {
             fullCode = titleParts[1];
             String secondLine = titleParts[1];
-            if (secondLine.contains(".")) {
-                //MCOs
+
+            if (pubType == MCO ||
+                    pubType == MCO_P ||
+                    pubType == NAVMC) {
                 fullCode = secondLine;
                 parseMcoTitle(fullCode);
-            } else if (secondLine.contains("-") || StringUtils.isNumber(secondLine)) {
-                //Doctrine document
-                rootCode = fullCode = secondLine;
-            } else if (secondLine.equalsIgnoreCase("DIR")) {
+            } else if (pubType == NAVMC_DIR) {
                 fullCode = titleParts[2];
                 parseMcoTitle(fullCode);
+            } else if (pubType == DOCTRINE_UNSUPPORTED) {
+                rootCode = fullCode = secondLine;
             } else {
                 throw new UnrecognizedPubException(title);
             }
@@ -84,6 +95,7 @@ public class Pub extends DbRecord {
         code = resultSet.getInt(CODE);
         version = resultSet.getString(VERSION);
         isActive = resultSet.getBoolean(IS_ACTIVE);
+        pubType = resultSet.getInt(PUB_TYPE);
         title = resultSet.getString(TITLE);
         readableTitle = resultSet.getString(READABLE_TITLE);
         lastUpdated = resultSet.getDate(LAST_UPDATED).getTime();
@@ -143,6 +155,14 @@ public class Pub extends DbRecord {
         isActive = active;
     }
 
+    public int getPubType() {
+        return pubType;
+    }
+
+    public void setPubType(int pubType) {
+        this.pubType = pubType;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -200,6 +220,7 @@ public class Pub extends DbRecord {
         if (id != pub.id) return false;
         if (code != pub.code) return false;
         if (isActive != pub.isActive) return false;
+        if (pubType != pub.pubType) return false;
         if (lastUpdated != pub.lastUpdated) return false;
         if (fullCode != null ? !fullCode.equals(pub.fullCode) : pub.fullCode != null) return false;
         if (rootCode != null ? !rootCode.equals(pub.rootCode) : pub.rootCode != null) return false;
@@ -217,9 +238,10 @@ public class Pub extends DbRecord {
         result = 31 * result + code;
         result = 31 * result + (version != null ? version.hashCode() : 0);
         result = 31 * result + (isActive ? 1 : 0);
-        result = 31 * result + (int) (lastUpdated ^ (lastUpdated >>> 32));
+        result = 31 * result + pubType;
         result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (readableTitle != null ? readableTitle.hashCode() : 0);
+        result = 31 * result + (int) (lastUpdated ^ (lastUpdated >>> 32));
         return result;
     }
 
@@ -232,6 +254,7 @@ public class Pub extends DbRecord {
                 ", code=" + code +
                 ", version='" + version + '\'' +
                 ", isActive=" + isActive +
+                ", pubType=" + pubType +
                 ", title='" + title + '\'' +
                 ", readableTitle='" + readableTitle + '\'' +
                 ", lastUpdated=" + lastUpdated +

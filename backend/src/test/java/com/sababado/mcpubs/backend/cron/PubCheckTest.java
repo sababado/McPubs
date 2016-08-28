@@ -26,7 +26,7 @@ public class PubCheckTest {
     public void testGetPubsFromSearch() {
         String rootCode = "3500";
         PubCheck pubCheck = new PubCheck();
-        List<Pub> pubs = pubCheck.getPubsFromSearch(rootCode);
+        List<Pub> pubs = pubCheck.getPubsFromSearch(rootCode, Pub.MCO);
         assertNotNull(pubs);
         assertEquals(57, pubs.size());
         //checking inequality of random elements in list.

@@ -18,8 +18,8 @@ public class DbRecordTest {
         assertEquals(0, DbRecord.insertStatements.size());
 
         String expected = "INSERT INTO Pub " +
-                "(Pub.fullCode,Pub.rootCode,Pub.code,Pub.version,Pub.isActive,Pub.title,Pub.readableTitle) " +
-                "VALUES (?,?,?,?,?,?,?);";
+                "(Pub.fullCode,Pub.rootCode,Pub.code,Pub.version,Pub.isActive,Pub.pubType,Pub.title,Pub.readableTitle) " +
+                "VALUES (?,?,?,?,?,?,?,?);";
         String actual = Pub.getInsertQuery();
         assertEquals(expected, actual);
 

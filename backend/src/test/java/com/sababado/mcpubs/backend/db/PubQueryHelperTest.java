@@ -74,23 +74,28 @@ public class PubQueryHelperTest {
     public void testGetDistinctRootCodes() {
         try {
             // insert dummy data
-            connection.prepareStatement("INSERT INTO `Pub`\n" +
-                    "(`fullCode`,`rootCode`,`code`,`version`,`isActive`)\n" +
+            connection.prepareStatement("INSERT INTO `mcPubsDev`.`Pub`\n" +
+                    "(`fullCode`,`rootCode`,`code`,`version`,`isActive`,`pubType`)\n" +
                     "VALUES\n" +
-                    "('AAA4200.43','AAA4200',43,'B',true),\n" +
-                    "('AAA4200.19','AAA4200',19,'B',true),\n" +
-                    "('AAA4500.10','AAA4500',10,'A',false),\n" +
-                    "('AAA4500.11','AAA4500',11,'A',true),\n" +
-                    "('AAA3500.99','AAA3500',99,'D',true),\n" +
-                    "('AAA3200.18','AAA3200',18,'C',false);")
+                    "('AAA4200.43','AAA4200',43,'B',true, 2005),\n" +
+                    "('AAA4200.19','AAA4200',19,'B',true, 2005),\n" +
+                    "('AAA4500.10','AAA4500',10,'A',false, 2005),\n" +
+                    "('AAA4500.11','AAA4500',11,'A',true, 2005),\n" +
+                    "('AAA3500.99','AAA3500',99,'D',true, 2005),\n" +
+                    "('AAA3200.18','AAA3200',18,'C',false, 2005),\n" +
+                    "('AAAP3200.18','AAAP3200',18,'C',true, 2006);")
                     .execute();
 
-            List<String> actual = PubQueryHelper.getDistinctRootCodes(connection, Pub.ROOT_CODE + " like 'AAA%'");
+            List<String> actual = PubQueryHelper.getDistinctRootCodes(connection, Pub.MCO, Pub.ROOT_CODE + " like 'AAA%'");
             List<String> expected = new ArrayList<>();
             expected.add("AAA3500");
             expected.add("AAA4200");
             expected.add("AAA4500");
+            assertEquals(expected, actual);
 
+            actual = PubQueryHelper.getDistinctRootCodes(connection, Pub.MCO_P, Pub.ROOT_CODE + " like 'AAA%'");
+            expected.clear();
+            expected.add("AAAP3200");
             assertEquals(expected, actual);
         } catch (SQLException e) {
             fail();
