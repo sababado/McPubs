@@ -23,6 +23,30 @@ public class PubQueryHelper extends QueryHelper {
 
     static String[] SHORT_PUB_QUERY_WHERE_COLUMNS = {Column.ID, Pub.FULL_CODE, Pub.IS_ACTIVE};
 
+    public static void batchUpdate(Connection connection, List<Pub> records) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(Pub.getUpdateQuery());
+
+            for (Pub pub : records) {
+                statement.setString(1, pub.getFullCode());
+                statement.setString(2, pub.getRootCode());
+                statement.setInt(3, pub.getCode());
+                statement.setString(4, pub.getVersion());
+                statement.setBoolean(5, pub.isActive());
+                statement.setInt(6, pub.getPubType());
+                statement.setString(7, pub.getTitle());
+                statement.setString(8, pub.getReadableTitle());
+                statement.setLong(9, pub.getId());
+                statement.addBatch();
+            }
+            statement.executeBatch();
+            statement.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static Pub insertRecordIfNonExistent(Connection connection, Pub pub) {
         Pub pubRecord = getPubRecord(connection, pub.getId(), pub.getFullCode(), pub.isActive());
         if (pubRecord != null) {
@@ -61,7 +85,7 @@ public class PubQueryHelper extends QueryHelper {
         return null;
     }
 
-    public static Pub getPubRecord(Connection connection, Long id, String fullCode, boolean isActive) {
+    public static Pub getPubRecord(Connection connection, Long id, String fullCode, Boolean isActive) {
         Object[] values = {id, fullCode, isActive};
         String where = QueryHelper.buildRecordQuery(SHORT_PUB_QUERY_WHERE_COLUMNS, values, true);
         List<Pub> recordList = DbUtils.getList(connection, Pub.class, where);

@@ -1,27 +1,37 @@
 package com.sababado.mcpubs.backend.cron;
 
+import com.sababado.mcpubs.backend.db.PubQueryHelper;
+import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.factory.FactoryHelper;
 import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.utils.PubUtils.CompareResult;
+import com.sababado.mcpubs.backend.utils.Tuple;
 import com.sababado.mcpubs.backend.utils.UnrecognizedPubException;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Created by robert on 8/27/16.
  */
 public class PubCheckTest {
+    private Connection connection;
+
     @Before
     public void setup() {
         FactoryHelper.setMockNetworkHelper();
+        connection = DbUtils.openConnection();
     }
 
     @Test
@@ -95,8 +105,60 @@ public class PubCheckTest {
         }
     }
 
+    @Test
+    public void commitUpdatesTest() {
+        List<Tuple<Pub, Pub, CompareResult>> changes = new ArrayList<>();
+        try {
+            // Setup changes.
+            // deleted Pub
+            Pub existingPub = new Pub("MCO AAA6600.42A", "A readable title", true, 2005);
+            existingPub = PubQueryHelper.insertRecordIfNonExistent(connection, existingPub);
+            Pub newPub = new Pub("MCO AAA6600.42A", "A readable title", false, 2005);
+            newPub.setId(existingPub.getId());
+            changes.add(new Tuple<>(existingPub, newPub, CompareResult.DELETED));
+
+            // updated pub
+            existingPub = new Pub("MCO AAA9900.42A", "A readable title", true, 2005);
+            existingPub = PubQueryHelper.insertRecordIfNonExistent(connection, existingPub);
+            newPub = new Pub("MCO AAA9900.42B", "A readable title yup", true, 2005);
+            newPub.setId(existingPub.getId());
+            changes.add(new Tuple<>(existingPub, newPub, CompareResult.UPDATE));
+
+            // updated, but deleted pub
+            existingPub = new Pub("MCO AAA9800.42B", "A readable title", true, 2005);
+            existingPub = PubQueryHelper.insertRecordIfNonExistent(connection, existingPub);
+            newPub = new Pub("MCO AAA9800.42C", "A new readable title", false, 2005);
+            newPub.setId(existingPub.getId());
+            changes.add(new Tuple<>(existingPub, newPub, CompareResult.UPDATE_BUT_DELETED));
+            // end setting up changes.
+        } catch (UnrecognizedPubException e) {
+            e.printStackTrace();
+            fail();
+        }
+
+        PubCheck.commitUpdates(connection, changes);
+        for (Tuple<Pub, Pub, CompareResult> tuple : changes) {
+            long id = tuple.one.getId();
+            Pub newPub = PubQueryHelper.getPubRecord(connection, id, null, null);
+            tuple.two.setId(id);
+
+            // verify the timestamp has changed.
+            assertTrue(newPub.getLastUpdated() > tuple.two.getLastUpdated());
+            // now verify the rest of the objects.
+            tuple.two.setLastUpdated(newPub.getLastUpdated());
+            assertEquals(tuple.two, newPub);
+        }
+    }
+
     @After
     public void teardown() {
+        try {
+            connection.prepareStatement("DELETE FROM PUB WHERE " + Pub.FULL_CODE + " LIKE 'AAA%';").execute();
+        } catch (Exception e) {
+            DbUtils.closeConnection(connection);
+            throw new RuntimeException(e);
+        }
+        DbUtils.closeConnection(connection);
         FactoryHelper.removeMockNetworkHelper();
     }
 }

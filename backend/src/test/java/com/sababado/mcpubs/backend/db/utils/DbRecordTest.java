@@ -25,4 +25,18 @@ public class DbRecordTest {
 
         assertEquals(1, DbRecord.insertStatements.size());
     }
+
+    @Test
+    public void testGetUpdateStatement() {
+        DbRecord.updateStatements.clear();
+        assertEquals(0, DbRecord.updateStatements.size());
+
+        String expected = "UPDATE Pub " +
+                "SET Pub.fullCode=?,Pub.rootCode=?,Pub.code=?,Pub.version=?,Pub.isActive=?,Pub.pubType=?,Pub.title=?,Pub.readableTitle=? " +
+                "WHERE Pub.id=?;";
+        String actual = Pub.getUpdateQuery();
+        assertEquals(expected, actual);
+
+        assertEquals(1, DbRecord.updateStatements.size());
+    }
 }

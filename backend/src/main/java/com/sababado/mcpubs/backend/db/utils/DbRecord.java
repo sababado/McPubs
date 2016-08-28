@@ -1,5 +1,6 @@
 package com.sababado.mcpubs.backend.db.utils;
 
+import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.utils.StringUtils;
 
 import java.sql.ResultSet;
@@ -11,7 +12,9 @@ import java.util.Map;
  * Created by robert on 9/15/15.
  */
 public abstract class DbRecord {
+    public static final String ID = Column.ID;
     static Map<Class<? extends DbRecord>, String> insertStatements = new HashMap<>(3);
+    static Map<Class<? extends DbRecord>, String> updateStatements = new HashMap<>(3);
 
     public DbRecord() {
     }
@@ -36,13 +39,32 @@ public abstract class DbRecord {
         }
 
         String tableName = DbUtils.getTableName(cls).value();
-        String fields = DbUtils.getSelectColumns(cls, isFk, tableName, false).replace("Pub.id,", "");
+        String fields = DbUtils.getSelectColumns(cls, isFk, tableName, false).replace("Pub." + Pub.ID + ",", "");
         int numFields = fields.split(",").length;
         statement = "INSERT INTO " + tableName +
                 " (" + fields + ") " +
                 "VALUES (" + StringUtils.generateQuestionString(numFields) + ");";
 
         insertStatements.put(cls, statement);
+        return statement;
+    }
+
+    protected static String getUpdateQuery(Class<? extends DbRecord> cls, boolean isFk) {
+        String statement = updateStatements.get(cls);
+        if (statement != null) {
+            return statement;
+        }
+
+        String tableName = DbUtils.getTableName(cls).value();
+        String fields = DbUtils.getSelectColumns(cls, isFk, tableName, false)
+                .replace("Pub." + Pub.ID + ",", "")
+                .replace(",", "=?,")
+                + "=?";
+        statement = "UPDATE " + tableName +
+                " SET " + fields +
+                " WHERE Pub." + Pub.ID + "=?;";
+
+        updateStatements.put(cls, statement);
         return statement;
     }
 }

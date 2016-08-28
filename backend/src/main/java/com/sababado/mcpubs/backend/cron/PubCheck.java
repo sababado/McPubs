@@ -91,6 +91,7 @@ public class PubCheck extends HttpServlet {
                     if (watchedPub != null) {
                         CompareResult compareResult = comparePub(watchedPub, mostRecentPub);
                         if (compareResult != CompareResult.NO_CHANGE) {
+                            mostRecentPub.setId(watchedPub.getId());
                             changesList.add(new Tuple<>(watchedPub, mostRecentPub, compareResult));
                         }
                     }
@@ -138,6 +139,18 @@ public class PubCheck extends HttpServlet {
         // this would happen if we're comparing an existing pub with a version higher than that of
         // a new pub. This shouldn't happen.
         return CompareResult.NO_CHANGE;
+    }
+
+    static void commitUpdates(Connection connection, List<Tuple<Pub, Pub, CompareResult>> changes) {
+        // save changes to the DB. Assuming the changes already have existing IDs associated to them.
+        int changeCount = changes.size();
+        List<Pub> changedPubs = new ArrayList<>(changeCount);
+        for (int i = 0; i < changeCount; i++) {
+            changedPubs.add(changes.get(i).two);
+        }
+        PubQueryHelper.batchUpdate(connection, changedPubs);
+
+        // TODO send notifications.
     }
 
     // TODO only check pubs that haven't been checked in the past month.

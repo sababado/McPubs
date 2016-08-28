@@ -183,6 +183,10 @@ public class Pub extends DbRecord {
         return getInsertQuery(Pub.class, false);
     }
 
+    public static String getUpdateQuery() {
+        return getUpdateQuery(Pub.class, false);
+    }
+
     public long getLastUpdated() {
         return lastUpdated;
     }
