@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -66,5 +67,23 @@ public class PubQueryHelper extends QueryHelper {
         }
 
         return null;
+    }
+
+    public static List<String> getDistinctRootCodes(Connection connection, String where) {
+        where = where == null ? "" : "and " + where;
+        where = "where " + Pub.IS_ACTIVE + "=true " + where;
+
+        List<Object> distinctValues = DbUtils.getDistinctList(connection, Pub.class,
+                Pub.ROOT_CODE,
+                where);
+
+        if (distinctValues == null) {
+            return null;
+        }
+        return (ArrayList<String>) (ArrayList<?>) distinctValues;
+    }
+
+    public static List<String> getDistinctRootCodes(Connection connection) {
+        return getDistinctRootCodes(connection, null);
     }
 }

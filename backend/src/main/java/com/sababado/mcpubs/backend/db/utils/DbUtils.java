@@ -214,4 +214,26 @@ public class DbUtils {
         capitalizedColumnName = Character.toString(capitalizedColumnName.charAt(0)).toUpperCase() + capitalizedColumnName.substring(1);
         return tableName.toLowerCase() + capitalizedColumnName;
     }
+
+    public static <T extends DbRecord> List<Object> getDistinctList(Connection connection, Class<T> cls, String distinctColumn, String where) {
+        String tableName = getTableName(cls).value();
+        String query = "select " + distinctColumn + " from " + tableName;
+        if (!StringUtils.isEmptyOrWhitespace(where)) {
+            query = insertWhereClause(query, where);
+        }
+        query += " group by(" + distinctColumn + ");";
+
+        try {
+            List<Object> list = new ArrayList<>();
+            ResultSet resultSet = connection.createStatement().executeQuery(query);
+            resultSet.beforeFirst();
+            while (resultSet.next()) {
+                list.add(resultSet.getObject(distinctColumn));
+            }
+            return list;
+        } catch (SQLException e) {
+            _logger.warning("Trouble getting distinct values for class " + cls.getSimpleName() + "\n" + e.getMessage());
+            return null;
+        }
+    }
 }

@@ -8,11 +8,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Created by robert on 8/25/16.
@@ -66,10 +70,37 @@ public class PubQueryHelperTest {
         assertEquals(newPubRecord.getId(), existingRecord.getId());
     }
 
+    @Test
+    public void testGetDistinctRootCodes() {
+        try {
+            // insert dummy data
+            connection.prepareStatement("INSERT INTO `Pub`\n" +
+                    "(`fullCode`,`rootCode`,`code`,`version`,`isActive`)\n" +
+                    "VALUES\n" +
+                    "('AAA4200.43','AAA4200',43,'B',true),\n" +
+                    "('AAA4200.19','AAA4200',19,'B',true),\n" +
+                    "('AAA4500.10','AAA4500',10,'A',false),\n" +
+                    "('AAA4500.11','AAA4500',11,'A',true),\n" +
+                    "('AAA3500.99','AAA3500',99,'D',true),\n" +
+                    "('AAA3200.18','AAA3200',18,'C',false);")
+                    .execute();
+
+            List<String> actual = PubQueryHelper.getDistinctRootCodes(connection, Pub.ROOT_CODE + " like 'AAA%'");
+            List<String> expected = new ArrayList<>();
+            expected.add("AAA3500");
+            expected.add("AAA4200");
+            expected.add("AAA4500");
+
+            assertEquals(expected, actual);
+        } catch (SQLException e) {
+            fail();
+        }
+    }
+
     @After
     public void cleanup() {
         try {
-            connection.prepareStatement("DELETE FROM PUB WHERE " + Pub.FULL_CODE + " in ('" + DUMMY_NAME + "', '3-12');").execute();
+            connection.prepareStatement("DELETE FROM PUB WHERE " + Pub.FULL_CODE + " LIKE 'AAA%';").execute();
         } catch (Exception e) {
             DbUtils.closeConnection(connection);
             throw new RuntimeException(e);
