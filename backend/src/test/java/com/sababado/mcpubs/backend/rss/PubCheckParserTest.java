@@ -1,12 +1,12 @@
 package com.sababado.mcpubs.backend.rss;
 
+import com.sababado.mcpubs.backend.FileUtils;
 import com.sababado.mcpubs.backend.models.Pub;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class PubCheckParserTest {
     @Test
     public void parseMcoPubs() {
         try {
-            Document document = Jsoup.parse(readFile("mco_results.html"), "UTF-8");
+            Document document = Jsoup.parse(FileUtils.readFile("mco_results.html"), "UTF-8");
             List<Pub> pubs = PubCheckParser.parseSearchResults(document);
             assertNotNull(pubs);
             assertEquals(25, pubs.size());
@@ -36,7 +36,7 @@ public class PubCheckParserTest {
     @Test
     public void parseMcopPubs() {
         try {
-            Document document = Jsoup.parse(readFile("mcop_results.html"), "UTF-8");
+            Document document = Jsoup.parse(FileUtils.readFile("mcop_results.html"), "UTF-8");
             List<Pub> pubs = PubCheckParser.parseSearchResults(document);
             Pub pub = pubs.get(1);
             assertNotNull(pubs);
@@ -52,7 +52,7 @@ public class PubCheckParserTest {
     @Test
     public void parseDoctrinePubs() {
         try {
-            Document document = Jsoup.parse(readFile("doctrine_results.html"), "UTF-8");
+            Document document = Jsoup.parse(FileUtils.readFile("doctrine_results.html"), "UTF-8");
             List<Pub> pubs = PubCheckParser.parseSearchResults(document);
             assertNotNull(pubs);
             assertEquals(25, pubs.size());
@@ -67,7 +67,7 @@ public class PubCheckParserTest {
     @Test
     public void parseNoPubs() {
         try {
-            Document document = Jsoup.parse(readFile("no_items_results.html"), "UTF-8");
+            Document document = Jsoup.parse(FileUtils.readFile("no_items_results.html"), "UTF-8");
             List<Pub> pubs = PubCheckParser.parseSearchResults(document);
             assertNotNull(pubs);
             assertEquals(0, pubs.size());
@@ -79,7 +79,7 @@ public class PubCheckParserTest {
     @Test
     public void parsePagination() {
         try {
-            Document document = Jsoup.parse(readFile("pagination.html"), "UTF-8");
+            Document document = Jsoup.parse(FileUtils.readFile("pagination.html"), "UTF-8");
             String[] pageLinks = PubCheckParser.getPageLinks(document);
             assertEquals(7, pageLinks.length);
             assertEquals("http://www.marines.mil/News/Publications/ELECTRONIC-LIBRARY/Custompubtype/2006/?Page=1", pageLinks[0]);
@@ -93,16 +93,11 @@ public class PubCheckParserTest {
     @Test
     public void parseNoPagination() {
         try {
-            Document document = Jsoup.parse(readFile("no_pagination.html"), "UTF-8");
+            Document document = Jsoup.parse(FileUtils.readFile("no_pagination.html"), "UTF-8");
             String[] pageLinks = PubCheckParser.getPageLinks(document);
             assertEquals(0, pageLinks.length);
         } catch (IOException e) {
             fail(e.getMessage());
         }
-    }
-
-    private File readFile(String fileName) {
-        ClassLoader classLoader = this.getClass().getClassLoader();
-        return new File(classLoader.getResource("" + fileName).getFile());
     }
 }
