@@ -18,6 +18,11 @@ import java.util.logging.Logger;
 public class PubCheckParser {
     private static final Logger _logger = Logger.getLogger(PubCheckParser.class.getName());
 
+    /**
+     * Send the document for the HTML page that has a list of pubs in it.
+     * @param document Document of the HTML page.
+     * @return A list of pubs, or none if none exist or none were recognized.
+     */
     public static List<Pub> parseSearchResults(Document document) {
         Elements pubList = document.getElementsByClass("alist-pub")
                 .first()

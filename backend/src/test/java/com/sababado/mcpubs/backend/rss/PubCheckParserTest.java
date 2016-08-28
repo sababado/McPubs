@@ -65,6 +65,18 @@ public class PubCheckParserTest {
     }
 
     @Test
+    public void parseNoPubs() {
+        try {
+            Document document = Jsoup.parse(readFile("no_items_results.html"), "UTF-8");
+            List<Pub> pubs = PubCheckParser.parseSearchResults(document);
+            assertNotNull(pubs);
+            assertEquals(0, pubs.size());
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
     public void parsePagination() {
         fail();
     }
