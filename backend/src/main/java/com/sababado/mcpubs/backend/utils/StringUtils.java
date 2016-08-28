@@ -5,6 +5,11 @@ package com.sababado.mcpubs.backend.utils;
  */
 public class StringUtils {
 
+    /**
+     * Use this regex to find one of any letter.
+     */
+    public static final String REGEX_ANY_LETTER = "[a-zA-Z]";
+
     public static boolean isEmptyOrWhitespace(String string) {
         return string == null || string.trim().equals("");
     }

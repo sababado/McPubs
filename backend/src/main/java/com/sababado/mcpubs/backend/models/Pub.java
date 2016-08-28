@@ -4,6 +4,8 @@ import com.googlecode.objectify.annotation.Id;
 import com.sababado.mcpubs.backend.db.utils.Column;
 import com.sababado.mcpubs.backend.db.utils.DbRecord;
 import com.sababado.mcpubs.backend.db.utils.TableName;
+import com.sababado.mcpubs.backend.utils.StringUtils;
+import com.sababado.mcpubs.backend.utils.UnrecognizedPubException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,6 +45,30 @@ public class Pub extends DbRecord {
     long lastUpdated;
 
     public Pub() {
+        code = -1;
+    }
+
+    public Pub(String title, String readableTitle, boolean isActive) throws UnrecognizedPubException {
+        this();
+        this.isActive = isActive;
+        this.readableTitle = readableTitle;
+        this.title = title;
+
+        String[] titleParts = title.split("\\s");
+        if (titleParts.length > 1) {
+            fullCode = titleParts[1];
+            if (fullCode.contains(".")) {
+                //MCOs
+                parseMcoTitle(fullCode);
+            } else if (fullCode.contains("-")) {
+                //Doctrine document
+                rootCode = fullCode;
+            } else {
+                throw new UnrecognizedPubException(title);
+            }
+        } else {
+            throw new UnrecognizedPubException(title);
+        }
     }
 
     public Pub(ResultSet resultSet) throws SQLException {
@@ -138,6 +164,22 @@ public class Pub extends DbRecord {
 
     public void setLastUpdated(long lastUpdated) {
         this.lastUpdated = lastUpdated;
+    }
+
+    /**
+     * Helper method to parse a title that appears to be an MCO or MCO P
+     *
+     * @param fullCode
+     */
+    private void parseMcoTitle(String fullCode) {
+        String[] parts = fullCode.trim().split("\\.");
+        rootCode = parts[0];
+
+        String temp = parts[1].split(StringUtils.REGEX_ANY_LETTER)[0];
+        code = Integer.parseInt(temp);
+        version = parts[1].replace(temp, "");
+
+        this.fullCode = rootCode + "." + code;
     }
 
     @Override
