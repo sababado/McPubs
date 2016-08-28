@@ -11,16 +11,7 @@ import java.util.List;
  */
 public class PubSorter {
     public static <E extends List<Pub>> E sortByFullCode(E list) {
-        Collections.sort(list, new FullCodeSorter());
+        Collections.sort(list, new AlphanumericComparator());
         return list;
-    }
-
-    static class FullCodeSorter implements Comparator<Pub> {
-        @Override
-        public int compare(Pub o1, Pub o2) {
-            String o1FullCode = o1.getFullCode();
-            String o2FullCode = o2.getFullCode();
-            return o1FullCode.compareTo(o2FullCode);
-        }
     }
 }

@@ -1,7 +1,6 @@
 package com.sababado.mcpubs.backend.db.utils;
 
 import com.google.appengine.api.utils.SystemProperty;
-import com.sababado.mcpubs.backend.utils.ConnectionStrings;
 import com.sababado.mcpubs.backend.utils.ModelFactory;
 import com.sababado.mcpubs.backend.utils.StringUtils;
 
@@ -30,11 +29,11 @@ public class DbUtils {
             if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
                 // Load the class that provides the new "jdbc:google:mysql://" prefix.
                 Class.forName("com.mysql.jdbc.GoogleDriver");
-                url = ConnectionStrings.PROD_DB;
+                url = StringUtils.PROD_DB;
             } else {
                 // Local MySQL instance to use during development.
                 Class.forName("com.mysql.jdbc.Driver");
-                url = ConnectionStrings.DEV_DB;
+                url = StringUtils.DEV_DB;
             }
         } catch (Exception e) {
             e.printStackTrace();
