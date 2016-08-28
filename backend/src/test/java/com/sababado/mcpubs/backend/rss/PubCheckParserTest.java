@@ -80,7 +80,7 @@ public class PubCheckParserTest {
     public void parsePagination() {
         try {
             Document document = Jsoup.parse(FileUtils.readFile("pagination.html"), "UTF-8");
-            String[] pageLinks = PubCheckParser.getPageLinks(document);
+            String[] pageLinks = PubCheckParser.parsePageLinks(document);
             assertEquals(7, pageLinks.length);
             assertEquals("http://www.marines.mil/News/Publications/ELECTRONIC-LIBRARY/Custompubtype/2006/?Page=1", pageLinks[0]);
             assertEquals("http://www.marines.mil/News/Publications/ELECTRONIC-LIBRARY/Custompubtype/2006/?Page=2", pageLinks[1]);
@@ -94,7 +94,7 @@ public class PubCheckParserTest {
     public void parseNoPagination() {
         try {
             Document document = Jsoup.parse(FileUtils.readFile("no_pagination.html"), "UTF-8");
-            String[] pageLinks = PubCheckParser.getPageLinks(document);
+            String[] pageLinks = PubCheckParser.parsePageLinks(document);
             assertEquals(0, pageLinks.length);
         } catch (IOException e) {
             fail(e.getMessage());

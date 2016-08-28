@@ -62,7 +62,7 @@ public class PubCheckParser {
      * @param document Pagination document.
      * @return An array of links, one item for each page.
      */
-    public static String[] getPageLinks(Document document) {
+    public static String[] parsePageLinks(Document document) {
         Elements paginationElements = document.getElementsByClass("article-task-bar")
                 .first()
                 .getElementsByClass("pagination");
