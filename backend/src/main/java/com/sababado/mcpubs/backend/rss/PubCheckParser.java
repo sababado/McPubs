@@ -17,9 +17,11 @@ import java.util.logging.Logger;
  */
 public class PubCheckParser {
     private static final Logger _logger = Logger.getLogger(PubCheckParser.class.getName());
+    private static final String PAGE_STR = "Page=";
 
     /**
      * Send the document for the HTML page that has a list of pubs in it.
+     *
      * @param document Document of the HTML page.
      * @return A list of pubs, or none if none exist or none were recognized.
      */
@@ -52,5 +54,41 @@ public class PubCheckParser {
         }
 
         return pubs;
+    }
+
+    /**
+     * Send the document for the HTML page that has pagination.
+     *
+     * @param document Pagination document.
+     * @return An array of links, one item for each page.
+     */
+    public static String[] getPageLinks(Document document) {
+        Elements paginationElements = document.getElementsByClass("article-task-bar")
+                .first()
+                .getElementsByClass("pagination");
+        String[] pageLinks;
+        if (paginationElements.size() == 0) {
+            pageLinks = new String[0];
+        } else {
+            Elements elements = paginationElements.first().getElementsByTag("li");
+
+            int pageCount = elements.size();
+            pageLinks = new String[pageCount];
+
+            if (pageCount > 0) {
+                String lastLink = pageLinks[pageCount - 1] =
+                        elements.last()
+                                .getElementsByTag("a")
+                                .first()
+                                .attr("abs:href");
+                String lastPageStr = PAGE_STR + pageCount;
+                // Create a link for all other pages, except the last one since it is already set.
+                for (int i = 1; i < pageCount; i++) {
+                    pageLinks[i - 1] = lastLink.replace(lastPageStr, PAGE_STR + i);
+                }
+            }
+        }
+
+        return pageLinks;
     }
 }
