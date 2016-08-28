@@ -30,4 +30,14 @@ public class StringUtils {
         }
         return s;
     }
+
+    public static boolean isNumber(String str) {
+        if (isEmptyOrWhitespace(str)) return false;
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 }

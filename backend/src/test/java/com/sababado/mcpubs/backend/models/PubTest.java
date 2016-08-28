@@ -52,9 +52,25 @@ public class PubTest {
     }
 
     @Test
+    public void parseDoctrine() {
+        try {
+            Pub pub = new Pub("MCDP 1", "WARFIGHTING", true);
+            assertEquals(pub.getTitle(), "MCDP 1");
+            assertEquals(pub.getReadableTitle(), "WARFIGHTING");
+            assertEquals(pub.isActive(), true);
+            assertEquals(pub.getFullCode(), "1");
+            assertEquals(pub.getRootCode(), "1");
+            assertEquals(pub.getCode(), -1);
+            assertEquals(pub.getVersion(), null);
+        } catch (UnrecognizedPubException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
     public void unrecognizedPubParseTest() {
         try {
-            Pub pub = new Pub("U.S. MARINES IN THE KOREAN WAR PT 12", "U.S. MARINES IN THE KOREAN WAR", true);
+            new Pub("U.S. MARINES IN THE KOREAN WAR PT 12", "U.S. MARINES IN THE KOREAN WAR", true);
             fail("This pub should not have passed.");
         } catch (UnrecognizedPubException e) {
             assertTrue(true);

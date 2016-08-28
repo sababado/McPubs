@@ -29,6 +29,7 @@ dependencies {
     compile 'com.googlecode.objectify:objectify:5.1.9'
     compile 'com.ganyo:gcm-server:1.0.2'
     compile 'mysql:mysql-connector-java:5.1.36'
+    compile 'org.jsoup:jsoup:1.9.2'
     testCompile 'junit:junit:4.10'
 }
 
@@ -42,3 +43,9 @@ appengine {
         getDiscoveryDocsOnBuild = true
     }
 }
+
+task copyTestResources(type: Copy) {
+    from "${projectDir}/src/test/resources"
+    into "${buildDir}/classes/test/"
+}
+processTestResources.dependsOn copyTestResources

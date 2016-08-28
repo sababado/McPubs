@@ -60,7 +60,7 @@ public class Pub extends DbRecord {
             if (fullCode.contains(".")) {
                 //MCOs
                 parseMcoTitle(fullCode);
-            } else if (fullCode.contains("-")) {
+            } else if (fullCode.contains("-") || StringUtils.isNumber(fullCode)) {
                 //Doctrine document
                 rootCode = fullCode;
             } else {
