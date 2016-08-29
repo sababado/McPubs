@@ -100,8 +100,10 @@ public class PubCheck extends HttpServlet {
             }
 
             // commit updates
+            commitUpdates(connection, changesList);
 
             // send updates.
+            //TODO
         }
 
         DbUtils.closeConnection(connection);
