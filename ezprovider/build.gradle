@@ -1,11 +1,13 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
+
+version = VERSION_NAME
+group = GROUP
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
-        applicationId "com.sababado.mcpubs"
         minSdkVersion 19
         targetSdkVersion 24
         versionCode 1
@@ -17,19 +19,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:design:24.2.0'
-    compile 'com.google.android.gms:play-services-gcm:8.3.0'
-    compile project(path: ':backend', configuration: 'android-endpoints')
-    compile project(':ezprovider')
 }
+
+//apply from: 'mvn_push.gradle'
