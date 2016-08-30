@@ -1,10 +1,17 @@
 package com.sababado.mcpubs.ui;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.view.ContextMenu;
 import android.view.MenuItem;
@@ -12,21 +19,17 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.sababado.ezprovider.Contracts;
 import com.sababado.mcpubs.PubAdapter;
 import com.sababado.mcpubs.R;
 import com.sababado.mcpubs.models.Pub;
 
-import java.util.ArrayList;
-
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MyPubsFragment extends ListFragment {
-
-    private static final String ARG_PUB_LIST = "arg_pub_list";
+public class MyPubsFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private PubAdapter pubAdapter;
-    private ArrayList<Pub> pubList;
     private Callbacks callbacks;
 
     public MyPubsFragment() {
@@ -44,48 +47,37 @@ public class MyPubsFragment extends ListFragment {
 
         setEmptyText(getString(R.string.empty_pub_list_text));
 
-        if (savedInstanceState != null) {
-            pubList = savedInstanceState.getParcelableArrayList(ARG_PUB_LIST);
-        }
-
-        // TODO get pubList if null
+        getLoaderManager().initLoader(1, null, this);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (pubAdapter == null) {
-            pubAdapter = new PubAdapter(getContext(), pubList);
+            pubAdapter = new PubAdapter(getContext(), null);
         }
         setListAdapter(pubAdapter);
         registerForContextMenu(getListView());
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(ARG_PUB_LIST, pubList);
-        super.onSaveInstanceState(outState);
-    }
-
     public void addPub(Pub pub) {
-        if (pubList == null) {
-            pubList = new ArrayList<>();
-        }
-        pubList.add(pub);
-        pubAdapter.setData(pubList);
-        pubAdapter.notifyDataSetChanged();
+        ContentValues values = pub.toContentValues();
+        Contracts.Contract contract = Contracts.getContract(Pub.class);
+        getActivity().getContentResolver().insert(contract.CONTENT_URI, values);
     }
 
-    public void editPub(int index, Pub pub) {
-        pubList.set(index, pub);
-        pubAdapter.setData(pubList);
-        pubAdapter.notifyDataSetChanged();
+    public void editPub(long pubId, Pub pub) {
+        ContentValues values = pub.toContentValues();
+        Contracts.Contract contract = Contracts.getContract(Pub.class);
+        getActivity().getContentResolver().update(contract.CONTENT_URI, values,
+                Contracts.Contract.ID_COLUMN_NAME + "=" + String.valueOf(pubId),
+                null);
     }
 
-    public void deletePub(int index) {
-        pubList.remove(index);
-        pubAdapter.setData(pubList);
-        pubAdapter.notifyDataSetChanged();
+    public void deletePub(long pubId) {
+        Contracts.Contract contract = Contracts.getContract(Pub.class);
+        getActivity().getContentResolver().delete(contract.CONTENT_URI,
+                BaseColumns._ID + " = ?", new String[]{String.valueOf(pubId)});
     }
 
     @Override
@@ -97,14 +89,15 @@ public class MyPubsFragment extends ListFragment {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        final int position = info.position;
         switch (item.getItemId()) {
             case R.id.action_edit:
-                Pub clickedPub = pubAdapter.getItem(position);
+                Cursor cursor = pubAdapter.getCursor();
+                cursor.moveToPosition(info.position);
+                Pub clickedPub = new Pub(cursor);
                 if (callbacks != null) {
-                    callbacks.editPub(clickedPub, position);
+                    callbacks.editPub(clickedPub, info.id);
                 }
-                break;
+                return true;
             case R.id.action_delete:
                 new AlertDialog.Builder(getContext())
                         .setTitle(R.string.delete_pub)
@@ -113,10 +106,10 @@ public class MyPubsFragment extends ListFragment {
                         .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                deletePub(position);
+                                deletePub(info.id);
                             }
                         }).show();
-                break;
+                return true;
         }
         return super.onContextItemSelected(item);
     }
@@ -136,13 +129,31 @@ public class MyPubsFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         getListView().showContextMenu();
-        Pub clickedPub = pubAdapter.getItem(position);
-        if (callbacks != null) {
-            callbacks.editPub(clickedPub, position);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Contracts.Contract contract = Contracts.getContract(Pub.class);
+        final Uri uri = contract.CONTENT_URI;
+        final String[] projection = contract.COLUMNS;
+        return new CursorLoader(getContext(), uri, projection, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (pubAdapter != null) {
+            pubAdapter.swapCursor(data);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        if (pubAdapter != null) {
+            pubAdapter.swapCursor(null);
         }
     }
 
     public interface Callbacks {
-        void editPub(Pub pub, int index);
+        void editPub(Pub pub, long pubId);
     }
 }

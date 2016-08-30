@@ -59,15 +59,15 @@ public class MyPubs extends AppCompatActivity implements MyPubsFragment.Callback
     }
 
     @Override
-    public void editPub(Pub pub, int index) {
-        startPubDialog(pub, index, R.string.edit_pub);
+    public void editPub(Pub pub, long pubId) {
+        startPubDialog(pub, pubId, R.string.edit_pub);
     }
 
     public void newPub() {
         startPubDialog(null, -1, R.string.new_pub);
     }
 
-    public void startPubDialog(final Pub pub, final int index, @StringRes int title) {
+    public void startPubDialog(final Pub pub, final long pubId, @StringRes int title) {
         final EditText tv = new EditText(this);
         AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setTitle(title)
@@ -82,7 +82,7 @@ public class MyPubs extends AppCompatActivity implements MyPubsFragment.Callback
                         // the title has changed.
                         if (!TextUtils.isEmpty(savedTitle) && !TextUtils.equals(pub == null ? "" : pub.getTitle(), savedTitle)) {
                             savedPub.setTitle(savedTitle);
-                            pushPubUpdate(savedPub, index);
+                            pushPubUpdate(savedPub, pubId);
                         }
                     }
                 })
@@ -94,12 +94,12 @@ public class MyPubs extends AppCompatActivity implements MyPubsFragment.Callback
         alertDialog.show();
     }
 
-    private void pushPubUpdate(Pub pub, int index) {
+    private void pushPubUpdate(Pub pub, long pubId) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         MyPubsFragment fragment = (MyPubsFragment) fragmentManager.findFragmentById(R.id.my_pubs_fragment);
         if (!fragment.isRemoving() && fragment.isVisible()) {
-            if (index > 0) {
-                fragment.editPub(index, pub);
+            if (pubId > -1) {
+                fragment.editPub(pubId, pub);
             } else {
                 fragment.addPub(pub);
             }

@@ -1,65 +1,46 @@
 package com.sababado.mcpubs;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-import com.sababado.mcpubs.models.Pub;
 import com.sababado.mcpubs.models.Constants;
+import com.sababado.mcpubs.models.Pub;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by robert on 8/29/16.
  */
-public class PubAdapter extends BaseAdapter {
+public class PubAdapter extends CursorAdapter {
 
-    private List<Pub> pubList;
-    private Context context;
+    private LayoutInflater inflater;
 
-    public PubAdapter(Context context, List<Pub> pubList) {
-        this.pubList = pubList;
-        this.context = context;
-    }
-
-    public void setData(List<Pub> pubList) {
-        this.pubList = pubList;
+    public PubAdapter(Context context, Cursor c) {
+        super(context, c, 0);
+        inflater = LayoutInflater.from(context);
     }
 
     @Override
-    public int getCount() {
-        return pubList == null ? 0 : pubList.size();
+    public View newView(Context context, Cursor cursor, ViewGroup parent) {
+        View view = inflater.inflate(R.layout.pub_list_item, parent, false);
+        ViewHolder vh = new ViewHolder();
+        vh.title = (TextView) view.findViewById(R.id.title);
+        vh.readableTitle = (TextView) view.findViewById(R.id.readable_title);
+        vh.status = (TextView) view.findViewById(R.id.status);
+        vh.lastUpdated = (TextView) view.findViewById(R.id.last_updated);
+        view.setTag(vh);
+        return view;
     }
 
     @Override
-    public Pub getItem(int position) {
-        return pubList == null ? null : pubList.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return pubList == null ? 0 : pubList.get(position).getId();
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.pub_list_item, parent, false);
-            ViewHolder vh = new ViewHolder();
-            vh.title = (TextView) view.findViewById(R.id.title);
-            vh.readableTitle = (TextView) view.findViewById(R.id.readable_title);
-            vh.status = (TextView) view.findViewById(R.id.status);
-            vh.lastUpdated = (TextView) view.findViewById(R.id.last_updated);
-            view.setTag(vh);
-        }
-
+    public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder vh = (ViewHolder) view.getTag();
-        Pub pub = getItem(position);
+        Pub pub = new Pub(cursor);
         vh.title.setText(pub.getTitle());
         vh.readableTitle.setText(pub.getReadableTitle());
         String date = Utils.DATE_FORMAT.format(new Date(pub.getLastUpdated()));
@@ -82,8 +63,6 @@ public class PubAdapter extends BaseAdapter {
         }
 
         ((View) (vh.status.getParent())).setEnabled(disableRow);
-
-        return view;
     }
 
     private class ViewHolder {

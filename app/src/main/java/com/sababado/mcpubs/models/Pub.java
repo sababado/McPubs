@@ -1,24 +1,46 @@
 package com.sababado.mcpubs.models;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.sababado.ezprovider.Column;
+import com.sababado.ezprovider.Id;
+import com.sababado.ezprovider.Table;
 import com.sababado.mcpubs.models.Constants.UpdateStatus;
 
 /**
  * Created by robert on 8/29/16.
  */
+@Table(name = "Pub", code = 1)
 public class Pub implements Parcelable {
+    @Id
     private long id;
+    @Column(1)
     private String title;
+    @Column(2)
     private String readableTitle;
+    @Column(3)
     private boolean isActive;
+    @Column(4)
     @UpdateStatus
     private int updateStatus;
+    @Column(5)
     private long lastUpdated;
 
     public Pub() {
 
+    }
+
+    public Pub(Cursor cursor) {
+        id = cursor.getLong(0);
+        title = cursor.getString(1);
+        readableTitle = cursor.getString(2);
+        isActive = cursor.getInt(3) == 1;
+        //noinspection WrongConstant
+        updateStatus = cursor.getInt(4);
+        lastUpdated = cursor.getLong(5);
     }
 
     public Pub(Parcel in) {
@@ -29,6 +51,16 @@ public class Pub implements Parcelable {
         //noinspection WrongConstant
         updateStatus = in.readInt();
         lastUpdated = in.readLong();
+    }
+
+    public ContentValues toContentValues() {
+        ContentValues values = new ContentValues(5);
+        values.put("title", title);
+        values.put("readableTitle", readableTitle);
+        values.put("isActive", isActive);
+        values.put("updateStatus", updateStatus);
+        values.put("lastUpdated", lastUpdated);
+        return values;
     }
 
     @Override
