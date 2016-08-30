@@ -28,6 +28,8 @@ public class Pub implements Parcelable {
     private int updateStatus;
     @Column(5)
     private long lastUpdated;
+    @Column(6)
+    private long pubServerId;
 
     public Pub() {
 
@@ -41,6 +43,7 @@ public class Pub implements Parcelable {
         //noinspection WrongConstant
         updateStatus = cursor.getInt(4);
         lastUpdated = cursor.getLong(5);
+        pubServerId = cursor.getLong(6);
     }
 
     public Pub(Parcel in) {
@@ -51,6 +54,7 @@ public class Pub implements Parcelable {
         //noinspection WrongConstant
         updateStatus = in.readInt();
         lastUpdated = in.readLong();
+        pubServerId = in.readLong();
     }
 
     public ContentValues toContentValues() {
@@ -60,6 +64,7 @@ public class Pub implements Parcelable {
         values.put("isActive", isActive);
         values.put("updateStatus", updateStatus);
         values.put("lastUpdated", lastUpdated);
+        values.put("pubServerId", pubServerId);
         return values;
     }
 
@@ -76,6 +81,7 @@ public class Pub implements Parcelable {
         dest.writeByte((byte) (isActive ? 0x01 : 0x00));
         dest.writeInt(updateStatus);
         dest.writeLong(lastUpdated);
+        dest.writeLong(pubServerId);
     }
 
     public static final Creator<Pub> CREATOR = new Creator<Pub>() {
@@ -138,6 +144,14 @@ public class Pub implements Parcelable {
         this.lastUpdated = lastUpdated;
     }
 
+    public long getPubServerId() {
+        return pubServerId;
+    }
+
+    public void setPubServerId(long pubServerId) {
+        this.pubServerId = pubServerId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -149,6 +163,7 @@ public class Pub implements Parcelable {
         if (isActive != pub.isActive) return false;
         if (updateStatus != pub.updateStatus) return false;
         if (lastUpdated != pub.lastUpdated) return false;
+        if (pubServerId != pub.pubServerId) return false;
         if (title != null ? !title.equals(pub.title) : pub.title != null) return false;
         return readableTitle != null ? readableTitle.equals(pub.readableTitle) : pub.readableTitle == null;
 
@@ -162,6 +177,7 @@ public class Pub implements Parcelable {
         result = 31 * result + (isActive ? 1 : 0);
         result = 31 * result + updateStatus;
         result = 31 * result + (int) (lastUpdated ^ (lastUpdated >>> 32));
+        result = 31 * result + (int) (pubServerId ^ (pubServerId >>> 32));
         return result;
     }
 
@@ -174,6 +190,7 @@ public class Pub implements Parcelable {
                 ", isActive=" + isActive +
                 ", updateStatus=" + updateStatus +
                 ", lastUpdated=" + lastUpdated +
+                ", pubServerId=" + pubServerId +
                 '}';
     }
 }
