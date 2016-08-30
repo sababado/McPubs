@@ -22,6 +22,7 @@ import android.widget.ListView;
 import com.sababado.ezprovider.Contracts;
 import com.sababado.mcpubs.PubAdapter;
 import com.sababado.mcpubs.R;
+import com.sababado.mcpubs.models.Constants;
 import com.sababado.mcpubs.models.Pub;
 
 /**
@@ -64,9 +65,15 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
         ContentValues values = pub.toContentValues();
         Contracts.Contract contract = Contracts.getContract(Pub.class);
         getActivity().getContentResolver().insert(contract.CONTENT_URI, values);
+        // TODO API call
     }
 
     public void editPub(long pubId, Pub pub) {
+        savePub(pubId, pub);
+        // TODO API call
+    }
+
+    private void savePub(long pubId, Pub pub) {
         ContentValues values = pub.toContentValues();
         Contracts.Contract contract = Contracts.getContract(Pub.class);
         getActivity().getContentResolver().update(contract.CONTENT_URI, values,
@@ -78,22 +85,31 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
         Contracts.Contract contract = Contracts.getContract(Pub.class);
         getActivity().getContentResolver().delete(contract.CONTENT_URI,
                 BaseColumns._ID + " = ?", new String[]{String.valueOf(pubId)});
+        // TODO API call
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         getActivity().getMenuInflater().inflate(R.menu.pub_list_item_action_menu, menu);
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        Cursor cursor = pubAdapter.getCursor();
+        cursor.moveToPosition(info.position);
+        Pub clickedPub = new Pub(cursor);
+
+        boolean showReviewedOption = clickedPub.getUpdateStatus() != Constants.NO_CHANGE;
+        menu.findItem(R.id.action_mark_as_reviewed).setVisible(showReviewedOption);
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        Cursor cursor = pubAdapter.getCursor();
+        cursor.moveToPosition(info.position);
+        Pub clickedPub = new Pub(cursor);
         switch (item.getItemId()) {
             case R.id.action_edit:
-                Cursor cursor = pubAdapter.getCursor();
-                cursor.moveToPosition(info.position);
-                Pub clickedPub = new Pub(cursor);
                 if (callbacks != null) {
                     callbacks.editPub(clickedPub, info.id);
                 }
@@ -109,6 +125,10 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
                                 deletePub(info.id);
                             }
                         }).show();
+                return true;
+            case R.id.action_mark_as_reviewed:
+                clickedPub.setUpdateStatus(Constants.NO_CHANGE);
+                savePub(info.id, clickedPub);
                 return true;
         }
         return super.onContextItemSelected(item);
@@ -136,7 +156,7 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
         Contracts.Contract contract = Contracts.getContract(Pub.class);
         final Uri uri = contract.CONTENT_URI;
         final String[] projection = contract.COLUMNS;
-        return new CursorLoader(getContext(), uri, projection, null, null, null);
+        return new CursorLoader(getContext(), uri, projection, null, null, "updateStatus desc title asc");
     }
 
     @Override

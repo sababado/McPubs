@@ -14,4 +14,5 @@
     <string name="delete_pub">Delete Pub</string>
     <string name="save">Save</string>
     <string name="are_you_sure_delete_pub">Are you sure you want to delete this pub? This action cannot be undone.</string>
+    <string name="mark_as_reviewed">Mark As Reviewed</string>
 </resources>

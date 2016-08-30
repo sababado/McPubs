@@ -2,6 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.MyPubs">
     <item
+        android:id="@+id/action_mark_as_reviewed"
+        android:title="@string/mark_as_reviewed" />
+    <item
         android:id="@+id/action_edit"
         android:title="@string/edit" />
     <item
