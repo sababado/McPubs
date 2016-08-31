@@ -39,7 +39,7 @@ public abstract class Contracts {
         public final String CONTENT_URI_STRING;
         public final Uri CONTENT_URI;
         public final int CODE;
-        public final String ID_COLUMN_NAME = BaseColumns._ID;
+        public final static String ID_COLUMN_NAME = BaseColumns._ID;
 
         public final String SQL_CREATE;
 
