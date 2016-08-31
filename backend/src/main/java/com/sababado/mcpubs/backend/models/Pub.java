@@ -61,30 +61,8 @@ public class Pub extends DbRecord {
         this();
         this.isActive = isActive;
         this.readableTitle = readableTitle;
-        this.title = title;
         this.pubType = pubType;
-
-        String[] titleParts = title.split("\\s");
-        if (titleParts.length > 1) {
-            fullCode = titleParts[1];
-            String secondLine = titleParts[1];
-
-            if (pubType == MCO ||
-                    pubType == MCO_P ||
-                    pubType == NAVMC) {
-                fullCode = secondLine;
-                parseMcoTitle(fullCode);
-            } else if (pubType == NAVMC_DIR) {
-                fullCode = titleParts[2];
-                parseMcoTitle(fullCode);
-            } else if (pubType == DOCTRINE_UNSUPPORTED) {
-                rootCode = fullCode = secondLine;
-            } else {
-                throw new UnrecognizedPubException(title);
-            }
-        } else {
-            throw new UnrecognizedPubException(title);
-        }
+        setTitle(title);
     }
 
     public Pub(ResultSet resultSet) throws SQLException {
@@ -167,8 +145,30 @@ public class Pub extends DbRecord {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setTitle(String title) throws UnrecognizedPubException {
         this.title = title;
+
+        String[] titleParts = title.split("\\s");
+        if (titleParts.length > 1) {
+            fullCode = titleParts[1];
+            String secondLine = titleParts[1];
+
+            if (pubType == MCO ||
+                    pubType == MCO_P ||
+                    pubType == NAVMC) {
+                fullCode = secondLine;
+                parseMcoTitle(fullCode);
+            } else if (pubType == NAVMC_DIR) {
+                fullCode = titleParts[2];
+                parseMcoTitle(fullCode);
+            } else if (pubType == DOCTRINE_UNSUPPORTED) {
+                rootCode = fullCode = secondLine;
+            } else {
+                throw new UnrecognizedPubException(title);
+            }
+        } else {
+            throw new UnrecognizedPubException(title);
+        }
     }
 
     public String getReadableTitle() {

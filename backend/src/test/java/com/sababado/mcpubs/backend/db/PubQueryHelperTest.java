@@ -2,6 +2,7 @@ package com.sababado.mcpubs.backend.db;
 
 import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.models.Pub;
+import com.sababado.mcpubs.backend.utils.UnrecognizedPubException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -98,6 +99,28 @@ public class PubQueryHelperTest {
             expected.add("AAAP3200");
             assertEquals(expected, actual);
         } catch (SQLException e) {
+            fail();
+        }
+    }
+
+    @Test
+    public void testInsertOrUpdatePub() {
+        try {
+            Pub newPub = new Pub("MCO AAA4990.342B", "A readable title yeahyeah", true, Pub.MCO);
+            Pub newPubRecord = PubQueryHelper.insertOrUpdateRecord(connection, newPub);
+            assertNotNull(newPubRecord);
+            assertNotNull(newPubRecord.getId());
+            assertTrue(newPubRecord.getId() > 0);
+            newPub.setId(newPubRecord.getId());
+            assertEquals(newPub, newPubRecord);
+
+            long oldId = newPubRecord.getId();
+            newPub.setTitle("MCO AAA4991.342B");
+            newPubRecord = PubQueryHelper.insertOrUpdateRecord(connection, newPub);
+            assertNotNull(newPubRecord);
+            assertNotNull(newPubRecord.getId());
+            assertTrue(oldId == newPubRecord.getId());
+        } catch (UnrecognizedPubException e) {
             fail();
         }
     }

@@ -47,6 +47,51 @@ public class PubQueryHelper extends QueryHelper {
         }
     }
 
+    public static Pub insertOrUpdateRecord(Connection connection, Pub pub) {
+        Pub pubRecord = getPubRecord(connection, pub.getId(), null, null);
+        boolean isInsert = pubRecord == null;
+        String query = isInsert ? Pub.getInsertQuery() : Pub.getUpdateQuery();
+        try {
+            PreparedStatement statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, pub.getFullCode());
+            statement.setString(2, pub.getRootCode());
+            statement.setInt(3, pub.getCode());
+            statement.setString(4, pub.getVersion());
+            statement.setBoolean(5, pub.isActive());
+            statement.setInt(6, pub.getPubType());
+            statement.setString(7, pub.getTitle());
+            statement.setString(8, pub.getReadableTitle());
+            if (!isInsert) {
+                statement.setLong(9, pub.getId());
+            }
+
+            int affectedRows = statement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Creating Pub failed, no rows affected.");
+            }
+            if (!isInsert && affectedRows == 1) {
+                // Update successful
+                return pub;
+            }
+
+            // return newly inserted record.
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    pub.setId(generatedKeys.getLong(1));
+                    statement.close();
+                    return pub;
+                } else {
+                    statement.close();
+                    throw new SQLException("Creating Pub failed, no ID obtained.");
+                }
+            }
+        } catch (SQLException e) {
+            _logger.severe("Couldn't insert or update Pub: " + pub.getFullCode() + "\n" + e.getMessage());
+        }
+        return null;
+    }
+
     public static Pub insertRecordIfNonExistent(Connection connection, Pub pub) {
         Pub pubRecord = getPubRecord(connection, pub.getId(), pub.getFullCode(), pub.isActive());
         if (pubRecord != null) {
