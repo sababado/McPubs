@@ -146,7 +146,7 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        getListView().showContextMenu();
+        getListView().showContextMenuForChild(v);
     }
 
     @Override

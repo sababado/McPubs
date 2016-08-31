@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pub_types">
+        <item>@string/mco</item>
+        <item>@string/mcop</item>
+        <item>@string/navmc</item>
+        <item>@string/navmc_dir</item>
+    </string-array>
+</resources>

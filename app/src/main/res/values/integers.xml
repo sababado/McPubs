@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="mco_value">2005</integer>
+    <integer name="mcop_value">2006</integer>
+    <integer name="navmc_value">2008</integer>
+    <integer name="navmc_dir_value">2009</integer>
+</resources>

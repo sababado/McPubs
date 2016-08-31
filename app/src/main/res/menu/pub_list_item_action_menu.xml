@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.MyPubs">
+    tools:context=".ui.MyPubsActivity">
     <item
         android:id="@+id/action_mark_as_reviewed"
         android:title="@string/mark_as_reviewed" />

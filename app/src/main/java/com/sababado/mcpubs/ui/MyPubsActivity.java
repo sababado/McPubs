@@ -10,15 +10,17 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.sababado.mcpubs.R;
 import com.sababado.mcpubs.models.Pub;
 
-public class MyPubs extends AppCompatActivity implements MyPubsFragment.Callbacks {
+public class MyPubsActivity extends AppCompatActivity implements MyPubsFragment.Callbacks {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +70,9 @@ public class MyPubs extends AppCompatActivity implements MyPubsFragment.Callback
     }
 
     public void startPubDialog(final Pub pub, final long pubId, @StringRes int title) {
-        final EditText tv = new EditText(this);
+        View view = LayoutInflater.from(this).inflate(R.layout.edit_pub, null, false);
+        final Spinner spn = (Spinner) view.findViewById(R.id.pub_type_spinner);
+        final EditText tv = (EditText) view.findViewById(R.id.pub_title);
         AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setCancelable(true)
@@ -90,7 +94,8 @@ public class MyPubs extends AppCompatActivity implements MyPubsFragment.Callback
         if (pub != null) {
             tv.setText(pub.getTitle());
         }
-        alertDialog.setView(tv);
+
+        alertDialog.setView(view);
         alertDialog.show();
     }
 

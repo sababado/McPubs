@@ -15,4 +15,9 @@
     <string name="save">Save</string>
     <string name="are_you_sure_delete_pub">Are you sure you want to delete this pub? This action cannot be undone.</string>
     <string name="mark_as_reviewed">Mark As Reviewed</string>
+    <string name="pub_title_hint">4500.35B</string>
+    <string name="mco">MCO</string>
+    <string name="mcop">MCO P</string>
+    <string name="navmc">NAVMC</string>
+    <string name="navmc_dir">NAVMC DIR</string>
 </resources>
