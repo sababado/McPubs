@@ -2,6 +2,7 @@ package com.sababado.mcpubs;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +43,10 @@ public class PubAdapter extends CursorAdapter {
         ViewHolder vh = (ViewHolder) view.getTag();
         Pub pub = new Pub(cursor);
         vh.title.setText(pub.getTitle());
+
+        vh.readableTitle.setVisibility(TextUtils.isEmpty(pub.getReadableTitle()) ? View.GONE : View.VISIBLE);
         vh.readableTitle.setText(pub.getReadableTitle());
+
         String date = Utils.DATE_FORMAT.format(new Date(pub.getLastUpdated()));
         vh.lastUpdated.setText(
                 context.getResources().getString(R.string.last_updated_at, date));

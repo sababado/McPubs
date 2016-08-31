@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -84,9 +83,12 @@ public class MyPubsActivity extends AppCompatActivity implements MyPubsFragment.
                         String savedTitle = tv.getText().toString().trim();
                         // Only save changes if there are changes to save, or if editing a pub and
                         // the title has changed.
-                        if (!TextUtils.isEmpty(savedTitle) && !TextUtils.equals(pub == null ? "" : pub.getTitle(), savedTitle)) {
-                            savedPub.setTitle(savedTitle);
-                            pushPubUpdate(savedPub, pubId);
+                        if (!TextUtils.isEmpty(savedTitle)) {
+                            savedTitle = String.valueOf(spn.getSelectedItem()) + " " + savedTitle.toUpperCase();
+                            if (!TextUtils.equals(pub == null ? "" : pub.getTitle(), savedTitle)) {
+                                savedPub.setTitle(savedTitle);
+                                pushPubUpdate(savedPub, pubId);
+                            }
                         }
                     }
                 })

@@ -63,12 +63,20 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
         ContentValues values = pub.toContentValues();
         Contracts.Contract contract = Contracts.getContract(Pub.class);
         getActivity().getContentResolver().insert(contract.CONTENT_URI, values);
-        // TODO API call
+        doUpdatePub(pub);
     }
 
     public void editPub(long pubId, Pub pub) {
         savePub(pubId, pub);
-        // TODO API call
+        doUpdatePub(pub);
+    }
+
+    private void doUpdatePub(Pub pub) {
+        if (pub.getPubServerId() == 0) {
+            // TODO Add Pub
+        } else {
+            // TODO Edit Pub
+        }
     }
 
     private void savePub(long pubId, Pub pub) {
