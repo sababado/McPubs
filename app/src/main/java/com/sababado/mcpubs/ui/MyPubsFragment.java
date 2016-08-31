@@ -45,15 +45,13 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setEmptyText(getString(R.string.empty_pub_list_text));
-
         getLoaderManager().initLoader(1, null, this);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setEmptyText(getString(R.string.empty_pub_list_text));
         if (pubAdapter == null) {
             pubAdapter = new PubAdapter(getContext(), null);
         }
@@ -156,7 +154,7 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
         Contracts.Contract contract = Contracts.getContract(Pub.class);
         final Uri uri = contract.CONTENT_URI;
         final String[] projection = contract.COLUMNS;
-        return new CursorLoader(getContext(), uri, projection, null, null, "updateStatus desc title asc");
+        return new CursorLoader(getContext(), uri, projection, null, null, "updateStatus desc, title asc");
     }
 
     @Override
