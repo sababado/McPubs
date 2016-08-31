@@ -66,6 +66,12 @@ public class PubAdapter extends CursorAdapter {
             disableRow = true;
         }
 
+        if (!TextUtils.isEmpty(pub.getOldTitle())) {
+            String oldTitle = context.getResources().getString(R.string.previously_called, pub.getOldTitle());
+            String finalStatusText = vh.status.getText().toString() + "\n" + oldTitle;
+            vh.status.setText(finalStatusText);
+        }
+
         ((View) (vh.status.getParent())).setEnabled(disableRow);
     }
 

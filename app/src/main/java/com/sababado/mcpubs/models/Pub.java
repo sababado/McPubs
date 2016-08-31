@@ -30,6 +30,8 @@ public class Pub implements Parcelable {
     private long lastUpdated;
     @Column(6)
     private long pubServerId;
+    @Column(7)
+    private String oldTitle;
 
     public Pub() {
 
@@ -44,6 +46,7 @@ public class Pub implements Parcelable {
         updateStatus = cursor.getInt(4);
         lastUpdated = cursor.getLong(5);
         pubServerId = cursor.getLong(6);
+        oldTitle = cursor.getString(7);
     }
 
     public Pub(Parcel in) {
@@ -55,6 +58,7 @@ public class Pub implements Parcelable {
         updateStatus = in.readInt();
         lastUpdated = in.readLong();
         pubServerId = in.readLong();
+        oldTitle = in.readString();
     }
 
     public ContentValues toContentValues() {
@@ -65,6 +69,7 @@ public class Pub implements Parcelable {
         values.put("updateStatus", updateStatus);
         values.put("lastUpdated", lastUpdated);
         values.put("pubServerId", pubServerId);
+        values.put("oldTitle", oldTitle);
         return values;
     }
 
@@ -82,6 +87,7 @@ public class Pub implements Parcelable {
         dest.writeInt(updateStatus);
         dest.writeLong(lastUpdated);
         dest.writeLong(pubServerId);
+        dest.writeString(oldTitle);
     }
 
     public static final Creator<Pub> CREATOR = new Creator<Pub>() {
@@ -152,6 +158,14 @@ public class Pub implements Parcelable {
         this.pubServerId = pubServerId;
     }
 
+    public String getOldTitle() {
+        return oldTitle;
+    }
+
+    public void setOldTitle(String oldTitle) {
+        this.oldTitle = oldTitle;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -165,7 +179,9 @@ public class Pub implements Parcelable {
         if (lastUpdated != pub.lastUpdated) return false;
         if (pubServerId != pub.pubServerId) return false;
         if (title != null ? !title.equals(pub.title) : pub.title != null) return false;
-        return readableTitle != null ? readableTitle.equals(pub.readableTitle) : pub.readableTitle == null;
+        if (readableTitle != null ? !readableTitle.equals(pub.readableTitle) : pub.readableTitle != null)
+            return false;
+        return oldTitle != null ? oldTitle.equals(pub.oldTitle) : pub.oldTitle == null;
 
     }
 
@@ -178,6 +194,7 @@ public class Pub implements Parcelable {
         result = 31 * result + updateStatus;
         result = 31 * result + (int) (lastUpdated ^ (lastUpdated >>> 32));
         result = 31 * result + (int) (pubServerId ^ (pubServerId >>> 32));
+        result = 31 * result + (oldTitle != null ? oldTitle.hashCode() : 0);
         return result;
     }
 
@@ -191,6 +208,7 @@ public class Pub implements Parcelable {
                 ", updateStatus=" + updateStatus +
                 ", lastUpdated=" + lastUpdated +
                 ", pubServerId=" + pubServerId +
+                ", oldTitle='" + oldTitle + '\'' +
                 '}';
     }
 }
