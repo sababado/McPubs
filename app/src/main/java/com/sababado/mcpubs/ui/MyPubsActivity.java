@@ -35,6 +35,7 @@ public class MyPubsActivity extends AppCompatActivity implements MyPubsFragment.
                 newPub();
             }
         });
+        // TODO check for google play services
     }
 
     @Override
