@@ -3,6 +3,7 @@ package com.sababado.mcpubs.backend.models;
 import com.googlecode.objectify.annotation.Id;
 import com.sababado.mcpubs.backend.db.utils.Column;
 import com.sababado.mcpubs.backend.db.utils.DbRecord;
+import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.db.utils.TableName;
 
 import java.sql.ResultSet;
@@ -32,8 +33,12 @@ public class Device extends DbRecord {
     }
 
     public Device(ResultSet resultSet) throws SQLException {
+        this(resultSet, false);
+    }
+
+    public Device(ResultSet resultSet, boolean fromJoin) throws SQLException {
         super(resultSet);
-        id = resultSet.getLong(ID);
+        id = resultSet.getLong(fromJoin ? DbUtils.getFkColumnName(ID, "Device") : ID);
         deviceToken = resultSet.getString(DEVICE_TOKEN);
         lastNotificationFail = resultSet.getLong(LAST_NOTIFICATION_FAIL);
         keepAlive = resultSet.getLong(KEEP_ALIVE);
@@ -74,11 +79,11 @@ public class Device extends DbRecord {
     }
 
     public static String getInsertQuery() {
-        return getInsertQuery(Device.class, false);
+        return getInsertQuery(Device.class);
     }
 
     public static String getUpdateQuery() {
-        return getUpdateQuery(Device.class, false);
+        return getUpdateQuery(Device.class);
     }
 
     public static String getUpdateByDeviceTokenQuery() {

@@ -1,6 +1,5 @@
 package com.sababado.mcpubs.backend.db.utils;
 
-import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.utils.StringUtils;
 
 import java.sql.ResultSet;
@@ -32,7 +31,7 @@ public abstract class DbRecord {
 
     public abstract void setId(Long id);
 
-    protected static String getInsertQuery(Class<? extends DbRecord> cls, boolean isFk) {
+    protected static String getInsertQuery(Class<? extends DbRecord> cls) {
         String statement = insertStatements.get(cls);
         if (statement != null) {
             return statement;
@@ -40,7 +39,7 @@ public abstract class DbRecord {
 
         String tableName = DbUtils.getTableName(cls).value();
         // TODO make that ID more generic, it doesn't support custom ID field names.
-        String fields = DbUtils.getSelectColumns(cls, isFk, tableName, false).replace(tableName + "." + Column.ID + ",", "");
+        String fields = DbUtils.getSelectColumns(cls, false, tableName, false).replace(tableName + "." + Column.ID + ",", "");
         int numFields = fields.split(",").length;
         statement = "INSERT INTO " + tableName +
                 " (" + fields + ") " +
@@ -50,14 +49,14 @@ public abstract class DbRecord {
         return statement;
     }
 
-    protected static String getUpdateQuery(Class<? extends DbRecord> cls, boolean isFk) {
+    protected static String getUpdateQuery(Class<? extends DbRecord> cls) {
         String statement = updateStatements.get(cls);
         if (statement != null) {
             return statement;
         }
 
         String tableName = DbUtils.getTableName(cls).value();
-        String fields = DbUtils.getSelectColumns(cls, isFk, tableName, false)
+        String fields = DbUtils.getSelectColumns(cls, false, tableName, false)
                 .replace(tableName + "." + Column.ID + ",", "")
                 .replace(",", "=?,")
                 + "=?";

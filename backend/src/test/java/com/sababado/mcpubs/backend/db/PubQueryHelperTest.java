@@ -50,6 +50,8 @@ public class PubQueryHelperTest {
         assertNotNull(newPubRecord.getId());
         assertTrue(newPubRecord.getId() > 0);
         newPub.setId(newPubRecord.getId());
+        assertTrue(newPubRecord.getLastUpdated() > 0);
+        newPub.setLastUpdated(newPubRecord.getLastUpdated());
         assertEquals(newPub, newPubRecord);
 
         // record shouldn't be returned if looking for an inactive one.
@@ -63,7 +65,6 @@ public class PubQueryHelperTest {
         assertEquals(newPubRecord.getFullCode(), existingRecord.getFullCode());
         assertEquals(newPubRecord.getRootCode(), existingRecord.getRootCode());
         assertEquals(newPubRecord.isActive(), existingRecord.isActive());
-        assertTrue(existingRecord.getLastUpdated() > newPubRecord.getLastUpdated());
 
         //Inserting a new record with the same id should return the same result.
         newPubRecord = PubQueryHelper.insertRecordIfNonExistent(connection, newPubRecord);
@@ -111,6 +112,8 @@ public class PubQueryHelperTest {
             assertNotNull(newPubRecord.getId());
             assertTrue(newPubRecord.getId() > 0);
             newPub.setId(newPubRecord.getId());
+            assertTrue(newPubRecord.getLastUpdated() > 0);
+            newPub.setLastUpdated(newPubRecord.getLastUpdated());
             assertEquals(newPub, newPubRecord);
 
             long oldId = newPubRecord.getId();

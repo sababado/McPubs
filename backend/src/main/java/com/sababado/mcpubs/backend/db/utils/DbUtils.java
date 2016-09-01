@@ -79,9 +79,13 @@ public class DbUtils {
     }
 
     public static <T extends DbRecord> List<T> getList(Connection connection, Class<T> cls, String where) {
+        return getList(connection, cls, false, where);
+    }
+
+    public static <T extends DbRecord> List<T> getList(Connection connection, Class<T> cls, boolean hasFk, String where) {
         String query = classQueryMap.get(cls);
         if (query == null) {
-            query = buildQuery(cls);
+            query = buildQuery(cls, hasFk);
             classQueryMap.put(cls, query);
         }
         if (!StringUtils.isEmptyOrWhitespace(where)) {
@@ -115,9 +119,9 @@ public class DbUtils {
         return query += " " + where;
     }
 
-    static String buildQuery(Class cls) {
+    static String buildQuery(Class cls, boolean hasFk) {
         TableName tableName = getTableName(cls);
-        String selectColumns = getSelectColumns(cls, false, tableName.value(), true);
+        String selectColumns = getSelectColumns(cls, hasFk, tableName.value(), true);
         String query = "select " + selectColumns +
                 " from " + tableName.value();
         if (!StringUtils.isEmptyOrWhitespace(tableName.joinTable())) {
@@ -126,9 +130,17 @@ public class DbUtils {
         return query + ";";
     }
 
-    private static String getForeignKeyClause(TableName tableName) {
-        return " join " + tableName.joinTable() +
-                " where " + tableName.value() + "." + tableName.joinTable().toLowerCase() + "Id = " + tableName.joinTable() + ".id";
+    static String getForeignKeyClause(TableName tableName) {
+        String[] joinTables = tableName.joinTable().split(",");
+        String clause = " join " + tableName.joinTable() + " where ";
+        for (int i = 0; i < joinTables.length; i++) {
+            String joinTable = joinTables[i].trim();
+            if (i > 0) {
+                clause += " and ";
+            }
+            clause += tableName.value() + "." + joinTable.toLowerCase() + "Id = " + joinTable + ".id";
+        }
+        return clause;
     }
 
     static String getSelectColumns(Class cls, boolean isFk, String tableName, boolean allowIgnores) {
@@ -136,12 +148,14 @@ public class DbUtils {
         Field[] fields = cls.getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
-            String columnValue = getColumnValue(field, isFk, tableName, allowIgnores);
+            String columnValue = getColumnValue(field, false, tableName, allowIgnores);
             if (columnValue != null) {
                 if (columnValue.equals(Column.FK_COL_NAME)) {
                     String foreignTableName = getTableName(field.getType()).value();
                     columns += tableName + "." + foreignTableName.toLowerCase() + "Id,";
-                    columns += getSelectColumns(field.getType(), true, foreignTableName, true) + ",";
+                    if (isFk) {
+                        columns += getSelectColumns(field.getType(), true, foreignTableName, true) + ",";
+                    }
                 } else {
                     columns += columnValue + ",";
                 }

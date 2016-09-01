@@ -72,13 +72,13 @@ public class PubQueryHelper extends QueryHelper {
             }
             if (!isInsert && affectedRows == 1) {
                 // Update successful
-                return pub;
+                return getPubRecord(connection, pub.getId(), null, null);
             }
 
             // return newly inserted record.
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    pub.setId(generatedKeys.getLong(1));
+                    pub = getPubRecord(connection, generatedKeys.getLong(1), null, null);
                     statement.close();
                     return pub;
                 } else {
@@ -116,7 +116,7 @@ public class PubQueryHelper extends QueryHelper {
 
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    pub.setId(generatedKeys.getLong(1));
+                    pub = getPubRecord(connection, generatedKeys.getLong(1), null, null);
                     statement.close();
                     return pub;
                 } else {

@@ -4,6 +4,7 @@ import com.sababado.mcpubs.backend.models.Pub;
 
 import org.junit.Test;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 import static org.junit.Assert.assertEquals;
@@ -75,6 +76,51 @@ public class DbUtilsTest {
         where = null;
         expected = query;
         actual = DbUtils.insertWhereClause(query, where);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGetForeignKeyClause() {
+        TableName tableName = new TableName() {
+            @Override
+            public String joinTable() {
+                return "Single";
+            }
+
+            @Override
+            public String value() {
+                return "Name";
+            }
+
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return null;
+            }
+        };
+
+        String expected = " join Single where Name.singleId = Single.id";
+        String actual = DbUtils.getForeignKeyClause(tableName);
+        assertEquals(expected, actual);
+
+        tableName = new TableName() {
+            @Override
+            public String joinTable() {
+                return "First, SecondName";
+            }
+
+            @Override
+            public String value() {
+                return "Name";
+            }
+
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return null;
+            }
+        };
+
+        expected = " join First, SecondName where Name.firstId = First.id and Name.secondnameId = SecondName.id";
+        actual = DbUtils.getForeignKeyClause(tableName);
         assertEquals(expected, actual);
     }
 }

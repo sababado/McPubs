@@ -3,6 +3,7 @@ package com.sababado.mcpubs.backend.models;
 import com.googlecode.objectify.annotation.Id;
 import com.sababado.mcpubs.backend.db.utils.Column;
 import com.sababado.mcpubs.backend.db.utils.DbRecord;
+import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.db.utils.TableName;
 import com.sababado.mcpubs.backend.utils.StringUtils;
 import com.sababado.mcpubs.backend.utils.UnrecognizedPubException;
@@ -66,8 +67,12 @@ public class Pub extends DbRecord {
     }
 
     public Pub(ResultSet resultSet) throws SQLException {
+        this(resultSet, false);
+    }
+
+    public Pub(ResultSet resultSet, boolean fromJoin) throws SQLException {
         super(resultSet);
-        id = resultSet.getLong(Column.ID);
+        id = resultSet.getLong(fromJoin ? DbUtils.getFkColumnName(ID, "Pub") : ID);
         fullCode = resultSet.getString(FULL_CODE);
         rootCode = resultSet.getString(ROOT_CODE);
         code = resultSet.getInt(CODE);
@@ -180,11 +185,11 @@ public class Pub extends DbRecord {
     }
 
     public static String getInsertQuery() {
-        return getInsertQuery(Pub.class, false);
+        return getInsertQuery(Pub.class);
     }
 
     public static String getUpdateQuery() {
-        return getUpdateQuery(Pub.class, false);
+        return getUpdateQuery(Pub.class);
     }
 
     public long getLastUpdated() {

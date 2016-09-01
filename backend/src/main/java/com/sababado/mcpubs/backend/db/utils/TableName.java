@@ -10,5 +10,8 @@ import java.lang.annotation.RetentionPolicy;
 public @interface TableName {
     String value();
 
+    /**
+     * This can be a comma separated string to support joining on multiple tables.
+     */
     String joinTable() default "";
 }
