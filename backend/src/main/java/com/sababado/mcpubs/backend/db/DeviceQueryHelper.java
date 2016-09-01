@@ -68,4 +68,20 @@ public class DeviceQueryHelper extends QueryHelper {
             return false;
         }
     }
+
+    public static boolean updateDeviceKeepAlive(Connection connection, String deviceToken) {
+        try {
+            String updateQuery = Device.getUpdateKeepAliveByDeviceTokenQuery();
+            PreparedStatement statement = connection.prepareStatement(updateQuery);
+            statement.setString(1, deviceToken);
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Updating Device failed, no rows affected.");
+            }
+            return true;
+        } catch (SQLException e) {
+            _logger.severe("Couldn't keep alive device: " + deviceToken + "\n" + e.getMessage());
+            return false;
+        }
+    }
 }

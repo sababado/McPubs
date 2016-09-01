@@ -8,6 +8,7 @@ import com.sababado.mcpubs.backend.db.utils.TableName;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 /**
  * Created by robert on 8/31/16.
@@ -40,8 +41,11 @@ public class Device extends DbRecord {
         super(resultSet);
         id = resultSet.getLong(fromJoin ? DbUtils.getFkColumnName(ID, "Device") : ID);
         deviceToken = resultSet.getString(DEVICE_TOKEN);
-        lastNotificationFail = resultSet.getLong(LAST_NOTIFICATION_FAIL);
-        keepAlive = resultSet.getLong(KEEP_ALIVE);
+        Timestamp timestamp = resultSet.getTimestamp(LAST_NOTIFICATION_FAIL);
+        if (timestamp != null) {
+            lastNotificationFail = timestamp.getTime();
+        }
+        keepAlive = resultSet.getTimestamp(KEEP_ALIVE).getTime();
     }
 
     @Override
@@ -89,6 +93,12 @@ public class Device extends DbRecord {
     public static String getUpdateByDeviceTokenQuery() {
         return "UPDATE Device " +
                 "SET Device.deviceToken=? " +
+                "WHERE Device.deviceToken=?;";
+    }
+
+    public static String getUpdateKeepAliveByDeviceTokenQuery() {
+        return "UPDATE Device " +
+                "SET Device.keepAlive=CURRENT_TIMESTAMP " +
                 "WHERE Device.deviceToken=?;";
     }
 

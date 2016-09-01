@@ -61,6 +61,22 @@ public class DeviceQueryHelperTest {
         assertTrue(actual);
     }
 
+    @Test
+    public void testKeepAliveDevice() {
+        String deviceToken = "AAA567980ghjklr7689";
+        Device device = DeviceQueryHelper.updateToken(connection, null, deviceToken);
+        long lastKeepAlive = device.getKeepAlive();
+
+        try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+        }
+
+        assertTrue(DeviceQueryHelper.updateDeviceKeepAlive(connection, deviceToken));
+        device = DeviceQueryHelper.getDevice(connection, deviceToken);
+        assertTrue(device.getKeepAlive() > lastKeepAlive);
+    }
+
     @After
     public void cleanup() {
         try {

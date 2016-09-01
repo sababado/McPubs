@@ -44,11 +44,24 @@ public class DeviceEndpoint {
      * @param oldToken Old token that was being used.
      * @param newToken New token that is going to be used.
      */
-    public void registerDevice(@Named("oldToken") String oldToken, @Named("newToken") String newToken) {
+    public void register(@Named("oldToken") String oldToken, @Named("newToken") String newToken) {
         Connection connection = DbUtils.openConnection();
 
         DeviceQueryHelper.updateToken(connection, oldToken, newToken);
         // TODO Can I register the device with firebase here?
+
+        DbUtils.closeConnection(connection);
+    }
+
+    /**
+     * Remind the server that this device is still in use.
+     *
+     * @param deviceToken Device to keep alive.
+     */
+    public void keepAlive(@Named("deviceToken") String deviceToken) {
+        Connection connection = DbUtils.openConnection();
+
+        DeviceQueryHelper.updateDeviceKeepAlive(connection, deviceToken);
 
         DbUtils.closeConnection(connection);
     }
