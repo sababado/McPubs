@@ -43,11 +43,29 @@ public class DeviceQueryHelper extends QueryHelper {
 
     public static Device getDevice(Connection connection, String deviceToken) {
         Object values[] = {deviceToken};
-        String where = QueryHelper.buildRecordQuery(new String[]{Device.DEVICE_TOKEN}, values, true);
+        String where = QueryHelper.buildWhereQuery(new String[]{Device.DEVICE_TOKEN}, values, true);
         List<Device> deviceList = DbUtils.getList(connection, Device.class, where);
         if (deviceList != null && deviceList.size() > 0) {
             return deviceList.get(0);
         }
         return null;
+    }
+
+    public static boolean deleteDevice(Connection connection, String deviceToken) {
+        try {
+            String deleteQuery = QueryHelper.buildDeleteQuery(
+                    Device.class,
+                    new String[]{Device.DEVICE_TOKEN},
+                    new Object[]{deviceToken});
+            PreparedStatement statement = connection.prepareStatement(deleteQuery);
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Deleting Device failed, no rows affected.");
+            }
+            return true;
+        } catch (SQLException e) {
+            _logger.severe("Couldn't delete device: " + deviceToken + "\n" + e.getMessage());
+            return false;
+        }
     }
 }

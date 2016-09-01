@@ -132,7 +132,7 @@ public class PubQueryHelper extends QueryHelper {
 
     public static Pub getPubRecord(Connection connection, Long id, String fullCode, Boolean isActive) {
         Object[] values = {id, fullCode, isActive};
-        String where = QueryHelper.buildRecordQuery(SHORT_PUB_QUERY_WHERE_COLUMNS, values, true);
+        String where = QueryHelper.buildWhereQuery(SHORT_PUB_QUERY_WHERE_COLUMNS, values, true);
         List<Pub> recordList = DbUtils.getList(connection, Pub.class, where);
         if (recordList != null && recordList.size() > 0) {
             return recordList.get(0);

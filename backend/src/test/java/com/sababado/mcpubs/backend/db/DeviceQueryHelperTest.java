@@ -10,6 +10,7 @@ import org.junit.Test;
 import java.sql.Connection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -47,6 +48,17 @@ public class DeviceQueryHelperTest {
         assertNotNull(actual);
         assertEquals(newToken, actual.getDeviceToken());
         assertEquals(oldId, (long) actual.getId());
+    }
+
+    @Test
+    public void deleteDeviceTest() {
+        String token = "AAAHGHGHGHG";
+        boolean actual = DeviceQueryHelper.deleteDevice(connection, token);
+        assertFalse(actual);
+
+        DeviceQueryHelper.updateToken(connection, null, token);
+        actual = DeviceQueryHelper.deleteDevice(connection, token);
+        assertTrue(actual);
     }
 
     @After

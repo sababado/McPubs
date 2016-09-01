@@ -42,6 +42,6 @@ public class PubEndpoint {
      * @param pubId
      */
     public void addPub(@Named("pubTitle") String pubTitle, @Named("pubId") long pubId) {
-
+        // TODO get deviceToken from header?
     }
 }

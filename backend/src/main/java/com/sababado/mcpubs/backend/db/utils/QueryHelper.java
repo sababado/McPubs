@@ -31,7 +31,7 @@ public abstract class QueryHelper {
         return where + " limit 1";
     }
 
-    protected static String buildRecordQuery(String[] columnNames, Object[] values, boolean limitOne) {
+    protected static String buildWhereQuery(String[] columnNames, Object[] values, boolean limitOne) {
         assert columnNames.length == values.length;
         if (columnNames.length < 1) {
             return null;
@@ -49,5 +49,12 @@ public abstract class QueryHelper {
             where = limitOne(where);
         }
         return where;
+    }
+
+    protected static <T extends DbRecord> String buildDeleteQuery(Class<T> cls, String[] columnNames, Object[] values) {
+        assert columnNames.length > 0;
+        return "DELETE FROM " + DbUtils.getTableName(cls).value()
+                + " " + buildWhereQuery(columnNames, values, false)
+                + ";";
     }
 }
