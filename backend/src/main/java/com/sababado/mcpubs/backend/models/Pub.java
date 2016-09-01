@@ -50,7 +50,7 @@ public class Pub extends DbRecord {
     String title;
     @Column(READABLE_TITLE)
     String readableTitle;
-    @Column(value = LAST_UPDATED, ignoreInInsert = true)
+    @Column(value = LAST_UPDATED, ignoreInQueryGenerator = true)
     long lastUpdated;
 
     public Pub() {

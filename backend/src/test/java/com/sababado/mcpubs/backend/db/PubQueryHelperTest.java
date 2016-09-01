@@ -30,7 +30,6 @@ public class PubQueryHelperTest {
     public void setup() {
         try {
             connection = DbUtils.openConnection();
-            connection.prepareStatement("DELETE FROM PUB WHERE " + Pub.FULL_CODE + " in ('" + DUMMY_NAME + "', '3-12');").execute();
         } catch (Exception e) {
             DbUtils.closeConnection(connection);
             throw new RuntimeException(e);

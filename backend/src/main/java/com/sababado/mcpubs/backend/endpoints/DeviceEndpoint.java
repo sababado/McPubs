@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 import javax.inject.Named;
 
 /**
- * An endpoint to handle CRUD operations for Pubs
+ * Endpoint to handle device registration
  * <p/>
  * For more information, see
  * https://developers.google.com/appengine/docs/java/endpoints/
@@ -24,7 +24,7 @@ import javax.inject.Named;
  * you'd like to add authentication, take a look at the documentation.
  */
 @Api(
-        name = "pub",
+        name = "device",
         version = "v1",
         namespace = @ApiNamespace(
                 ownerDomain = "backend.mcpubs.sababado.com",
@@ -32,16 +32,17 @@ import javax.inject.Named;
                 packagePath = ""
         )
 )
-public class PubEndpoint {
-    private static final Logger log = Logger.getLogger(PubEndpoint.class.getName());
+public class DeviceEndpoint {
+    private static final Logger log = Logger.getLogger(DeviceEndpoint.class.getName());
 
     /**
-     * Add a new pub or edit an existing pub by passing a valid pubId.
+     * Register a device with it's newest device token. This token is used for notifications.
      *
-     * @param pubTitle
-     * @param pubId
+     * @param oldToken Old token that was being used.
+     * @param newToken New token that is going to be used.
      */
-    public void addPub(@Named("pubTitle") String pubTitle, @Named("pubId") long pubId) {
+    public void registerDevice(@Named("oldToken") String oldToken, @Named("newToken") String newToken) {
+        // TODO Can I register the device with firebase here?
 
     }
 }

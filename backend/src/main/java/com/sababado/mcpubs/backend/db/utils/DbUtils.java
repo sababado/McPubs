@@ -171,7 +171,7 @@ public class DbUtils {
                 if (annotation.annotationType().equals(Column.class)) {
                     Column column = (Column) annotation;
                     columnName = null;
-                    if (allowIgnores || !column.ignoreInInsert()) {
+                    if (allowIgnores || !column.ignoreInQueryGenerator()) {
                         columnName = column.value();
                         if (fromFk && columnName.equals(Column.ID)) {
                             columnName = null;

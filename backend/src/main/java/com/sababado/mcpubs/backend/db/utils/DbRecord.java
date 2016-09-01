@@ -39,7 +39,8 @@ public abstract class DbRecord {
         }
 
         String tableName = DbUtils.getTableName(cls).value();
-        String fields = DbUtils.getSelectColumns(cls, isFk, tableName, false).replace("Pub." + Pub.ID + ",", "");
+        // TODO make that ID more generic, it doesn't support custom ID field names.
+        String fields = DbUtils.getSelectColumns(cls, isFk, tableName, false).replace(tableName + "." + Column.ID + ",", "");
         int numFields = fields.split(",").length;
         statement = "INSERT INTO " + tableName +
                 " (" + fields + ") " +
@@ -57,12 +58,12 @@ public abstract class DbRecord {
 
         String tableName = DbUtils.getTableName(cls).value();
         String fields = DbUtils.getSelectColumns(cls, isFk, tableName, false)
-                .replace("Pub." + Pub.ID + ",", "")
+                .replace(tableName + "." + Column.ID + ",", "")
                 .replace(",", "=?,")
                 + "=?";
         statement = "UPDATE " + tableName +
                 " SET " + fields +
-                " WHERE Pub." + Pub.ID + "=?;";
+                " WHERE " + tableName + "." + Column.ID + "=?;";
 
         updateStatements.put(cls, statement);
         return statement;

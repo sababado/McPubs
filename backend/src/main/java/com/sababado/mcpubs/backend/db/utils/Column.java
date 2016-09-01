@@ -13,5 +13,5 @@ public @interface Column {
 
     String value();
 
-    boolean ignoreInInsert() default false;
+    boolean ignoreInQueryGenerator() default false;
 }
