@@ -29,10 +29,10 @@ CREATE SCHEMA `MCPUBS` ;
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `deviceId` int(11) NOT NULL COMMENT 'ID of the device.',
     `pubId` int(11) NOT NULL COMMENT 'ID of the pub',
-    PRIMARY KEY (`id`),
+    PRIMARY KEY (`id`,`deviceId`),
+    UNIQUE KEY `deviceId_pubId_UNIQUE` (`deviceId`,`pubId`),
     KEY `device_idx` (`deviceId`),
     KEY `pub_idx` (`pubId`),
     CONSTRAINT `fk_device` FOREIGN KEY (`deviceId`) REFERENCES `Device` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
     CONSTRAINT `fk_pub` FOREIGN KEY (`pubId`) REFERENCES `Pub` (`id`) ON UPDATE NO ACTION
   );
-

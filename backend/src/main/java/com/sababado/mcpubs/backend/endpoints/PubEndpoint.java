@@ -8,7 +8,16 @@ package com.sababado.mcpubs.backend.endpoints;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.sababado.mcpubs.backend.db.DeviceQueryHelper;
+import com.sababado.mcpubs.backend.db.PubDevicesQueryHelper;
+import com.sababado.mcpubs.backend.db.PubQueryHelper;
+import com.sababado.mcpubs.backend.db.utils.DbUtils;
+import com.sababado.mcpubs.backend.models.Device;
+import com.sababado.mcpubs.backend.models.Pub;
+import com.sababado.mcpubs.backend.models.PubDevices;
+import com.sababado.mcpubs.backend.utils.UnrecognizedPubException;
 
+import java.sql.Connection;
 import java.util.logging.Logger;
 
 import javax.inject.Named;
@@ -41,7 +50,38 @@ public class PubEndpoint {
      * @param pubTitle
      * @param pubId
      */
-    public void addPub(@Named("pubTitle") String pubTitle, @Named("pubId") long pubId) {
+    public void addPub(@Named("pubId") long pubId,
+                       @Named("pubTitle") String pubTitle,
+                       @Named("pubType") int pubType) {
         // TODO get deviceToken from header?
+        String deviceToken = "";
+
+        Connection connection = DbUtils.openConnection();
+
+        Device device = DeviceQueryHelper.getDevice(connection, deviceToken);
+        if (device == null) {
+            // Device isn't registered
+            // TODO return an error, device not registered.
+        }
+
+        Pub pub = null;
+        try {
+            pub = new Pub();
+            pub.setId(pubId);
+            pub.setTitle(pubTitle);
+            pub.setPubType(pubType);
+            pub = PubQueryHelper.insertOrUpdateRecord(connection, pub);
+        } catch (UnrecognizedPubException e) {
+            // TODO return an error, invalid pub name
+        }
+
+        if (device != null && pub != null) {
+            PubDevices pubDevices = PubDevicesQueryHelper.insertPubDevicesRecord(connection, device.getId(), pub.getId());
+            if (pubDevices == null) {
+                // TODO Return a warning, attempting to save a duplicate record (same pub and same device)
+            }
+            // TODO success
+        }
+        DbUtils.closeConnection(connection);
     }
 }

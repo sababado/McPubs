@@ -47,6 +47,12 @@ public class PubDevicesQueryHelperTest {
         pubDevicesIdsToCleanup.add(pubDevices.getId());
         assertEquals(device, pubDevices.getDevice());
         assertEquals(pub, pubDevices.getPub());
+
+        PubDevicesQueryHelper.insertPubDevicesRecord(connection, device.getId(), pub.getId());
+        PubDevicesQueryHelper.insertPubDevicesRecord(connection, device.getId(), pub.getId());
+        PubDevicesQueryHelper.insertPubDevicesRecord(connection, device.getId(), pub.getId());
+        List<PubDevices> pubDevicesList = DbUtils.getList(connection, PubDevices.class, " where deviceId=" + device.getId() + " and pubId=" + pub.getId());
+        assertEquals(1, pubDevicesList.size());
     }
 
     @After
