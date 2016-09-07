@@ -15,5 +15,11 @@ public class MyApp extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         EasyProvider.init(this, DatabaseHelper.class, Pub.class);
+
+        // check last keep alive flag.
+        long lastKeepAliveTime = Utils.getLongMetaData(this, Utils.LAST_KEEP_ALIVE);
+        if (!Utils.isPastTimeWithinTime(lastKeepAliveTime, Utils.WEEK)) {
+            KeepAliveService.startActionKeepAlive(this);
+        }
     }
 }

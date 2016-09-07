@@ -21,4 +21,10 @@
     <string name="mcop">MCO P</string>
     <string name="navmc">NAVMC</string>
     <string name="navmc_dir">NAVMC DIR</string>
+    <string name="notification_message_updated">'%s' has been updated to '%s'</string>
+    <string name="notification_message_deleted">'%s' has been deleted.</string>
+    <string name="notification_message_updated_but_deleted">'%s' has been updated to '%s' but the updated pub has been deleted.</string>
+    <string name="notif_message_udpated">'%s' Updated</string>
+    <string name="notif_message_deleted">'%s' Deleted</string>
+    <string name="notif_message_updated_but_deleted">'%s' Updated But Deleted</string>
 </resources>
