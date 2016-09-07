@@ -160,4 +160,22 @@ public class PubQueryHelper extends QueryHelper {
     public static List<String> getDistinctRootCodes(Connection connection, int pubType) {
         return getDistinctRootCodes(connection, pubType, null);
     }
+
+    public static boolean deletePub(Connection connection, long pubId) {
+        try {
+            String deleteQuery = QueryHelper.buildDeleteQuery(
+                    Pub.class,
+                    new String[]{Pub.ID},
+                    new Object[]{pubId});
+            PreparedStatement statement = connection.prepareStatement(deleteQuery);
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Deleting Pub failed, no rows affected.");
+            }
+            return true;
+        } catch (SQLException e) {
+            _logger.severe("Couldn't delete Pub: " + pubId + "\n" + e.getMessage());
+            return false;
+        }
+    }
 }

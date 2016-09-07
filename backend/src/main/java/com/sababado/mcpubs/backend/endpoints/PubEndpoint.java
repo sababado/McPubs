@@ -60,8 +60,12 @@ public class PubEndpoint {
 
         Device device = DeviceQueryHelper.getDevice(connection, deviceToken);
         if (device == null) {
-            // Device isn't registered
-            // TODO return an error, device not registered.
+            // Device isn't registered so register it
+            device = DeviceEndpoint.register(connection, null, deviceToken);
+
+            if (device == null) {
+                // TODO return an error, device not registered.
+            }
         }
 
         Pub pub = null;
@@ -82,6 +86,17 @@ public class PubEndpoint {
             }
             // TODO success
         }
+        DbUtils.closeConnection(connection);
+    }
+
+    public void deletePub(@Named("pubId") long pubId) {
+        // TODO deviceToken from header?
+        String deviceToken = "";
+        Connection connection = DbUtils.openConnection();
+
+        PubDevicesQueryHelper.deletePubDevicesRecord(connection, deviceToken, pubId);
+        PubDevicesQueryHelper.cleanupUnwatchedPubs(connection);
+
         DbUtils.closeConnection(connection);
     }
 }

@@ -10,6 +10,7 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.sababado.mcpubs.backend.db.DeviceQueryHelper;
 import com.sababado.mcpubs.backend.db.utils.DbUtils;
+import com.sababado.mcpubs.backend.models.Device;
 
 import java.sql.Connection;
 import java.util.logging.Logger;
@@ -47,10 +48,16 @@ public class DeviceEndpoint {
     public void register(@Named("oldToken") String oldToken, @Named("newToken") String newToken) {
         Connection connection = DbUtils.openConnection();
 
-        DeviceQueryHelper.updateToken(connection, oldToken, newToken);
-        // TODO Can I register the device with firebase here?
+        register(connection, oldToken, newToken);
 
         DbUtils.closeConnection(connection);
+    }
+
+    static Device register(Connection connection, String oldToken, String newToken) {
+        Device device = DeviceQueryHelper.updateToken(connection, oldToken, newToken);
+        // TODO Can I register the device with firebase here?
+
+        return device;
     }
 
     /**

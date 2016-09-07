@@ -55,4 +55,38 @@ public class PubDevicesQueryHelper extends QueryHelper {
         }
         return null;
     }
+
+    public static boolean deletePubDevicesRecord(Connection connection, String deviceToken, long pubId) {
+        try {
+            String deleteQuery = "delete from pubDevices " +
+                    "where pubId = " + pubId + " " +
+                    "and deviceId = (select id from device where deviceToken='" + deviceToken + "');";
+            PreparedStatement statement = connection.prepareStatement(deleteQuery);
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Deleting PubDevices Record failed, no rows affected.");
+            }
+            return true;
+        } catch (SQLException e) {
+            _logger.severe("Couldn't delete PubDevices Record: deviceToken:" + deviceToken + " pubId:" + pubId + "\n" + e.getMessage());
+            return false;
+        }
+    }
+
+    public static int cleanupUnwatchedPubs(Connection connection) {
+        int affectedRows = 0;
+        try {
+            String query = "delete from Pub " +
+                    "where Pub.id not in " +
+                    "(select PubDevices.pubId from PubDevices group by(PubDevices.pubId));";
+            PreparedStatement statement = connection.prepareStatement(query);
+            affectedRows = statement.executeUpdate();
+            if (affectedRows == 0) {
+                _logger.info("No unwatched pubs were found to be cleaned up.");
+            }
+        } catch (SQLException e) {
+            _logger.severe("Couldn't cleanup unwatched pubs.\n" + e.getMessage());
+        }
+        return affectedRows;
+    }
 }

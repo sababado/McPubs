@@ -127,6 +127,16 @@ public class PubQueryHelperTest {
         }
     }
 
+    @Test
+    public void testDeletePub() throws UnrecognizedPubException {
+        Pub newPub = new Pub("MCO AAA4990.342B", "A readable title yeahyeah", true, Pub.MCO);
+        Pub newPubRecord = PubQueryHelper.insertOrUpdateRecord(connection, newPub);
+
+        assertEquals(true, PubQueryHelper.deletePub(connection, newPubRecord.getId()));
+
+        assertNull(PubQueryHelper.getPubRecord(connection, newPubRecord.getId(), null, null));
+    }
+
     @After
     public void cleanup() {
         try {
