@@ -95,7 +95,6 @@ public class PubEndpoint {
         Connection connection = DbUtils.openConnection();
 
         PubDevicesQueryHelper.deletePubDevicesRecord(connection, deviceToken, pubId);
-        PubDevicesQueryHelper.cleanupUnwatchedPubs(connection);
 
         DbUtils.closeConnection(connection);
     }

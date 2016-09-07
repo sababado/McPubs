@@ -5,4 +5,9 @@
         <description>Check for updates on any watched pubs.</description>
         <schedule>every 48 hours</schedule>
     </cron>
+    <cron>
+        <url>/cron/pubCleanup</url>
+        <description>Remove any pubs not being watched.</description>
+        <schedule>every week</schedule>
+    </cron>
 </cronentries>
