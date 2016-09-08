@@ -52,7 +52,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".KeepAliveService"
+            android:name=".network.KeepAliveService"
             android:exported="false"></service>
     </application>
 

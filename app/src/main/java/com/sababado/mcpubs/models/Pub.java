@@ -8,7 +8,10 @@ import android.os.Parcelable;
 import com.sababado.ezprovider.Column;
 import com.sababado.ezprovider.Id;
 import com.sababado.ezprovider.Table;
+import com.sababado.mcpubs.models.Constants.PubType;
 import com.sababado.mcpubs.models.Constants.UpdateStatus;
+
+import java.util.Arrays;
 
 /**
  * Created by robert on 8/29/16.
@@ -32,6 +35,9 @@ public class Pub implements Parcelable {
     private long pubServerId;
     @Column(7)
     private String oldTitle;
+    @Column(8)
+    @PubType
+    private int pubType;
 
     public Pub() {
 
@@ -47,6 +53,8 @@ public class Pub implements Parcelable {
         lastUpdated = cursor.getLong(5);
         pubServerId = cursor.getLong(6);
         oldTitle = cursor.getString(7);
+        //noinspection WrongConstant
+        pubType = cursor.getInt(8);
     }
 
     public Pub(Parcel in) {
@@ -59,6 +67,8 @@ public class Pub implements Parcelable {
         lastUpdated = in.readLong();
         pubServerId = in.readLong();
         oldTitle = in.readString();
+        //noinspection WrongConstant
+        pubType = in.readInt();
     }
 
     public ContentValues toContentValues() {
@@ -70,6 +80,7 @@ public class Pub implements Parcelable {
         values.put("lastUpdated", lastUpdated);
         values.put("pubServerId", pubServerId);
         values.put("oldTitle", oldTitle);
+        values.put("pubType", pubType);
         return values;
     }
 
@@ -88,6 +99,7 @@ public class Pub implements Parcelable {
         dest.writeLong(lastUpdated);
         dest.writeLong(pubServerId);
         dest.writeString(oldTitle);
+        dest.writeInt(pubType);
     }
 
     public static final Creator<Pub> CREATOR = new Creator<Pub>() {
@@ -166,6 +178,19 @@ public class Pub implements Parcelable {
         this.oldTitle = oldTitle;
     }
 
+    public int getPubType() {
+        return pubType;
+    }
+
+    public void setPubType(String pubType) {
+        int i = Arrays.binarySearch(Constants.PUB_TYPES, pubType);
+        setPubType(Constants.PUB_TYPE_VALS[i]);
+    }
+
+    public void setPubType(@PubType int pubType) {
+        this.pubType = pubType;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -178,6 +203,7 @@ public class Pub implements Parcelable {
         if (updateStatus != pub.updateStatus) return false;
         if (lastUpdated != pub.lastUpdated) return false;
         if (pubServerId != pub.pubServerId) return false;
+        if (pubType != pub.pubType) return false;
         if (title != null ? !title.equals(pub.title) : pub.title != null) return false;
         if (readableTitle != null ? !readableTitle.equals(pub.readableTitle) : pub.readableTitle != null)
             return false;
@@ -195,6 +221,7 @@ public class Pub implements Parcelable {
         result = 31 * result + (int) (lastUpdated ^ (lastUpdated >>> 32));
         result = 31 * result + (int) (pubServerId ^ (pubServerId >>> 32));
         result = 31 * result + (oldTitle != null ? oldTitle.hashCode() : 0);
+        result = 31 * result + pubType;
         return result;
     }
 
@@ -209,6 +236,7 @@ public class Pub implements Parcelable {
                 ", lastUpdated=" + lastUpdated +
                 ", pubServerId=" + pubServerId +
                 ", oldTitle='" + oldTitle + '\'' +
+                ", pubType=" + pubType +
                 '}';
     }
 }

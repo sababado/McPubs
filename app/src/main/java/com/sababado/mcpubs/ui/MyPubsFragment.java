@@ -13,6 +13,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,11 +25,15 @@ import com.sababado.mcpubs.PubAdapter;
 import com.sababado.mcpubs.R;
 import com.sababado.mcpubs.models.Constants;
 import com.sababado.mcpubs.models.Pub;
+import com.sababado.mcpubs.network.NetworkUtils;
+
+import java.io.IOException;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MyPubsFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    public static final String TAG = MyPubsFragment.class.getSimpleName();
 
     private PubAdapter pubAdapter;
     private Callbacks callbacks;
@@ -72,10 +77,11 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
     }
 
     private void doUpdatePub(Pub pub) {
-        if (pub.getPubServerId() == 0) {
-            // TODO Add Pub
-        } else {
-            // TODO Edit Pub
+        try {
+            NetworkUtils.getPubService(getContext())
+                    .addPub(pub.getPubServerId(), pub.getTitle(), pub.getPubType());
+        } catch (IOException e) {
+            Log.v(TAG, "Failed to add/update pub: " + pub + "\n" + e.getMessage());
         }
     }
 
@@ -87,11 +93,17 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
                 null);
     }
 
-    public void deletePub(long pubId) {
-        Contracts.Contract contract = Contracts.getContract(Pub.class);
-        getActivity().getContentResolver().delete(contract.CONTENT_URI,
-                BaseColumns._ID + " = ?", new String[]{String.valueOf(pubId)});
-        // TODO API call
+    public void deletePub(Pub pub) {
+        try {
+            NetworkUtils.getPubService(getContext())
+                    .deletePub(pub.getPubServerId());
+
+            Contracts.Contract contract = Contracts.getContract(Pub.class);
+            getActivity().getContentResolver().delete(contract.CONTENT_URI,
+                    BaseColumns._ID + " = ?", new String[]{String.valueOf(pub.getId())});
+        } catch (IOException e) {
+            Log.v(TAG, "Failed to delete pub from server: " + pub + "\n" + e.getMessage());
+        }
     }
 
     @Override
@@ -113,7 +125,7 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
         final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         Cursor cursor = pubAdapter.getCursor();
         cursor.moveToPosition(info.position);
-        Pub clickedPub = new Pub(cursor);
+        final Pub clickedPub = new Pub(cursor);
         switch (item.getItemId()) {
             case R.id.action_edit:
                 if (callbacks != null) {
@@ -128,7 +140,7 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
                         .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                deletePub(info.id);
+                                deletePub(clickedPub);
                             }
                         }).show();
                 return true;

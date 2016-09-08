@@ -104,7 +104,8 @@ public abstract class Contracts {
             sqlCreate += ");";
             SQL_CREATE = sqlCreate;
 
-            Log.v("contracts", sqlCreate);
+            if (BuildConfig.DEBUG)
+                Log.v("contracts", sqlCreate);
         }
 
         public Uri getContentUri(long id) {

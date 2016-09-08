@@ -4,7 +4,9 @@ import android.app.Application;
 import android.content.Context;
 
 import com.sababado.ezprovider.EasyProvider;
+import com.sababado.mcpubs.models.Constants;
 import com.sababado.mcpubs.models.Pub;
+import com.sababado.mcpubs.network.KeepAliveService;
 import com.sababado.mcpubs.provider.DatabaseHelper;
 
 /**
@@ -15,6 +17,7 @@ public class MyApp extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         EasyProvider.init(this, DatabaseHelper.class, Pub.class);
+        Constants.init(this);
 
         // check last keep alive flag.
         long lastKeepAliveTime = Utils.getLongMetaData(this, Utils.LAST_KEEP_ALIVE);

@@ -17,7 +17,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.sababado.mcpubs.R;
+import com.sababado.mcpubs.models.Constants;
 import com.sababado.mcpubs.models.Pub;
+
+import java.util.Arrays;
 
 public class MyPubsActivity extends AppCompatActivity implements MyPubsFragment.Callbacks {
 
@@ -85,7 +88,8 @@ public class MyPubsActivity extends AppCompatActivity implements MyPubsFragment.
                         // Only save changes if there are changes to save, or if editing a pub and
                         // the title has changed.
                         if (!TextUtils.isEmpty(savedTitle)) {
-                            savedTitle = String.valueOf(spn.getSelectedItem()) + " " + savedTitle.toUpperCase();
+                            savedPub.setPubType(String.valueOf(spn.getSelectedItem()));
+                            savedTitle = savedPub.getPubType() + " " + savedTitle.toUpperCase();
                             if (!TextUtils.equals(pub == null ? "" : pub.getTitle(), savedTitle)) {
                                 savedPub.setTitle(savedTitle);
                                 pushPubUpdate(savedPub, pubId);
@@ -96,6 +100,8 @@ public class MyPubsActivity extends AppCompatActivity implements MyPubsFragment.
                 .create();
         if (pub != null) {
             tv.setText(pub.getTitle());
+            int i = Arrays.binarySearch(Constants.PUB_TYPE_VALS, pub.getPubType());
+            spn.setSelection(i);
         }
 
         alertDialog.setView(view);

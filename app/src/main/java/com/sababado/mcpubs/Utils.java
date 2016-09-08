@@ -19,10 +19,13 @@ public class Utils {
     public static final long DAY = 1000 * 60 * 60 * 24;
     public static final long WEEK = DAY * 7;
 
+    public static final String SP_FIREBASE_PUSH = "firebasePush";
+
     public static final String LAST_KEEP_ALIVE = "last_keep_alive";
+    public static final String DEVICE_TOKEN = "device_token";
 
     @Retention(RetentionPolicy.SOURCE)
-    @StringDef({LAST_KEEP_ALIVE})
+    @StringDef({LAST_KEEP_ALIVE, DEVICE_TOKEN})
     public @interface SpKey {
     }
 
