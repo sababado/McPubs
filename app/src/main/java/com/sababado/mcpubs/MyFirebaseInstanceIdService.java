@@ -28,7 +28,6 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
     }
 
     private void sendRegistrationToServer(String newToken) {
-        // TODO Ignore token from auto-backup
         SharedPreferences sharedPreferences = getSharedPreferences(Utils.SP_FIREBASE_PUSH, MODE_PRIVATE);
         String oldToken = sharedPreferences.getString(Utils.DEVICE_TOKEN, null);
         sharedPreferences.edit()
