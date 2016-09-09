@@ -71,15 +71,16 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
         doUpdatePub(pub);
     }
 
-    public void editPub(long pubId, Pub pub) {
-        savePub(pubId, pub);
-        doUpdatePub(pub);
-    }
+//    public void editPub(long pubId, Pub pub) {
+//        savePub(pubId, pub);
+//        doUpdatePub(pub);
+//    }
 
     private void doUpdatePub(Pub pub) {
         try {
-            NetworkUtils.getPubService(getContext())
-                    .addPub(pub.getPubServerId(), pub.getTitle(), pub.getPubType());
+            NetworkUtils.addDeviceTokenHeader(NetworkUtils.getPubService(getContext())
+                    .addPub(pub.getTitle(), pub.getPubType(), pub.getPubServerId()), getContext())
+                    .execute();
         } catch (IOException e) {
             Log.v(TAG, "Failed to add/update pub: " + pub + "\n" + e.getMessage());
         }
@@ -95,8 +96,9 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
 
     public void deletePub(Pub pub) {
         try {
-            NetworkUtils.getPubService(getContext())
-                    .deletePub(pub.getPubServerId());
+            NetworkUtils.addDeviceTokenHeader(NetworkUtils.getPubService(getContext())
+                    .deletePub(pub.getPubServerId()), getContext())
+                    .execute();
 
             Contracts.Contract contract = Contracts.getContract(Pub.class);
             getActivity().getContentResolver().delete(contract.CONTENT_URI,
@@ -127,11 +129,11 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
         cursor.moveToPosition(info.position);
         final Pub clickedPub = new Pub(cursor);
         switch (item.getItemId()) {
-            case R.id.action_edit:
-                if (callbacks != null) {
-                    callbacks.editPub(clickedPub, info.id);
-                }
-                return true;
+//            case R.id.action_edit:
+//                if (callbacks != null) {
+//                    callbacks.editPub(clickedPub, info.id);
+//                }
+//                return true;
             case R.id.action_delete:
                 new AlertDialog.Builder(getContext())
                         .setTitle(R.string.delete_pub)
@@ -192,6 +194,6 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
     }
 
     public interface Callbacks {
-        void editPub(Pub pub, long pubId);
+//        void editPub(Pub pub, long pubId);
     }
 }

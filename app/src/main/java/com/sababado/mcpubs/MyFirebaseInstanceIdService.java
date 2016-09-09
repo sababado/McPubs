@@ -38,7 +38,8 @@ public class MyFirebaseInstanceIdService extends FirebaseInstanceIdService {
             oldToken = "";
         }
         try {
-            NetworkUtils.getDeviceService(this).register(oldToken, newToken).execute();
+            NetworkUtils.addDeviceTokenHeader(NetworkUtils.getDeviceService(this).register(oldToken), this)
+                    .execute();
             Utils.setMetaData(this, Utils.LAST_KEEP_ALIVE, System.currentTimeMillis());
         } catch (IOException e) {
             Log.e(TAG, "Problem with device registration: " + e.getMessage());

@@ -3,7 +3,6 @@ package com.sababado.mcpubs.network;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -40,11 +39,12 @@ public class KeepAliveService extends IntentService {
      * parameters.
      */
     private void handleActionKeepAlive() {
-        SharedPreferences sharedPreferences = getSharedPreferences(Utils.SP_FIREBASE_PUSH, MODE_PRIVATE);
-        String deviceToken = sharedPreferences.getString(Utils.DEVICE_TOKEN, null);
+        String deviceToken = Utils.getDt(this);
         if (!TextUtils.isEmpty(deviceToken)) {
             try {
-                NetworkUtils.getDeviceService(this).keepAlive(deviceToken).execute();
+                NetworkUtils.addDeviceTokenHeader(
+                        NetworkUtils.getDeviceService(this).keepAlive(), this)
+                        .execute();
                 Utils.setMetaData(this, Utils.LAST_KEEP_ALIVE, System.currentTimeMillis());
             } catch (IOException e) {
                 Log.e(TAG, "Problem with keep-alive: " + e.getMessage());

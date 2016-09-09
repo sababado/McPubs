@@ -8,6 +8,9 @@ package com.sababado.mcpubs.backend.endpoints;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.response.BadRequestException;
+import com.google.api.server.spi.response.ConflictException;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.sababado.mcpubs.backend.db.DeviceQueryHelper;
 import com.sababado.mcpubs.backend.db.PubDevicesQueryHelper;
 import com.sababado.mcpubs.backend.db.PubQueryHelper;
@@ -15,12 +18,14 @@ import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.models.Device;
 import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.models.PubDevices;
+import com.sababado.mcpubs.backend.utils.EndpointUtils;
 import com.sababado.mcpubs.backend.utils.UnrecognizedPubException;
 
 import java.sql.Connection;
 import java.util.logging.Logger;
 
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * An endpoint to handle CRUD operations for Pubs
@@ -45,16 +50,16 @@ public class PubEndpoint {
     private static final Logger log = Logger.getLogger(PubEndpoint.class.getName());
 
     /**
-     * Add a new pub or edit an existing pub by passing a valid pubId.
+     * Add a new pub.
      *
      * @param pubTitle
-     * @param pubId
+     * @param pubType
      */
-    public void addPub(@Named("pubId") long pubId,
+    public void addPub(HttpServletRequest req,
                        @Named("pubTitle") String pubTitle,
-                       @Named("pubType") int pubType) {
-        // TODO get deviceToken from header?
-        String deviceToken = "";
+                       @Named("pubType") int pubType)
+            throws UnauthorizedException, BadRequestException, ConflictException {
+        String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
 
         Connection connection = DbUtils.openConnection();
 
@@ -64,34 +69,35 @@ public class PubEndpoint {
             device = DeviceEndpoint.register(connection, null, deviceToken);
 
             if (device == null) {
-                // TODO return an error, device not registered.
+                throw new UnauthorizedException("The device is not registered.");
             }
         }
 
         Pub pub = null;
         try {
             pub = new Pub();
-            pub.setId(pubId);
-            pub.setTitle(pubTitle);
             pub.setPubType(pubType);
+            pub.setTitle(pubTitle);
+            pub.setActive(true);
             pub = PubQueryHelper.insertOrUpdateRecord(connection, pub);
         } catch (UnrecognizedPubException e) {
-            // TODO return an error, invalid pub name
+            throw new BadRequestException("Invalid pub name '" + pubTitle + "'");
+        } catch (BadRequestException e) {
+            pub = PubQueryHelper.getPubRecord(connection, null, pub.getFullCode(), null);
         }
 
-        if (device != null && pub != null) {
+        if (pub != null) {
             PubDevices pubDevices = PubDevicesQueryHelper.insertPubDevicesRecord(connection, device.getId(), pub.getId());
             if (pubDevices == null) {
-                // TODO Return a warning, attempting to save a duplicate record (same pub and same device)
+                throw new ConflictException("Attempting to save a duplicate record. Same pub and same device.");
             }
-            // TODO success
         }
         DbUtils.closeConnection(connection);
     }
 
-    public void deletePub(@Named("pubId") long pubId) {
-        // TODO deviceToken from header?
-        String deviceToken = "";
+    public void deletePub(HttpServletRequest req, @Named("pubId") long pubId) throws UnauthorizedException {
+        String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
+
         Connection connection = DbUtils.openConnection();
 
         PubDevicesQueryHelper.deletePubDevicesRecord(connection, deviceToken, pubId);

@@ -1,5 +1,6 @@
 package com.sababado.mcpubs.backend.db;
 
+import com.google.api.server.spi.response.BadRequestException;
 import com.sababado.mcpubs.backend.db.utils.Column;
 import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.db.utils.QueryHelper;
@@ -47,7 +48,7 @@ public class PubQueryHelper extends QueryHelper {
         }
     }
 
-    public static Pub insertOrUpdateRecord(Connection connection, Pub pub) {
+    public static Pub insertOrUpdateRecord(Connection connection, Pub pub) throws BadRequestException {
         Pub pubRecord = getPubRecord(connection, pub.getId(), null, null);
         boolean isInsert = pubRecord == null;
         String query = isInsert ? Pub.getInsertQuery() : Pub.getUpdateQuery();
@@ -87,9 +88,10 @@ public class PubQueryHelper extends QueryHelper {
                 }
             }
         } catch (SQLException e) {
-            _logger.severe("Couldn't insert or update Pub: " + pub.getFullCode() + "\n" + e.getMessage());
+            String message = "Couldn't insert or update Pub: " + pub.getFullCode() + "\n" + e.getMessage();
+            _logger.severe(message);
+            throw new BadRequestException(message);
         }
-        return null;
     }
 
     public static Pub insertRecordIfNonExistent(Connection connection, Pub pub) {

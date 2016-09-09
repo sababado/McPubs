@@ -63,10 +63,10 @@ public class MyPubsActivity extends AppCompatActivity implements MyPubsFragment.
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void editPub(Pub pub, long pubId) {
-        startPubDialog(pub, pubId, R.string.edit_pub);
-    }
+//    @Override
+//    public void editPub(Pub pub, long pubId) {
+//        startPubDialog(pub, pubId, R.string.edit_pub);
+//    }
 
     public void newPub() {
         startPubDialog(null, -1, R.string.new_pub);
@@ -112,11 +112,11 @@ public class MyPubsActivity extends AppCompatActivity implements MyPubsFragment.
         FragmentManager fragmentManager = getSupportFragmentManager();
         MyPubsFragment fragment = (MyPubsFragment) fragmentManager.findFragmentById(R.id.my_pubs_fragment);
         if (!fragment.isRemoving() && fragment.isVisible()) {
-            if (pubId > -1) {
-                fragment.editPub(pubId, pub);
-            } else {
+//            if (pubId > -1) {
+//                fragment.editPub(pubId, pub);
+//            } else {
                 fragment.addPub(pub);
-            }
+//            }
         }
     }
 }

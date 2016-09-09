@@ -8,6 +8,6 @@
     <cron>
         <url>/cron/pubCleanup</url>
         <description>Remove any pubs not being watched.</description>
-        <schedule>every week</schedule>
+        <schedule>every 168 hours</schedule>
     </cron>
 </cronentries>

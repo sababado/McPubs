@@ -53,4 +53,9 @@ public class Utils {
         long now = System.currentTimeMillis();
         return now - timeToCheck <= timePeriod;
     }
+
+    public static String getDt(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Utils.SP_FIREBASE_PUSH, context.MODE_PRIVATE);
+        return sharedPreferences.getString(Utils.DEVICE_TOKEN, null);
+    }
 }

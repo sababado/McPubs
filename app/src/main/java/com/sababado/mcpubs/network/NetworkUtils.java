@@ -5,8 +5,11 @@ import android.content.Context;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.json.AbstractGoogleJsonClient;
+import com.google.api.client.googleapis.services.json.AbstractGoogleJsonClientRequest;
+import com.google.api.client.http.HttpHeaders;
 import com.sababado.mcpubs.BuildConfig;
 import com.sababado.mcpubs.R;
+import com.sababado.mcpubs.Utils;
 import com.sababado.mcpubs.backend.device.Device;
 import com.sababado.mcpubs.backend.pub.Pub;
 
@@ -63,5 +66,12 @@ public class NetworkUtils {
 //                        abstractGoogleClientRequest.setDisableGZipContent(true);
 //                    }
 //                });
+    }
+
+    public static <T extends AbstractGoogleJsonClientRequest> T addDeviceTokenHeader(T t, Context context) {
+        HttpHeaders headers = t.getRequestHeaders();
+        headers.set("dT", Utils.getDt(context));
+        t.setRequestHeaders(headers);
+        return t;
     }
 }

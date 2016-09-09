@@ -8,14 +8,18 @@ package com.sababado.mcpubs.backend.endpoints;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.config.Nullable;
+import com.google.api.server.spi.response.UnauthorizedException;
 import com.sababado.mcpubs.backend.db.DeviceQueryHelper;
 import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.models.Device;
+import com.sababado.mcpubs.backend.utils.EndpointUtils;
 
 import java.sql.Connection;
 import java.util.logging.Logger;
 
 import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Endpoint to handle device registration
@@ -43,12 +47,12 @@ public class DeviceEndpoint {
      * Register a device with it's newest device token. This token is used for notifications.
      *
      * @param oldToken Old token that was being used.
-     * @param newToken New token that is going to be used.
      */
-    public void register(@Named("oldToken") String oldToken, @Named("newToken") String newToken) {
+    public void register(HttpServletRequest req, @Named("oldToken") String oldToken) throws UnauthorizedException {
         Connection connection = DbUtils.openConnection();
 
-        register(connection, oldToken, newToken);
+        String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
+        register(connection, oldToken, deviceToken);
 
         DbUtils.closeConnection(connection);
     }
@@ -62,12 +66,11 @@ public class DeviceEndpoint {
 
     /**
      * Remind the server that this device is still in use.
-     *
-     * @param deviceToken Device to keep alive.
      */
-    public void keepAlive(@Named("deviceToken") String deviceToken) {
+    public void keepAlive(HttpServletRequest req) throws UnauthorizedException {
         Connection connection = DbUtils.openConnection();
 
+        String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
         DeviceQueryHelper.updateDeviceKeepAlive(connection, deviceToken);
 
         DbUtils.closeConnection(connection);
