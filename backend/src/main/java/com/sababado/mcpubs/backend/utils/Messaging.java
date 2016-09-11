@@ -7,11 +7,11 @@ import com.sababado.mcpubs.backend.models.SubscribeResponse;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by robert on 9/10/16.
@@ -33,21 +33,25 @@ public class Messaging {
 
     // HTTP POST request
     private static boolean sendPost(String url, String deviceToken, String topic) {
+        log.setLevel(Level.ALL);
         if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
             try {
                 URL obj = new URL(url);
-                HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+                HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
                 //add request header
                 con.setRequestMethod("POST");
                 con.setRequestProperty("Content-Type", "application/json");
                 con.setRequestProperty("Authorization", "key=" + SERVER_KEY);
+                con.setDoOutput(true);
 
                 String data = "{" +
                         "\"to\": \"/topics/" + topic + "\"," +
                         "\"registration_tokens\": [\"" + deviceToken + "\"]" +
                         "}";
 
+                log.info("Sending 'POST' request to URL : " + url);
+                log.info("Post parameters : " + data);
                 byte[] out = data.getBytes(StandardCharsets.UTF_8);
                 int length = out.length;
 
@@ -58,13 +62,9 @@ public class Messaging {
                 }
 
                 // Send post request
-//        con.setDoOutput(true);
 
                 int responseCode = con.getResponseCode();
-                log.info("Sending 'POST' request to URL : " + url);
-                log.info("Post parameters : " + data);
                 log.info("Response Code : " + responseCode);
-
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(con.getInputStream()));
                 String inputLine;
@@ -75,19 +75,19 @@ public class Messaging {
                 }
                 in.close();
                 //print result
-                String responseString = response.toString();
+                String responseString = response.toString().trim();
                 log.info("Response: " + responseString);
-//            System.out.println(response.toString());
+
                 SubscribeResponse subscribeResponse = gson.fromJson(responseString, SubscribeResponse.class);
-                for (String resp : subscribeResponse.results) {
-                    if (!StringUtils.isEmptyOrWhitespace(resp)) {
+                for (SubscribeResponse.ErrorResponse resp : subscribeResponse.results) {
+                    if (!StringUtils.isEmptyOrWhitespace(resp.error)) {
                         // TODO handle an error
                         log.warning("Failed to un/subscribe to " + topic);
                     }
                 }
             } catch (Exception e) {
                 // TODO handle an exception un/subscribing to a topic.
-                log.severe("Failed to un/subscribe to " + topic);
+                log.severe("Failed to un/subscribe to " + topic + "\n" + e.getMessage());
                 return false;
             }
         }
