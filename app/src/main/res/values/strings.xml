@@ -9,6 +9,7 @@
     <string name="empty_pub_list_text">Add pubs to watch for updates.</string>
     <string name="previously_called">Previously called \"%s\"</string>
     <string name="edit">Edit</string>
+    <string name="retry">Retry</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="new_pub">New Pub</string>
@@ -28,4 +29,7 @@
     <string name="notif_message_udpated">\'%s\' Updated</string>
     <string name="notif_message_deleted">\'%s\' Deleted</string>
     <string name="notif_message_updated_but_deleted">\'%s\' Updated But Deleted</string>
+    <string name="saving">Saving&#8230;</string>
+    <string name="deleting">Deleting&#8230;</string>
+    <string name="failed_to_save">Failed to save. Tap to try again.</string>
 </resources>

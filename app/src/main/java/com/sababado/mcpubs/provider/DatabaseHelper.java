@@ -13,7 +13,7 @@ import com.sababado.mcpubs.models.Pub;
  */
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DB_NAME = "mcpubs.db";
-    public static final int VERSION = 3;
+    public static final int VERSION = 4;
 
     public DatabaseHelper(Context context) {
         super(context, DB_NAME, null, VERSION);

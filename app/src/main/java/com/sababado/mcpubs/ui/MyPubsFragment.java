@@ -26,6 +26,7 @@ import com.sababado.mcpubs.R;
 import com.sababado.mcpubs.models.Constants;
 import com.sababado.mcpubs.models.Pub;
 import com.sababado.mcpubs.network.NetworkUtils;
+import com.sababado.mcpubs.network.PubService;
 
 import java.io.IOException;
 
@@ -68,23 +69,13 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
         ContentValues values = pub.toContentValues();
         Contracts.Contract contract = Contracts.getContract(Pub.class);
         getActivity().getContentResolver().insert(contract.CONTENT_URI, values);
-        doUpdatePub(pub);
+        PubService.startActionSavePub(getContext(), pub);
     }
 
 //    public void editPub(long pubId, Pub pub) {
 //        savePub(pubId, pub);
 //        doUpdatePub(pub);
 //    }
-
-    private void doUpdatePub(Pub pub) {
-        try {
-            NetworkUtils.addDeviceTokenHeader(NetworkUtils.getPubService(getContext())
-                    .addPub(pub.getTitle(), pub.getPubType()), getContext())
-                    .execute();
-        } catch (IOException e) {
-            Log.v(TAG, "Failed to add/update pub: " + pub + "\n" + e.getMessage());
-        }
-    }
 
     private void savePub(long pubId, Pub pub) {
         ContentValues values = pub.toContentValues();
@@ -95,17 +86,7 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
     }
 
     public void deletePub(Pub pub) {
-        try {
-            NetworkUtils.addDeviceTokenHeader(NetworkUtils.getPubService(getContext())
-                    .deletePub(pub.getPubServerId()), getContext())
-                    .execute();
 
-            Contracts.Contract contract = Contracts.getContract(Pub.class);
-            getActivity().getContentResolver().delete(contract.CONTENT_URI,
-                    BaseColumns._ID + " = ?", new String[]{String.valueOf(pub.getId())});
-        } catch (IOException e) {
-            Log.v(TAG, "Failed to delete pub from server: " + pub + "\n" + e.getMessage());
-        }
     }
 
     @Override
@@ -120,6 +101,7 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
 
         boolean showReviewedOption = clickedPub.getUpdateStatus() != Constants.NO_CHANGE;
         menu.findItem(R.id.action_mark_as_reviewed).setVisible(showReviewedOption);
+        menu.findItem(R.id.action_retry).setVisible(clickedPub.getSaveStatus() == Constants.SAVE_STATUS_FAILED);
     }
 
     @Override
@@ -142,13 +124,16 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
                         .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                deletePub(clickedPub);
+                                PubService.startActionDeletePub(getContext(), clickedPub);
                             }
                         }).show();
                 return true;
             case R.id.action_mark_as_reviewed:
                 clickedPub.setUpdateStatus(Constants.NO_CHANGE);
                 savePub(info.id, clickedPub);
+                return true;
+            case R.id.action_retry:
+                PubService.startActionSavePub(getContext(), clickedPub);
                 return true;
         }
         return super.onContextItemSelected(item);

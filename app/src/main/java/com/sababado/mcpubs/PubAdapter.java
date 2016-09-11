@@ -66,8 +66,22 @@ public class PubAdapter extends CursorAdapter {
             disableRow = true;
         }
 
-        if (!TextUtils.isEmpty(pub.getOldTitle())) {
-            String oldTitle = context.getResources().getString(R.string.previously_called, pub.getOldTitle());
+        if (pub.getSaveStatus() != Constants.SAVE_STATUS_SAVED) {
+            String text;
+            switch (pub.getSaveStatus()) {
+                case Constants.SAVE_STATUS_DELETING:
+                    text = context.getString(R.string.deleting);
+                    break;
+                case Constants.SAVE_STATUS_SAVING:
+                    text = context.getString(R.string.saving);
+                    break;
+                default: //case Constants.SAVE_STATUS_FAILED:
+                    text = context.getString(R.string.failed_to_save);
+                    break;
+            }
+            vh.status.setText(text);
+        } else if (!TextUtils.isEmpty(pub.getOldTitle())) {
+            String oldTitle = context.getString(R.string.previously_called, pub.getOldTitle());
             String finalStatusText = vh.status.getText().toString() + "\n" + oldTitle;
             vh.status.setText(finalStatusText);
         }

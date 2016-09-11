@@ -38,4 +38,14 @@ public class Constants {
     @IntDef({MCO, MCO_P, NAVMC, NAVMC_DIR})
     public @interface PubType {
     }
+
+    public static final int SAVE_STATUS_SAVING = 0;
+    public static final int SAVE_STATUS_SAVED = 1;
+    public static final int SAVE_STATUS_FAILED = 2;
+    public static final int SAVE_STATUS_DELETING = 3;
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({SAVE_STATUS_SAVING, SAVE_STATUS_SAVED, SAVE_STATUS_FAILED, SAVE_STATUS_DELETING})
+    public @interface SaveStatus {
+    }
 }

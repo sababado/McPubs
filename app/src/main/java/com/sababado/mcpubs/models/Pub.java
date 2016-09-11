@@ -9,6 +9,7 @@ import com.sababado.ezprovider.Column;
 import com.sababado.ezprovider.Id;
 import com.sababado.ezprovider.Table;
 import com.sababado.mcpubs.models.Constants.PubType;
+import com.sababado.mcpubs.models.Constants.SaveStatus;
 import com.sababado.mcpubs.models.Constants.UpdateStatus;
 
 import java.util.Arrays;
@@ -38,9 +39,12 @@ public class Pub implements Parcelable {
     @Column(8)
     @PubType
     private int pubType;
+    @Column(9)
+    @Constants.SaveStatus
+    private int saveStatus;
 
     public Pub() {
-
+        saveStatus = Constants.SAVE_STATUS_SAVING;
     }
 
     public Pub(Cursor cursor) {
@@ -55,6 +59,8 @@ public class Pub implements Parcelable {
         oldTitle = cursor.getString(7);
         //noinspection WrongConstant
         pubType = cursor.getInt(8);
+        //noinspection WrongConstant
+        saveStatus = cursor.getInt(9);
     }
 
     public Pub(Parcel in) {
@@ -69,6 +75,8 @@ public class Pub implements Parcelable {
         oldTitle = in.readString();
         //noinspection WrongConstant
         pubType = in.readInt();
+        //noinspection WrongConstant
+        saveStatus = in.readInt();
     }
 
     public ContentValues toContentValues() {
@@ -81,6 +89,7 @@ public class Pub implements Parcelable {
         values.put("pubServerId", pubServerId);
         values.put("oldTitle", oldTitle);
         values.put("pubType", pubType);
+        values.put("saveStatus", saveStatus);
         return values;
     }
 
@@ -100,6 +109,7 @@ public class Pub implements Parcelable {
         dest.writeLong(pubServerId);
         dest.writeString(oldTitle);
         dest.writeInt(pubType);
+        dest.writeInt(saveStatus);
     }
 
     public static final Creator<Pub> CREATOR = new Creator<Pub>() {
@@ -146,11 +156,12 @@ public class Pub implements Parcelable {
         isActive = active;
     }
 
+    @UpdateStatus
     public int getUpdateStatus() {
         return updateStatus;
     }
 
-    public void setUpdateStatus(int updateStatus) {
+    public void setUpdateStatus(@UpdateStatus int updateStatus) {
         this.updateStatus = updateStatus;
     }
 
@@ -178,6 +189,7 @@ public class Pub implements Parcelable {
         this.oldTitle = oldTitle;
     }
 
+    @PubType
     public int getPubType() {
         return pubType;
     }
@@ -189,6 +201,15 @@ public class Pub implements Parcelable {
 
     public void setPubType(@PubType int pubType) {
         this.pubType = pubType;
+    }
+
+    @SaveStatus
+    public int getSaveStatus() {
+        return saveStatus;
+    }
+
+    public void setSaveStatus(@SaveStatus int saveStatus) {
+        this.saveStatus = saveStatus;
     }
 
     @Override
@@ -204,6 +225,7 @@ public class Pub implements Parcelable {
         if (lastUpdated != pub.lastUpdated) return false;
         if (pubServerId != pub.pubServerId) return false;
         if (pubType != pub.pubType) return false;
+        if (saveStatus != pub.saveStatus) return false;
         if (title != null ? !title.equals(pub.title) : pub.title != null) return false;
         if (readableTitle != null ? !readableTitle.equals(pub.readableTitle) : pub.readableTitle != null)
             return false;
@@ -222,6 +244,7 @@ public class Pub implements Parcelable {
         result = 31 * result + (int) (pubServerId ^ (pubServerId >>> 32));
         result = 31 * result + (oldTitle != null ? oldTitle.hashCode() : 0);
         result = 31 * result + pubType;
+        result = 31 * result + saveStatus;
         return result;
     }
 
@@ -237,6 +260,7 @@ public class Pub implements Parcelable {
                 ", pubServerId=" + pubServerId +
                 ", oldTitle='" + oldTitle + '\'' +
                 ", pubType=" + pubType +
+                ", saveStatus=" + saveStatus +
                 '}';
     }
 }

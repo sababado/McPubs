@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class KeepAliveService extends IntentService {
     private static final String TAG = KeepAliveService.class.getSimpleName();
-    private static final String ACTION_KEEP_ALIVE = "com.sababado.mcpubs.action.FOO";
+    private static final String ACTION_KEEP_ALIVE = "com.sababado.mcpubs.action.keep_alive";
 
     public KeepAliveService() {
         super("KeepAliveService");
