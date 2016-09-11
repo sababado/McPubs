@@ -12,6 +12,7 @@ import java.sql.Connection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -63,6 +64,7 @@ public class DeviceQueryHelperTest {
 
     @Test
     public void testKeepAliveDevice() {
+        // test straight forward keep alive. updating timestamp
         String deviceToken = "AAA567980ghjklr7689";
         Device device = DeviceQueryHelper.updateToken(connection, null, deviceToken);
         long lastKeepAlive = device.getKeepAlive();
@@ -75,6 +77,12 @@ public class DeviceQueryHelperTest {
         assertTrue(DeviceQueryHelper.updateDeviceKeepAlive(connection, deviceToken));
         device = DeviceQueryHelper.getDevice(connection, deviceToken);
         assertTrue(device.getKeepAlive() > lastKeepAlive);
+
+        // test attempting to keep alive device that isn't registered
+        deviceToken = "AAA567980ghjklr7689asdfs";
+        assertNull(DeviceQueryHelper.getDevice(connection, deviceToken));
+        assertTrue(DeviceQueryHelper.updateDeviceKeepAlive(connection, deviceToken));
+        assertNotNull(DeviceQueryHelper.getDevice(connection, deviceToken));
     }
 
     @After

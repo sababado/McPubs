@@ -1,5 +1,6 @@
 package com.sababado.mcpubs.backend.db;
 
+import com.google.api.server.spi.response.BadRequestException;
 import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.utils.UnrecognizedPubException;
@@ -104,7 +105,7 @@ public class PubQueryHelperTest {
     }
 
     @Test
-    public void testInsertOrUpdatePub() {
+    public void testInsertOrUpdatePub() throws BadRequestException {
         try {
             Pub newPub = new Pub("MCO AAA4990.342B", "A readable title yeahyeah", true, Pub.MCO);
             Pub newPubRecord = PubQueryHelper.insertOrUpdateRecord(connection, newPub);
@@ -128,7 +129,7 @@ public class PubQueryHelperTest {
     }
 
     @Test
-    public void testDeletePub() throws UnrecognizedPubException {
+    public void testDeletePub() throws UnrecognizedPubException, BadRequestException {
         Pub newPub = new Pub("MCO AAA4990.342B", "A readable title yeahyeah", true, Pub.MCO);
         Pub newPubRecord = PubQueryHelper.insertOrUpdateRecord(connection, newPub);
 

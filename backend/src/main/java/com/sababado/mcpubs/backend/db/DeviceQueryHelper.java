@@ -76,7 +76,11 @@ public class DeviceQueryHelper extends QueryHelper {
             statement.setString(1, deviceToken);
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {
-                throw new SQLException("Updating Device failed, no rows affected.");
+                _logger.warning("Attempting to keep-alive non registered device.");
+                Device device = updateToken(connection, null, deviceToken);
+                if (device == null) {
+                    throw new SQLException("Updating Device failed, no rows affected.");
+                }
             }
             return true;
         } catch (SQLException e) {

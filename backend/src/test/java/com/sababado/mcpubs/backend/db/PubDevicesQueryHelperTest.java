@@ -1,5 +1,6 @@
 package com.sababado.mcpubs.backend.db;
 
+import com.google.api.server.spi.response.BadRequestException;
 import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.models.Device;
 import com.sababado.mcpubs.backend.models.Pub;
@@ -37,7 +38,7 @@ public class PubDevicesQueryHelperTest {
     }
 
     @Test
-    public void testInsertPubDevicesRecord() throws UnrecognizedPubException {
+    public void testInsertPubDevicesRecord() throws UnrecognizedPubException, BadRequestException {
         Pub pub = new Pub("MCO AAA4990.342B", "A readable title yeahyeah", true, Pub.MCO);
         pub = PubQueryHelper.insertOrUpdateRecord(connection, pub);
         String newToken = "AAA567980ghjklr7689";
@@ -57,7 +58,7 @@ public class PubDevicesQueryHelperTest {
     }
 
     @Test
-    public void testDeleteRecord() throws UnrecognizedPubException {
+    public void testDeleteRecord() throws UnrecognizedPubException, BadRequestException {
         Pub pub = new Pub("MCO AAA4990.342B", "A readable title yeahyeah", true, Pub.MCO);
         pub = PubQueryHelper.insertOrUpdateRecord(connection, pub);
         String newToken = "AAA567980ghjklr7689";
@@ -69,7 +70,7 @@ public class PubDevicesQueryHelperTest {
     }
 
     @Test
-    public void testCleanupUnwatchedPubs() throws UnrecognizedPubException {
+    public void testCleanupUnwatchedPubs() throws UnrecognizedPubException, BadRequestException {
         Pub pub = new Pub("MCO AAA4990.342B", "A readable title yeahyeah", true, Pub.MCO);
         pub = PubQueryHelper.insertOrUpdateRecord(connection, pub);
         String newToken = "AAA567980ghjklr7689";
