@@ -85,10 +85,6 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
                 null);
     }
 
-    public void deletePub(Pub pub) {
-
-    }
-
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);

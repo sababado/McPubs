@@ -1,6 +1,7 @@
 package com.sababado.mcpubs.network;
 
 import android.app.IntentService;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.BaseColumns;
@@ -15,7 +16,7 @@ import java.io.IOException;
 public class PubService extends IntentService {
     private static final String TAG = PubService.class.getSimpleName();
     private static final String ACTION_SAVE = "com.sababado.mcpubs.action.save";
-    private static final String ACTION_DELETE = "com.sababado.mcpubs.action.save";
+    private static final String ACTION_DELETE = "com.sababado.mcpubs.action.delete";
 
     private static final String ARG_PUB = "arg_pub";
 
@@ -65,11 +66,17 @@ public class PubService extends IntentService {
             pub.setSaveStatus(Constants.SAVE_STATUS_FAILED);
             Log.v(TAG, "Failed to add/update pub: " + pub + "\n" + e.getMessage());
         }
+
+        ContentValues values = pub.toContentValues();
+        Contracts.Contract contract = Contracts.getContract(Pub.class);
+        getContentResolver().update(contract.CONTENT_URI, values,
+                Contracts.Contract.ID_COLUMN_NAME + "=" + String.valueOf(pub.getId()),
+                null);
     }
 
     private void handleActionDelete(Pub pub) {
         try {
-            if (pub.getSaveStatus() != Constants.SAVE_STATUS_FAILED) {
+            if (pub.getSaveStatus() != Constants.SAVE_STATUS_FAILED && pub.getPubServerId() != 0) {
                 pub.setSaveStatus(Constants.SAVE_STATUS_DELETING);
                 NetworkUtils.addDeviceTokenHeader(NetworkUtils.getPubService(this)
                         .deletePub(pub.getPubServerId()), this)

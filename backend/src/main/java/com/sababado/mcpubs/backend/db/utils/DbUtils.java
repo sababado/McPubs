@@ -44,7 +44,7 @@ public class DbUtils {
         try {
             connection = DriverManager.getConnection(url);
         } catch (SQLException e) {
-            e.printStackTrace();
+            _logger.severe(e.getMessage());
         }
         return connection;
     }

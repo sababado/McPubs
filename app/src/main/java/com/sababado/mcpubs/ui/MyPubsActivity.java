@@ -89,7 +89,7 @@ public class MyPubsActivity extends AppCompatActivity implements MyPubsFragment.
                         // the title has changed.
                         if (!TextUtils.isEmpty(savedTitle)) {
                             savedPub.setPubType(String.valueOf(spn.getSelectedItem()));
-                            savedTitle = savedPub.getPubType() + " " + savedTitle.toUpperCase();
+                            savedTitle = savedPub.getPubTypeString() + " " + savedTitle.toUpperCase();
                             if (!TextUtils.equals(pub == null ? "" : pub.getTitle(), savedTitle)) {
                                 savedPub.setTitle(savedTitle);
                                 pushPubUpdate(savedPub, pubId);
@@ -115,7 +115,7 @@ public class MyPubsActivity extends AppCompatActivity implements MyPubsFragment.
 //            if (pubId > -1) {
 //                fragment.editPub(pubId, pub);
 //            } else {
-                fragment.addPub(pub);
+            fragment.addPub(pub);
 //            }
         }
     }

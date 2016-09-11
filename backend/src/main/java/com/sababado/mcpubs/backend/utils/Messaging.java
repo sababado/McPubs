@@ -82,10 +82,12 @@ public class Messaging {
                 for (String resp : subscribeResponse.results) {
                     if (!StringUtils.isEmptyOrWhitespace(resp)) {
                         // TODO handle an error
+                        log.warning("Failed to un/subscribe to " + topic);
                     }
                 }
             } catch (Exception e) {
                 // TODO handle an exception un/subscribing to a topic.
+                log.severe("Failed to un/subscribe to " + topic);
                 return false;
             }
         }

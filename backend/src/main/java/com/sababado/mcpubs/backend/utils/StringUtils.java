@@ -5,7 +5,7 @@ package com.sababado.mcpubs.backend.utils;
  */
 public class StringUtils {
 
-    public static final String PROD_DB = "jdbc:google:mysql://voltaic-flag-141523:mcpubsdb/mcpubsdb?user=root&zeroDateTimeBehavior=convertToNull";
+    public static final String PROD_DB = "jdbc:google:mysql://voltaic-flag-141523:mcpubs-db/mcpubsdb?user=root&zeroDateTimeBehavior=convertToNull";
     public static final String DEV_DB = "jdbc:mysql://127.0.0.1:8889/mcPubsDev?user=root&zeroDateTimeBehavior=convertToNull";
     public static final String HEADER_DEVICE_TOKEN = "dT";
     /**

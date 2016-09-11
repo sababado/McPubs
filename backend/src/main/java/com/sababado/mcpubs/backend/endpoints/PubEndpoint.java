@@ -107,11 +107,11 @@ public class PubEndpoint {
         Connection connection = DbUtils.openConnection();
 
         try {
-            PubDevicesQueryHelper.deletePubDevicesRecord(connection, deviceToken, pubId);
             Pub pub = PubQueryHelper.getPubRecord(connection, pubId, null, null);
             if (pub != null) {
                 Messaging.unsubscribeFromTopic(deviceToken, pub.getFullCode());
             }
+            PubDevicesQueryHelper.deletePubDevicesRecord(connection, deviceToken, pubId);
         } catch (Exception e) {
             DbUtils.closeConnection(connection);
             throw e;

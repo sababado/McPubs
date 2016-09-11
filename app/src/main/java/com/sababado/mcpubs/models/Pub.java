@@ -194,6 +194,11 @@ public class Pub implements Parcelable {
         return pubType;
     }
 
+    public String getPubTypeString() {
+        int i = Arrays.binarySearch(Constants.PUB_TYPE_VALS, pubType);
+        return Constants.PUB_TYPES[i];
+    }
+
     public void setPubType(String pubType) {
         int i = Arrays.binarySearch(Constants.PUB_TYPES, pubType);
         setPubType(Constants.PUB_TYPE_VALS[i]);
