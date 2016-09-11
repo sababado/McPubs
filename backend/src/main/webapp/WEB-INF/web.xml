@@ -13,8 +13,7 @@
         <servlet-class>com.google.api.server.spi.SystemServiceServlet</servlet-class>
         <init-param>
             <param-name>services</param-name>
-            <param-value>com.sababado.mcpubs.backend.MessagingEndpoint,
-                com.sababado.mcpubs.backend.endpoints.DeviceEndpoint,
+            <param-value>com.sababado.mcpubs.backend.endpoints.DeviceEndpoint,
                 com.sababado.mcpubs.backend.endpoints.PubEndpoint
             </param-value>
         </init-param>

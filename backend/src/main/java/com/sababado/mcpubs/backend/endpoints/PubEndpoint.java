@@ -19,6 +19,7 @@ import com.sababado.mcpubs.backend.models.Device;
 import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.models.PubDevices;
 import com.sababado.mcpubs.backend.utils.EndpointUtils;
+import com.sababado.mcpubs.backend.utils.Messaging;
 import com.sababado.mcpubs.backend.utils.UnrecognizedPubException;
 
 import java.sql.Connection;
@@ -59,38 +60,43 @@ public class PubEndpoint {
                        @Named("pubTitle") String pubTitle,
                        @Named("pubType") int pubType)
             throws UnauthorizedException, BadRequestException, ConflictException {
-        String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
-
         Connection connection = DbUtils.openConnection();
-
-        Device device = DeviceQueryHelper.getDevice(connection, deviceToken);
-        if (device == null) {
-            // Device isn't registered so register it
-            device = DeviceEndpoint.register(connection, null, deviceToken);
-
-            if (device == null) {
-                throw new UnauthorizedException("The device is not registered.");
-            }
-        }
-
-        Pub pub = null;
         try {
-            pub = new Pub();
-            pub.setPubType(pubType);
-            pub.setTitle(pubTitle);
-            pub.setActive(true);
-            pub = PubQueryHelper.insertOrUpdateRecord(connection, pub);
-        } catch (UnrecognizedPubException e) {
-            throw new BadRequestException("Invalid pub name '" + pubTitle + "'");
-        } catch (BadRequestException e) {
-            pub = PubQueryHelper.getPubRecord(connection, null, pub.getFullCode(), null);
-        }
+            String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
 
-        if (pub != null) {
-            PubDevices pubDevices = PubDevicesQueryHelper.insertPubDevicesRecord(connection, device.getId(), pub.getId());
-            if (pubDevices == null) {
-                throw new ConflictException("Attempting to save a duplicate record. Same pub and same device.");
+            Device device = DeviceQueryHelper.getDevice(connection, deviceToken);
+            if (device == null) {
+                // Device isn't registered so register it
+                device = DeviceEndpoint.register(connection, null, deviceToken);
+
+                if (device == null) {
+                    throw new UnauthorizedException("The device is not registered.");
+                }
             }
+
+            Pub pub = null;
+            try {
+                pub = new Pub();
+                pub.setPubType(pubType);
+                pub.setTitle(pubTitle);
+                pub.setActive(true);
+                pub = PubQueryHelper.insertOrUpdateRecord(connection, pub);
+            } catch (UnrecognizedPubException e) {
+                throw new BadRequestException("Invalid pub name '" + pubTitle + "'");
+            } catch (BadRequestException e) {
+                pub = PubQueryHelper.getPubRecord(connection, null, pub.getFullCode(), null);
+            }
+
+            if (pub != null) {
+                PubDevices pubDevices = PubDevicesQueryHelper.insertPubDevicesRecord(connection, device.getId(), pub.getId());
+                if (pubDevices == null) {
+                    throw new ConflictException("Attempting to save a duplicate record. Same pub and same device.");
+                }
+                Messaging.subscribeToTopic(deviceToken, pub.getFullCode());
+            }
+        } catch (Exception e) {
+            DbUtils.closeConnection(connection);
+            throw e;
         }
         DbUtils.closeConnection(connection);
     }
@@ -100,7 +106,16 @@ public class PubEndpoint {
 
         Connection connection = DbUtils.openConnection();
 
-        PubDevicesQueryHelper.deletePubDevicesRecord(connection, deviceToken, pubId);
+        try {
+            PubDevicesQueryHelper.deletePubDevicesRecord(connection, deviceToken, pubId);
+            Pub pub = PubQueryHelper.getPubRecord(connection, pubId, null, null);
+            if (pub != null) {
+                Messaging.unsubscribeFromTopic(deviceToken, pub.getFullCode());
+            }
+        } catch (Exception e) {
+            DbUtils.closeConnection(connection);
+            throw e;
+        }
 
         DbUtils.closeConnection(connection);
     }

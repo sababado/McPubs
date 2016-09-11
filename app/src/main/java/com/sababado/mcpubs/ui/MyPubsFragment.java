@@ -79,7 +79,7 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
     private void doUpdatePub(Pub pub) {
         try {
             NetworkUtils.addDeviceTokenHeader(NetworkUtils.getPubService(getContext())
-                    .addPub(pub.getTitle(), pub.getPubType(), pub.getPubServerId()), getContext())
+                    .addPub(pub.getTitle(), pub.getPubType()), getContext())
                     .execute();
         } catch (IOException e) {
             Log.v(TAG, "Failed to add/update pub: " + pub + "\n" + e.getMessage());

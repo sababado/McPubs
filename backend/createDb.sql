@@ -1,6 +1,6 @@
 CREATE SCHEMA `MCPUBS` ;
 
-  CREATE TABLE `MCPUBS`.`Pub` (
+  CREATE TABLE `Pub` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `fullCode` varchar(70) NOT NULL COMMENT '4200.43 or 3-12',
     `rootCode` varchar(10) NOT NULL COMMENT '4200 or 3-12',

@@ -8,7 +8,6 @@ package com.sababado.mcpubs.backend.endpoints;
 
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiNamespace;
-import com.google.api.server.spi.config.Nullable;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.sababado.mcpubs.backend.db.DeviceQueryHelper;
 import com.sababado.mcpubs.backend.db.utils.DbUtils;
@@ -51,16 +50,18 @@ public class DeviceEndpoint {
     public void register(HttpServletRequest req, @Named("oldToken") String oldToken) throws UnauthorizedException {
         Connection connection = DbUtils.openConnection();
 
-        String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
-        register(connection, oldToken, deviceToken);
-
+        try {
+            String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
+            register(connection, oldToken, deviceToken);
+        } catch (Exception e) {
+            DbUtils.closeConnection(connection);
+            throw e;
+        }
         DbUtils.closeConnection(connection);
     }
 
     static Device register(Connection connection, String oldToken, String newToken) {
         Device device = DeviceQueryHelper.updateToken(connection, oldToken, newToken);
-        // TODO Can I register the device with firebase here?
-
         return device;
     }
 
@@ -70,9 +71,13 @@ public class DeviceEndpoint {
     public void keepAlive(HttpServletRequest req) throws UnauthorizedException {
         Connection connection = DbUtils.openConnection();
 
-        String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
-        DeviceQueryHelper.updateDeviceKeepAlive(connection, deviceToken);
-
+        try {
+            String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
+            DeviceQueryHelper.updateDeviceKeepAlive(connection, deviceToken);
+        } catch (Exception e) {
+            DbUtils.closeConnection(connection);
+            throw e;
+        }
         DbUtils.closeConnection(connection);
     }
 }
