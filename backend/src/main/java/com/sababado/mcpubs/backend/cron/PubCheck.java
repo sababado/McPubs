@@ -4,12 +4,13 @@ import com.sababado.mcpubs.backend.db.PubQueryHelper;
 import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.factory.Factory;
 import com.sababado.mcpubs.backend.models.Pub;
+import com.sababado.mcpubs.backend.models.PubNotification;
 import com.sababado.mcpubs.backend.rss.PubCheckParser;
+import com.sababado.mcpubs.backend.utils.Messaging;
 import com.sababado.mcpubs.backend.utils.PubSorter;
 import com.sababado.mcpubs.backend.utils.PubUtils;
-import com.sababado.mcpubs.backend.utils.PubUtils.CompareResult;
+import com.sababado.mcpubs.backend.utils.PubUtils.UpdateStatus;
 import com.sababado.mcpubs.backend.utils.StringUtils;
-import com.sababado.mcpubs.backend.utils.Tuple;
 
 import org.jsoup.nodes.Document;
 
@@ -59,7 +60,7 @@ public class PubCheck extends HttpServlet {
 
         int count = distinctRootCodes == null ? 0 : distinctRootCodes.size();
         for (int i = 0; i < count; i++) {
-            List<Tuple<Pub, Pub, CompareResult>> changesList = new ArrayList<>();
+            List<Pub> changesList = new ArrayList<>();
             String rootCode = distinctRootCodes.get(i);
             List<Pub> pubsFromSearch = getPubsFromSearch(rootCode, pubType);
             // We're assuming the pubsFromSearch list is sorted by fullCode and version, ascending.
@@ -75,6 +76,7 @@ public class PubCheck extends HttpServlet {
                 int pfsSize = pubsFromSearch.size();
 
                 do {
+                    // mostRecentPub is the pub just now parsed from the server
                     Pub mostRecentPub = pubsFromSearch.get(pfsCounter);
                     String currentFullCode = mostRecentPub.getFullCode();
                     for (; pfsCounter < pfsSize; pfsCounter++) {
@@ -87,12 +89,15 @@ public class PubCheck extends HttpServlet {
                     }
 
                     // compare version against watched pub
+                    // watchedPub is the old pub, currently saved in the db.
                     Pub watchedPub = PubUtils.findPubByFullCode(watchedPubs, currentFullCode);
                     if (watchedPub != null) {
-                        CompareResult compareResult = comparePub(watchedPub, mostRecentPub);
-                        if (compareResult != CompareResult.NO_CHANGE) {
+                        UpdateStatus updateStatus = comparePub(watchedPub, mostRecentPub);
+                        if (updateStatus != UpdateStatus.NO_CHANGE) {
+                            mostRecentPub.setOldTitle(watchedPub.getOldTitle());
+                            mostRecentPub.setUpdateStatus(updateStatus.ordinal());
                             mostRecentPub.setId(watchedPub.getId());
-                            changesList.add(new Tuple<>(watchedPub, mostRecentPub, compareResult));
+                            changesList.add(mostRecentPub);
                         }
                     }
 
@@ -100,10 +105,10 @@ public class PubCheck extends HttpServlet {
             }
 
             // commit updates
-            commitUpdates(connection, changesList);
+            PubQueryHelper.batchUpdate(connection, changesList);
 
             // send updates.
-            //TODO
+            sendNotifications(changesList);
         }
 
         DbUtils.closeConnection(connection);
@@ -114,10 +119,10 @@ public class PubCheck extends HttpServlet {
      *
      * @param existingPub
      * @param newPub
-     * @return Return a {@link CompareResult CompareStatus}
+     * @return Return a {@link UpdateStatus CompareStatus}
      * relating to the outcome of the compare.
      */
-    static CompareResult comparePub(Pub existingPub, Pub newPub) {
+    static UpdateStatus comparePub(Pub existingPub, Pub newPub) {
         // both pubs with no version are considered the same, active flag needs to be checked
         // new pub with version and watched pub without version is considered updated.
         // new pub with higher version than watched pub is considered updated.
@@ -125,34 +130,32 @@ public class PubCheck extends HttpServlet {
         final boolean isDeleted = existingPub.isActive() && !newPub.isActive();
 
         if (existingPub.getVersion() == null && newPub.getVersion() == null) {
-            return isDeleted ? CompareResult.DELETED : CompareResult.NO_CHANGE;
+            return isDeleted ? UpdateStatus.DELETED : UpdateStatus.NO_CHANGE;
         }
 
         if (existingPub.getVersion() == null && newPub.getVersion() != null) {
-            return isDeleted ? CompareResult.UPDATE_BUT_DELETED : CompareResult.UPDATE;
+            return isDeleted ? UpdateStatus.UPDATED_BUT_DELETED : UpdateStatus.UPDATED;
         }
 
         if (existingPub.getVersion() != null && newPub.getVersion() != null) {
             boolean updated = existingPub.getVersion().compareTo(newPub.getVersion()) < 0;
-            if (!updated) return isDeleted ? CompareResult.DELETED : CompareResult.NO_CHANGE;
-            return isDeleted ? CompareResult.UPDATE_BUT_DELETED : CompareResult.UPDATE;
+            if (!updated) return isDeleted ? UpdateStatus.DELETED : UpdateStatus.NO_CHANGE;
+            return isDeleted ? UpdateStatus.UPDATED_BUT_DELETED : UpdateStatus.UPDATED;
         }
 
         // this would happen if we're comparing an existing pub with a version higher than that of
         // a new pub. This shouldn't happen.
-        return CompareResult.NO_CHANGE;
+        return UpdateStatus.NO_CHANGE;
     }
 
-    static void commitUpdates(Connection connection, List<Tuple<Pub, Pub, CompareResult>> changes) {
-        // save changes to the DB. Assuming the changes already have existing IDs associated to them.
-        int changeCount = changes.size();
-        List<Pub> changedPubs = new ArrayList<>(changeCount);
-        for (int i = 0; i < changeCount; i++) {
-            changedPubs.add(changes.get(i).two);
+    private void sendNotifications(List<Pub> changes) {
+        int size = changes.size();
+        for (int i = 0; i < size; i++) {
+            Pub pub = changes.get(i);
+            String topic = pub.getFullCode();
+            PubNotification pubNotification = new PubNotification(pub, topic, true);
+            Messaging.sendMessage(pubNotification);
         }
-        PubQueryHelper.batchUpdate(connection, changedPubs);
-
-        // TODO send notifications.
     }
 
     // TODO only check pubs that haven't been checked in the past month.

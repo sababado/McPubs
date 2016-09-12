@@ -3,6 +3,7 @@ package com.sababado.mcpubs.backend.db;
 import com.google.api.server.spi.response.BadRequestException;
 import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.models.Pub;
+import com.sababado.mcpubs.backend.utils.PubUtils;
 import com.sababado.mcpubs.backend.utils.UnrecognizedPubException;
 
 import org.junit.After;
@@ -125,6 +126,58 @@ public class PubQueryHelperTest {
             assertTrue(oldId == newPubRecord.getId());
         } catch (UnrecognizedPubException e) {
             fail();
+        }
+    }
+
+    @Test
+    public void testBatchUpdate() throws UnrecognizedPubException, InterruptedException {
+        List<Pub> changes = new ArrayList<>();
+        List<Pub> existingPubs = new ArrayList<>();
+        // Setup changes.
+        // deleted Pub
+        Pub existingPub = new Pub("MCO AAA6600.42A", "A readable title", true, 2005);
+        existingPub = PubQueryHelper.insertRecordIfNonExistent(connection, existingPub);
+        existingPubs.add(existingPub);
+        Pub newPub = new Pub("MCO AAA6600.42A", "A readable title", false, 2005);
+        newPub.setId(existingPub.getId());
+        newPub.setOldTitle(existingPub.getTitle());
+        newPub.setUpdateStatus(PubUtils.UpdateStatus.DELETED.ordinal());
+        changes.add(newPub);
+
+        // updated pub
+        existingPub = new Pub("MCO AAA9900.42A", "A readable title", true, 2005);
+        existingPub = PubQueryHelper.insertRecordIfNonExistent(connection, existingPub);
+        existingPubs.add(existingPub);
+        newPub = new Pub("MCO AAA9900.42B", "A readable title yup", true, 2005);
+        newPub.setId(existingPub.getId());
+        newPub.setOldTitle(existingPub.getTitle());
+        newPub.setUpdateStatus(PubUtils.UpdateStatus.UPDATED.ordinal());
+        changes.add(newPub);
+
+        // updated, but deleted pub
+        existingPub = new Pub("MCO AAA9800.42B", "A readable title", true, 2005);
+        existingPub = PubQueryHelper.insertRecordIfNonExistent(connection, existingPub);
+        existingPubs.add(existingPub);
+        newPub = new Pub("MCO AAA9800.42C", "A new readable title", false, 2005);
+        newPub.setId(existingPub.getId());
+        newPub.setOldTitle(existingPub.getTitle());
+        newPub.setUpdateStatus(PubUtils.UpdateStatus.UPDATED_BUT_DELETED.ordinal());
+        changes.add(newPub);
+
+        Thread.sleep(500);
+        PubQueryHelper.batchUpdate(connection, changes);
+        for (int i = 0; i < changes.size(); i++) {
+            existingPub = existingPubs.get(i);
+            newPub = PubQueryHelper.getPubRecord(connection, existingPub.getId(), null, null);
+
+            // verify the timestamp has changed.
+            assertTrue(newPub.getLastUpdated() > existingPub.getLastUpdated());
+            // now verify the rest of the objects.
+            Pub pubBeforeSave = changes.get(i);
+            pubBeforeSave.setLastUpdated(newPub.getLastUpdated());
+            pubBeforeSave.setOldTitle(newPub.getOldTitle());
+            pubBeforeSave.setUpdateStatus(newPub.getUpdateStatus());
+            assertEquals(changes.get(i), newPub);
         }
     }
 

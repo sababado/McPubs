@@ -83,7 +83,7 @@ public class Pub extends DbRecord {
         pubType = resultSet.getInt(PUB_TYPE);
         title = resultSet.getString(TITLE);
         readableTitle = resultSet.getString(READABLE_TITLE);
-        lastUpdated = resultSet.getDate(LAST_UPDATED).getTime();
+        lastUpdated = resultSet.getTimestamp(LAST_UPDATED).getTime();
     }
 
     @Override

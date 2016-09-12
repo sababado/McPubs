@@ -12,10 +12,10 @@ public class PubUtils {
     public static final String PS_CURRENT = "Current";
     public static final String PS_DELETED = "Deleted";
 
-    public enum CompareResult {
+    public enum UpdateStatus {
         NO_CHANGE,
-        UPDATE,
-        UPDATE_BUT_DELETED,
+        UPDATED,
+        UPDATED_BUT_DELETED,
         DELETED
     }
 
