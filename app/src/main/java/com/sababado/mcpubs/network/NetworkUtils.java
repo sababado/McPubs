@@ -54,8 +54,8 @@ public class NetworkUtils {
         // Need setRootUrl and setGoogleClientRequestInitializer only for local testing,
         // otherwise they can be skipped
         builder.setApplicationName(context.getString(R.string.app_engine_name));
-        if (false ) {
-            builder.setRootUrl("http://" + BuildConfig.LOCAL_IP + ":8080/_ah/api");
+        if (false) {
+            builder.setRootUrl("http://localhost:8080/_ah/api");
         } else {
             builder.setRootUrl("https://voltaic-flag-141523.appspot.com/_ah/api/");
         }
