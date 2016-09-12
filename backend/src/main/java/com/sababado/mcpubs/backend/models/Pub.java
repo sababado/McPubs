@@ -53,6 +53,8 @@ public class Pub extends DbRecord {
     String readableTitle;
     @Column(value = LAST_UPDATED, ignoreInQueryGenerator = true)
     long lastUpdated;
+    int updateStatus;
+    String oldTitle;
 
     public Pub() {
         code = -1;
@@ -200,6 +202,22 @@ public class Pub extends DbRecord {
         this.lastUpdated = lastUpdated;
     }
 
+    public int getUpdateStatus() {
+        return updateStatus;
+    }
+
+    public void setUpdateStatus(int updateStatus) {
+        this.updateStatus = updateStatus;
+    }
+
+    public String getOldTitle() {
+        return oldTitle;
+    }
+
+    public void setOldTitle(String oldTitle) {
+        this.oldTitle = oldTitle;
+    }
+
     /**
      * Helper method to parse a title that appears to be an MCO or MCO P
      *
@@ -231,11 +249,14 @@ public class Pub extends DbRecord {
         if (isActive != pub.isActive) return false;
         if (pubType != pub.pubType) return false;
         if (lastUpdated != pub.lastUpdated) return false;
+        if (updateStatus != pub.updateStatus) return false;
         if (fullCode != null ? !fullCode.equals(pub.fullCode) : pub.fullCode != null) return false;
         if (rootCode != null ? !rootCode.equals(pub.rootCode) : pub.rootCode != null) return false;
         if (version != null ? !version.equals(pub.version) : pub.version != null) return false;
         if (title != null ? !title.equals(pub.title) : pub.title != null) return false;
-        return readableTitle != null ? readableTitle.equals(pub.readableTitle) : pub.readableTitle == null;
+        if (readableTitle != null ? !readableTitle.equals(pub.readableTitle) : pub.readableTitle != null)
+            return false;
+        return oldTitle != null ? oldTitle.equals(pub.oldTitle) : pub.oldTitle == null;
 
     }
 
@@ -251,6 +272,8 @@ public class Pub extends DbRecord {
         result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (readableTitle != null ? readableTitle.hashCode() : 0);
         result = 31 * result + (int) (lastUpdated ^ (lastUpdated >>> 32));
+        result = 31 * result + updateStatus;
+        result = 31 * result + (oldTitle != null ? oldTitle.hashCode() : 0);
         return result;
     }
 
@@ -267,6 +290,8 @@ public class Pub extends DbRecord {
                 ", title='" + title + '\'' +
                 ", readableTitle='" + readableTitle + '\'' +
                 ", lastUpdated=" + lastUpdated +
+                ", updateStatus=" + updateStatus +
+                ", oldTitle='" + oldTitle + '\'' +
                 "} " + super.toString();
     }
 }

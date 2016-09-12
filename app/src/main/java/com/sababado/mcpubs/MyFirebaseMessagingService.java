@@ -3,6 +3,7 @@ package com.sababado.mcpubs;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
@@ -10,8 +11,10 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.sababado.ezprovider.Contracts;
 import com.sababado.mcpubs.models.Constants;
 import com.sababado.mcpubs.models.Constants.UpdateStatus;
+import com.sababado.mcpubs.models.Pub;
 import com.sababado.mcpubs.ui.MyPubsActivity;
 
 /**
@@ -22,7 +25,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // TODO(developer): Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
@@ -31,18 +33,35 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
         }
 
-        // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-        }
-
-        // TODO generate notification
+        String oldTitle = remoteMessage.getData().get("oldTitle");
+        String newTitle = remoteMessage.getData().get("title");
+        //noinspection WrongConstant
+        int status = Integer.parseInt(remoteMessage.getData().get("updateStatus"));
+        //noinspection WrongConstant
+        showNotification(oldTitle, newTitle, status);
+//        if (remoteMessage.getData().containsKey("id")) {
+//            long pubServerId = Long.parseLong(remoteMessage.getData().get("id"));
+//            //noinspection WrongConstant
+//            updatePub(pubServerId, oldTitle, newTitle, status);
+//        }
     }
 
-    private void showNotification(String oldTitle, String newTitle, @UpdateStatus int pubType) {
+    private void updatePub(long pubServerId, String oldTitle, String newTitle, @UpdateStatus int status) {
+        ContentValues values = new ContentValues(3);
+        values.put("oldTitle", oldTitle);
+        values.put("title", newTitle);
+        values.put("updateStatus", status);
+
+        Contracts.Contract contract = Contracts.getContract(Pub.class);
+        getContentResolver().update(contract.CONTENT_URI, values,
+                "pubServerId=" + String.valueOf(pubServerId),
+                null);
+    }
+
+    private void showNotification(String oldTitle, String newTitle, @UpdateStatus int status) {
         String title = "";
         String message = "";
-        switch (pubType) {
+        switch (status) {
             case Constants.DELETED:
                 title = getString(R.string.notif_message_deleted, oldTitle);
                 message = getString(R.string.notification_message_deleted, oldTitle);
@@ -64,6 +83,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         .setContentTitle(title)
                         .setContentText(message)
                         .setTicker(message)
+                        .setStyle(new NotificationCompat.BigTextStyle()
+                                .bigText(message))
                         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                         .setAutoCancel(true);
 

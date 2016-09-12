@@ -18,6 +18,7 @@ import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.models.Device;
 import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.models.PubDevices;
+import com.sababado.mcpubs.backend.models.PubNotification;
 import com.sababado.mcpubs.backend.utils.EndpointUtils;
 import com.sababado.mcpubs.backend.utils.Messaging;
 import com.sababado.mcpubs.backend.utils.UnrecognizedPubException;
@@ -93,6 +94,7 @@ public class PubEndpoint {
                     throw new ConflictException("Attempting to save a duplicate record. Same pub and same device.");
                 }
                 Messaging.subscribeToTopic(deviceToken, pub.getFullCode());
+                testNotifications(pub, device);
             }
         } catch (Exception e) {
             DbUtils.closeConnection(connection);
@@ -100,6 +102,13 @@ public class PubEndpoint {
         }
         DbUtils.closeConnection(connection);
         return pub;
+    }
+
+    private void testNotifications(Pub pub, Device device) {
+        pub.setUpdateStatus((int) (Math.random() * 3.0));
+        pub.setOldTitle("oLdTiTle");
+        PubNotification pubNotification = new PubNotification(pub, device.getDeviceToken());
+        Messaging.sendMessage(pubNotification);
     }
 
     public void deletePub(HttpServletRequest req, @Named("pubId") long pubId) throws UnauthorizedException {
