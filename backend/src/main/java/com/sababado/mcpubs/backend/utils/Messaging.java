@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -23,17 +22,17 @@ public class Messaging {
     private static final String SERVER_KEY = "AIzaSyAywwSJGV07RpNoS6tzHt08pB7cbdrJP_o";
     private static final Gson gson = new Gson();
 
-    public static void subscribeToTopic(String deviceToken, String topic) {
-        sendPost(SUBSCRIBE_URL, deviceToken, topic);
+    public static boolean subscribeToTopic(String deviceToken, String topic) {
+        return sendPost(SUBSCRIBE_URL, deviceToken, topic);
     }
 
-    public static void unsubscribeFromTopic(String deviceToken, String topic) {
-        sendPost(UNSUBSCRIBE_URL, deviceToken, topic);
+    public static boolean unsubscribeFromTopic(String deviceToken, String topic) {
+        return sendPost(UNSUBSCRIBE_URL, deviceToken, topic);
     }
 
     // HTTP POST request
     private static boolean sendPost(String url, String deviceToken, String topic) {
-        log.setLevel(Level.ALL);
+//        log.setLevel(Level.ALL);
         if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
             try {
                 URL obj = new URL(url);

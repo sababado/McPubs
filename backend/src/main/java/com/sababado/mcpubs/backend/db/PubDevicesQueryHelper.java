@@ -58,9 +58,9 @@ public class PubDevicesQueryHelper extends QueryHelper {
 
     public static boolean deletePubDevicesRecord(Connection connection, String deviceToken, long pubId) {
         try {
-            String deleteQuery = "delete from pubDevices " +
+            String deleteQuery = "delete from PubDevices " +
                     "where pubId = " + pubId + " " +
-                    "and deviceId = (select id from device where deviceToken='" + deviceToken + "');";
+                    "and deviceId = (select id from Device where deviceToken='" + deviceToken + "');";
             PreparedStatement statement = connection.prepareStatement(deleteQuery);
             int affectedRows = statement.executeUpdate();
             if (affectedRows == 0) {

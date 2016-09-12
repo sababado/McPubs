@@ -1,19 +1,18 @@
 package com.sababado.mcpubs.ui;
 
 import android.app.Activity;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,10 +24,7 @@ import com.sababado.mcpubs.PubAdapter;
 import com.sababado.mcpubs.R;
 import com.sababado.mcpubs.models.Constants;
 import com.sababado.mcpubs.models.Pub;
-import com.sababado.mcpubs.network.NetworkUtils;
 import com.sababado.mcpubs.network.PubService;
-
-import java.io.IOException;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -68,7 +64,8 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
     public void addPub(Pub pub) {
         ContentValues values = pub.toContentValues();
         Contracts.Contract contract = Contracts.getContract(Pub.class);
-        getActivity().getContentResolver().insert(contract.CONTENT_URI, values);
+        Uri uri = getActivity().getContentResolver().insert(contract.CONTENT_URI, values);
+        pub.setId(ContentUris.parseId(uri));
         PubService.startActionSavePub(getContext(), pub);
     }
 

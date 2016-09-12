@@ -93,6 +93,16 @@ public class Pub implements Parcelable {
         return values;
     }
 
+    public void copyFrom(com.sababado.mcpubs.backend.pub.model.Pub p) {
+        title = p.getTitle();
+        readableTitle = p.getReadableTitle();
+        isActive = p.getActive();
+        lastUpdated = p.getLastUpdated();
+        pubServerId = p.getId();
+        //noinspection WrongConstant
+        pubType = p.getPubType();
+    }
+
     @Override
     public int describeContents() {
         return 0;

@@ -80,10 +80,12 @@ public class PubAdapter extends CursorAdapter {
                     break;
             }
             vh.status.setText(text);
+            vh.status.setVisibility(View.VISIBLE);
         } else if (!TextUtils.isEmpty(pub.getOldTitle())) {
             String oldTitle = context.getString(R.string.previously_called, pub.getOldTitle());
             String finalStatusText = vh.status.getText().toString() + "\n" + oldTitle;
             vh.status.setText(finalStatusText);
+            vh.status.setVisibility(View.VISIBLE);
         }
 
         ((View) (vh.status.getParent())).setEnabled(disableRow);

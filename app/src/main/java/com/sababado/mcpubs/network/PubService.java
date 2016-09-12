@@ -58,15 +58,22 @@ public class PubService extends IntentService {
     private void handleActionSave(Pub pub) {
         try {
             pub.setSaveStatus(Constants.SAVE_STATUS_SAVING);
-            NetworkUtils.addDeviceTokenHeader(NetworkUtils.getPubService(this)
-                    .addPub(pub.getTitle(), pub.getPubType()), this)
-                    .execute();
+            savePub(pub);
+            com.sababado.mcpubs.backend.pub.model.Pub savedPub =
+                    NetworkUtils.addDeviceTokenHeader(NetworkUtils.getPubService(this)
+                            .addPub(pub.getTitle(), pub.getPubType()), this)
+                            .execute();
+            pub.copyFrom(savedPub);
             pub.setSaveStatus(Constants.SAVE_STATUS_SAVED);
         } catch (IOException e) {
             pub.setSaveStatus(Constants.SAVE_STATUS_FAILED);
             Log.v(TAG, "Failed to add/update pub: " + pub + "\n" + e.getMessage());
         }
 
+        savePub(pub);
+    }
+
+    private void savePub(Pub pub) {
         ContentValues values = pub.toContentValues();
         Contracts.Contract contract = Contracts.getContract(Pub.class);
         getContentResolver().update(contract.CONTENT_URI, values,
@@ -78,6 +85,7 @@ public class PubService extends IntentService {
         try {
             if (pub.getSaveStatus() != Constants.SAVE_STATUS_FAILED && pub.getPubServerId() != 0) {
                 pub.setSaveStatus(Constants.SAVE_STATUS_DELETING);
+                savePub(pub);
                 NetworkUtils.addDeviceTokenHeader(NetworkUtils.getPubService(this)
                         .deletePub(pub.getPubServerId()), this)
                         .execute();
@@ -89,6 +97,8 @@ public class PubService extends IntentService {
                     BaseColumns._ID + " = ?", new String[]{String.valueOf(pub.getId())});
         } catch (IOException e) {
             Log.v(TAG, "Failed to delete pub from server: " + pub + "\n" + e.getMessage());
+            pub.setSaveStatus(Constants.SAVE_STATUS_SAVED);
+            savePub(pub);
         }
     }
 }

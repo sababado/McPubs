@@ -56,11 +56,12 @@ public class PubEndpoint {
      * @param pubTitle
      * @param pubType
      */
-    public void addPub(HttpServletRequest req,
-                       @Named("pubTitle") String pubTitle,
-                       @Named("pubType") int pubType)
+    public Pub addPub(HttpServletRequest req,
+                      @Named("pubTitle") String pubTitle,
+                      @Named("pubType") int pubType)
             throws UnauthorizedException, BadRequestException, ConflictException {
         Connection connection = DbUtils.openConnection();
+        Pub pub = null;
         try {
             String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
 
@@ -74,7 +75,6 @@ public class PubEndpoint {
                 }
             }
 
-            Pub pub = null;
             try {
                 pub = new Pub();
                 pub.setPubType(pubType);
@@ -99,19 +99,21 @@ public class PubEndpoint {
             throw e;
         }
         DbUtils.closeConnection(connection);
+        return pub;
     }
 
     public void deletePub(HttpServletRequest req, @Named("pubId") long pubId) throws UnauthorizedException {
         String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
 
         Connection connection = DbUtils.openConnection();
-
         try {
             Pub pub = PubQueryHelper.getPubRecord(connection, pubId, null, null);
             if (pub != null) {
-                Messaging.unsubscribeFromTopic(deviceToken, pub.getFullCode());
+                boolean success = Messaging.unsubscribeFromTopic(deviceToken, pub.getFullCode());
+                log.info("unsubscribe success: " + success);
             }
-            PubDevicesQueryHelper.deletePubDevicesRecord(connection, deviceToken, pubId);
+            boolean success = PubDevicesQueryHelper.deletePubDevicesRecord(connection, deviceToken, pubId);
+            log.info("deleting PubDevice record success: " + success);
         } catch (Exception e) {
             DbUtils.closeConnection(connection);
             throw e;
