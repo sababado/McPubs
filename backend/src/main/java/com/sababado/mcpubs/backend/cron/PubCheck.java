@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -30,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class PubCheck extends HttpServlet {
     private static final Logger _logger = Logger.getLogger(PubCheck.class.getName());
-    private static final String SEARCH_URL = "http://www.marines.mil/News/Publications/ELECTRONIC-LIBRARY/Search/%s/?Page=1";
+    private static final String SEARCH_URL = "http://www.marines.mil/News/Publications/ELECTRONIC-LIBRARY/Custompubtype/%d/Search/%s/?Page=1";
 
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp)
@@ -59,15 +60,19 @@ public class PubCheck extends HttpServlet {
         List<String> distinctRootCodes = PubQueryHelper.getDistinctRootCodes(connection, pubType);
 
         int count = distinctRootCodes == null ? 0 : distinctRootCodes.size();
+        _logger.info("Checking pubs (type " + pubType + ") with " + count + " distinct code(s).");
+        // changesList includes all pubs with status updates (updated, deleted, etc)
+        List<Pub> changesList = new ArrayList<>();
+        // dataChangedPubs includes all pubs with new or updated information. Not necessarily a status update.
+        List<Pub> dataChangedPubs = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            List<Pub> changesList = new ArrayList<>();
             String rootCode = distinctRootCodes.get(i);
             List<Pub> pubsFromSearch = getPubsFromSearch(rootCode, pubType);
             // We're assuming the pubsFromSearch list is sorted by fullCode and version, ascending.
             if (pubsFromSearch.size() > 0) {
                 // only continue if we found any pubs.
                 List<Pub> watchedPubs = DbUtils.getList(connection, Pub.class,
-                        PubQueryHelper.ACTIVE_PUB_WHERE_CLAUSE +
+                        "where " + PubQueryHelper.ACTIVE_PUB_WHERE_CLAUSE +
                                 " and " + Pub.ROOT_CODE + "='" + rootCode + "'" +
                                 " and " + Pub.PUB_TYPE + "=" + pubType + " ");
 
@@ -91,6 +96,7 @@ public class PubCheck extends HttpServlet {
                     // compare version against watched pub
                     // watchedPub is the old pub, currently saved in the db.
                     Pub watchedPub = PubUtils.findPubByFullCode(watchedPubs, currentFullCode);
+
                     if (watchedPub != null) {
                         UpdateStatus updateStatus = comparePub(watchedPub, mostRecentPub);
                         if (updateStatus != UpdateStatus.NO_CHANGE) {
@@ -98,17 +104,29 @@ public class PubCheck extends HttpServlet {
                             mostRecentPub.setUpdateStatus(updateStatus.ordinal());
                             mostRecentPub.setId(watchedPub.getId());
                             changesList.add(mostRecentPub);
+                        } else if (!PubUtils.pubInfoEquals(watchedPub, mostRecentPub)) {
+                            // update status = no change, but the info has updated
+                            mostRecentPub.setId(watchedPub.getId());
+                            dataChangedPubs.add(mostRecentPub);
                         }
                     }
 
                 } while (pfsCounter < pfsSize);
             }
 
+        }
+        int numUpdates = changesList.size();
+        int numDataChangesSize = dataChangedPubs.size();
+        _logger.info("----Processing " + numUpdates + " updates(s).\n" +
+                "----Processing " + numDataChangesSize + " data change(s).");
+        if (numUpdates > 0) {
             // commit updates
             PubQueryHelper.batchUpdate(connection, changesList);
-
             // send updates.
             sendNotifications(changesList);
+        }
+        if (numDataChangesSize > 0) {
+            PubQueryHelper.batchUpdate(connection, dataChangedPubs);
         }
 
         DbUtils.closeConnection(connection);
@@ -161,13 +179,17 @@ public class PubCheck extends HttpServlet {
     // TODO only check pubs that haven't been checked in the past month.
 
     List<Pub> getPubsFromSearch(String pubRootCode, int pubType) {
-        String searchUrl = String.format(SEARCH_URL, pubRootCode);
+        String searchUrl = String.format(Locale.US, SEARCH_URL, pubType, pubRootCode);
         List<Pub> pubList = new ArrayList<>();
         String[] searchPages = null;
         int pageCounter = 0;
         do {
             try {
                 // Get the page
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                }
                 Document document = Factory.getNetworkProvider().doNetworkCall(searchUrl);
                 if (searchPages == null) {
                     searchPages = PubCheckParser.parsePageLinks(document);
@@ -177,15 +199,15 @@ public class PubCheck extends HttpServlet {
                 List<Pub> newPubList = PubCheckParser.parseSearchResults(document, pubType);
                 pubList.addAll(newPubList);
 
-                if (searchPages != null && pageCounter + 1 < searchPages.length) {
-                    // If there are anymore pages to check then get ready for that work.
-                    searchUrl = searchPages[++pageCounter];
-                } else {
-                    // Nothing more to search, we're done here.
-                    searchUrl = null;
-                }
             } catch (IOException e) {
-                _logger.severe(e.getMessage());
+                _logger.severe(e.getMessage() + "\n" + searchUrl);
+            }
+            if (searchPages != null && pageCounter + 1 < searchPages.length) {
+                // If there are anymore pages to check then get ready for that work.
+                searchUrl = searchPages[++pageCounter];
+            } else {
+                // Nothing more to search, we're done here.
+                searchUrl = null;
             }
         } while (!StringUtils.isEmptyOrWhitespace(searchUrl));
 

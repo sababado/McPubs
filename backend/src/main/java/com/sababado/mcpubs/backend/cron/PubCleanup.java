@@ -5,6 +5,8 @@ import com.sababado.mcpubs.backend.db.utils.DbUtils;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
  * Created by robert on 8/27/16.
  */
 public class PubCleanup extends HttpServlet {
+    private static final Logger _logger = Logger.getLogger(PubDevicesQueryHelper.class.getName());
+
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -23,8 +27,10 @@ public class PubCleanup extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        _logger.setLevel(Level.ALL);
         Connection connection = DbUtils.openConnection();
-        PubDevicesQueryHelper.cleanupUnwatchedPubs(connection);
+        int pubsRemoved = PubDevicesQueryHelper.cleanupUnwatchedPubs(connection);
+        _logger.info("Cleaning up " + pubsRemoved + " pub(s).");
         DbUtils.closeConnection(connection);
     }
 }

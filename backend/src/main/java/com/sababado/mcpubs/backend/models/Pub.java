@@ -168,13 +168,13 @@ public class Pub extends DbRecord {
                 } else if (pubType == DOCTRINE_UNSUPPORTED) {
                     rootCode = fullCode = secondLine;
                 } else {
-                    throw new UnrecognizedPubException(title);
+                    throw new UnrecognizedPubException(toString());
                 }
             } else {
-                throw new UnrecognizedPubException(title);
+                throw new UnrecognizedPubException(toString());
             }
         } catch (Exception e) {
-            throw new UnrecognizedPubException(e.getMessage());
+            throw new UnrecognizedPubException(toString() + "\n" + e.getMessage());
         }
     }
 

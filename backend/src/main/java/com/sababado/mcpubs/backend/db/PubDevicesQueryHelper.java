@@ -81,9 +81,6 @@ public class PubDevicesQueryHelper extends QueryHelper {
                     "(select PubDevices.pubId from PubDevices group by(PubDevices.pubId));";
             PreparedStatement statement = connection.prepareStatement(query);
             affectedRows = statement.executeUpdate();
-            if (affectedRows == 0) {
-                _logger.info("No unwatched pubs were found to be cleaned up.");
-            }
         } catch (SQLException e) {
             _logger.severe("Couldn't cleanup unwatched pubs.\n" + e.getMessage());
         }

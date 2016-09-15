@@ -116,7 +116,7 @@ public class DbUtils {
         if (query.charAt(query.length() - 1) == ';') {
             return query.substring(0, query.length() - 1) + " " + where + ";";
         }
-        return query += " " + where;
+        return query + " " + where;
     }
 
     static String buildQuery(Class cls, boolean hasFk) {

@@ -34,4 +34,20 @@ public class PubUtils {
         }
         return null;
     }
+
+    public static boolean pubInfoEquals(Pub pub1, Pub pub2) {
+        boolean rs1 = StringUtils.isEmptyOrWhitespace(pub1.getReadableTitle());
+        boolean rs2 = StringUtils.isEmptyOrWhitespace(pub2.getReadableTitle());
+        if (rs1 != rs2)
+            return false;
+        if (rs1 && rs2)
+            return true;
+        if (!pub1.getReadableTitle().equals(pub2.getReadableTitle()))
+            return false;
+        return true;
+    }
+
+    public static void copyPubInfo(Pub to, Pub from) {
+        to.setReadableTitle(from.getReadableTitle());
+    }
 }
