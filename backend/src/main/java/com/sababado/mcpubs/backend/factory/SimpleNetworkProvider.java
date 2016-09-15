@@ -17,7 +17,7 @@ public class SimpleNetworkProvider implements NetworkProvider {
         return Jsoup.connect(url)
                 .userAgent("Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:25.0) Gecko/20100101 Firefox/25.0")
                 .referrer("http://www.google.com")
-                .timeout(1000 * 5) //it's in milliseconds, so this means 5 seconds.
+                .timeout(1000 * 60) //it's in milliseconds, so this means 60 seconds.
                 .get();
     }
 }

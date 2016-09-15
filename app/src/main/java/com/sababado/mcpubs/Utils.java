@@ -5,9 +5,12 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.StringDef;
 
+import com.sababado.mcpubs.models.Pub;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -57,5 +60,14 @@ public class Utils {
     public static String getDt(Context context) {
         SharedPreferences sharedPreferences = context.getSharedPreferences(Utils.SP_FIREBASE_PUSH, context.MODE_PRIVATE);
         return sharedPreferences.getString(Utils.DEVICE_TOKEN, null);
+    }
+
+    public static Pub findPubByServerId(List<Pub> pubsList, long serverId) {
+        for (Pub pub : pubsList) {
+            if (pub.getPubServerId() == serverId) {
+                return pub;
+            }
+        }
+        return null;
     }
 }

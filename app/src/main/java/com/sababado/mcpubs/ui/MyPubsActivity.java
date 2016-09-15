@@ -19,6 +19,7 @@ import android.widget.Spinner;
 import com.sababado.mcpubs.R;
 import com.sababado.mcpubs.models.Constants;
 import com.sababado.mcpubs.models.Pub;
+import com.sababado.mcpubs.network.PubService;
 
 import java.util.Arrays;
 

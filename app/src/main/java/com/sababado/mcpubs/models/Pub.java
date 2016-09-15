@@ -80,7 +80,14 @@ public class Pub implements Parcelable {
     }
 
     public ContentValues toContentValues() {
+        return toContentValues(false);
+    }
+
+    public ContentValues toContentValues(boolean withId) {
         ContentValues values = new ContentValues(5);
+        if (withId) {
+            values.put("_id", id);
+        }
         values.put("title", title);
         values.put("readableTitle", readableTitle);
         values.put("isActive", isActive);
