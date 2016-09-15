@@ -16,14 +16,13 @@ public class MockNetworkProvider implements NetworkProvider {
         if(StringUtils.isEmptyOrWhitespace(url)) {
             return null;
         }
-
-        if(url.equals("http://www.marines.mil/News/Publications/ELECTRONIC-LIBRARY/Search/3500/?Page=1")) {
+        if(url.equals("http://www.marines.mil/News/Publications/ELECTRONIC-LIBRARY/Custompubtype/2005/Search/3500/?Page=1")) {
             return FileUtils.parseFile("paginatedSearch/page1.html");
         }
-        if(url.equals("http://www.marines.mil/News/Publications/ELECTRONIC-LIBRARY/Search/3500/?Page=2")) {
+        if(url.equals("http://www.marines.mil/News/Publications/ELECTRONIC-LIBRARY/Custompubtype/2005/Search/3500/?Page=2")) {
             return FileUtils.parseFile("paginatedSearch/page2.html");
         }
-        if(url.equals("http://www.marines.mil/News/Publications/ELECTRONIC-LIBRARY/Search/3500/?Page=3")) {
+        if(url.equals("http://www.marines.mil/News/Publications/ELECTRONIC-LIBRARY/Custompubtype/2005/Search/3500/?Page=3")) {
             return FileUtils.parseFile("paginatedSearch/page3.html");
         }
 

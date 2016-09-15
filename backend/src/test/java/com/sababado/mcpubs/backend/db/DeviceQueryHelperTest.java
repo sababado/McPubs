@@ -34,7 +34,7 @@ public class DeviceQueryHelperTest {
     @Test
     public void updateTokenTest() {
         // Insert new record
-        String newToken = "AAA567980ghjklr7689";
+        String newToken = "AAA567980ghjklr7689asasdasdaasasdasd";
         Device actual = DeviceQueryHelper.updateToken(connection, null, newToken);
         assertNotNull(actual);
         assertEquals(newToken, actual.getDeviceToken());

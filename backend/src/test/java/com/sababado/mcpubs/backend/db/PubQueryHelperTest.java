@@ -164,7 +164,7 @@ public class PubQueryHelperTest {
         newPub.setUpdateStatus(PubUtils.UpdateStatus.UPDATED_BUT_DELETED.ordinal());
         changes.add(newPub);
 
-        Thread.sleep(500);
+        Thread.sleep(1000);
         PubQueryHelper.batchUpdate(connection, changes);
         for (int i = 0; i < changes.size(); i++) {
             existingPub = existingPubs.get(i);

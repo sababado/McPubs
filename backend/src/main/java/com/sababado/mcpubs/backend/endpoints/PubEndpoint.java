@@ -9,6 +9,7 @@ package com.sababado.mcpubs.backend.endpoints;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.BadRequestException;
+import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.ConflictException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.sababado.mcpubs.backend.db.DeviceQueryHelper;
@@ -18,12 +19,12 @@ import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.models.Device;
 import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.models.PubDevices;
-import com.sababado.mcpubs.backend.models.PubNotification;
 import com.sababado.mcpubs.backend.utils.EndpointUtils;
 import com.sababado.mcpubs.backend.utils.Messaging;
 import com.sababado.mcpubs.backend.utils.UnrecognizedPubException;
 
 import java.sql.Connection;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.inject.Named;
@@ -121,5 +122,22 @@ public class PubEndpoint {
         }
 
         DbUtils.closeConnection(connection);
+    }
+
+    public CollectionResponse<Pub> getPubs(@Named("pubIds") String pubIds) {
+        // expecting a comma separated string of pubIds.
+        Connection connection = DbUtils.openConnection();
+        List<Pub> pubList;
+        try {
+            pubList = DbUtils.getList(connection, Pub.class, " where " + Pub.ID + " in (" + pubIds + ")");
+        } catch (Exception e) {
+            DbUtils.closeConnection(connection);
+            throw e;
+        }
+
+        DbUtils.closeConnection(connection);
+        return CollectionResponse.<Pub>builder()
+                .setItems(pubList)
+                .build();
     }
 }

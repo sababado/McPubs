@@ -94,6 +94,7 @@ public class DbUtils {
 
         try {
             List<T> list = new ArrayList<>();
+            // TODO Prone to SQL injection with that where clause.
             ResultSet resultSet = connection.createStatement().executeQuery(query);
             resultSet.beforeFirst();
             while (resultSet.next()) {
