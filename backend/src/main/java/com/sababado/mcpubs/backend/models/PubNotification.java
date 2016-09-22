@@ -9,8 +9,8 @@ public class PubNotification {
 
     public PubNotification(Pub data, String to, boolean isTopic) {
         this.data = data;
-        if (isTopic && !to.startsWith("/topic/")) {
-            this.to = "/topic/" + to;
+        if (isTopic && !to.startsWith("/topics/")) {
+            this.to = "/topics/" + to;
         } else {
             this.to = to;
         }

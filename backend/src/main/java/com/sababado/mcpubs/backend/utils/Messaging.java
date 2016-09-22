@@ -38,7 +38,7 @@ public class Messaging {
         if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
             try {
                 URL obj = new URL(url);
-                HttpURLConnection con = prepareRequest(obj);
+                HttpURLConnection con = preparePostRequest(obj);
 
                 String data = "{" +
                         "\"to\": \"/topics/" + topic + "\"," +
@@ -75,7 +75,7 @@ public class Messaging {
             String data = gson.toJson(pubNotification);
             try {
                 URL obj = new URL("https://fcm.googleapis.com/fcm/send");
-                HttpURLConnection con = prepareRequest(obj);
+                HttpURLConnection con = preparePostRequest(obj);
 
                 log.info("Sending 'POST' request to send notification.");
                 log.info("Post parameters : " + data);
@@ -93,7 +93,7 @@ public class Messaging {
         return true;
     }
 
-    private static HttpURLConnection prepareRequest(URL url) throws IOException {
+    private static HttpURLConnection preparePostRequest(URL url) throws IOException {
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         //add request header
         con.setRequestMethod("POST");
