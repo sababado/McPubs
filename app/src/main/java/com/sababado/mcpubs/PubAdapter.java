@@ -51,7 +51,7 @@ public class PubAdapter extends CursorAdapter {
         vh.lastUpdated.setText(
                 context.getResources().getString(R.string.last_updated_at, date));
 
-        boolean disableRow = false;
+        boolean disableRow = pub.isActive();
         if (pub.getUpdateStatus() == Constants.NO_CHANGE) {
             vh.status.setVisibility(View.GONE);
         } else if (pub.getUpdateStatus() == Constants.UPDATED) {
@@ -63,7 +63,6 @@ public class PubAdapter extends CursorAdapter {
             vh.status.setTextColor(context.getResources().getColor(R.color.red));
             int textId = pub.getUpdateStatus() == Constants.DELETED ? R.string.deleted : R.string.updated_but_deleted;
             vh.status.setText(textId);
-            disableRow = true;
         }
 
         if (pub.getSaveStatus() != Constants.SAVE_STATUS_SAVED) {
@@ -81,14 +80,15 @@ public class PubAdapter extends CursorAdapter {
             }
             vh.status.setText(text);
             vh.status.setVisibility(View.VISIBLE);
-        } else if (!TextUtils.isEmpty(pub.getOldTitle())) {
-            String oldTitle = context.getString(R.string.previously_called, pub.getOldTitle());
-            String finalStatusText = vh.status.getText().toString() + "\n" + oldTitle;
+        } else if (pub.getUpdateStatus() != Constants.NO_CHANGE) {
+            String finalStatusText = vh.status.getText().toString();
+            if (!pub.getTitle().equals(pub.getOldTitle())) {
+                String oldTitle = context.getString(R.string.previously_called, pub.getOldTitle());
+                finalStatusText += "\n" + oldTitle;
+            }
             vh.status.setText(finalStatusText);
             vh.status.setVisibility(View.VISIBLE);
         }
-
-        ((View) (vh.status.getParent())).setEnabled(disableRow);
     }
 
     private class ViewHolder {

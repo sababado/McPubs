@@ -92,7 +92,9 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
         cursor.moveToPosition(info.position);
         Pub clickedPub = new Pub(cursor);
 
-        boolean showReviewedOption = clickedPub.getUpdateStatus() != Constants.NO_CHANGE;
+        boolean showReviewedOption = clickedPub.getUpdateStatus() != Constants.NO_CHANGE
+                && clickedPub.getUpdateStatus() != Constants.DELETED
+                && clickedPub.getUpdateStatus() != Constants.UPDATED_BUT_DELETED;
         menu.findItem(R.id.action_mark_as_reviewed).setVisible(showReviewedOption);
         menu.findItem(R.id.action_retry).setVisible(clickedPub.getSaveStatus() == Constants.SAVE_STATUS_FAILED);
     }

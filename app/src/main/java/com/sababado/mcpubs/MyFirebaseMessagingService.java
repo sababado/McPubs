@@ -35,15 +35,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         String oldTitle = remoteMessage.getData().get("oldTitle");
         String newTitle = remoteMessage.getData().get("title");
+        long pubServerId = Long.parseLong(remoteMessage.getData().get("id"));
         //noinspection WrongConstant
         int status = Integer.parseInt(remoteMessage.getData().get("updateStatus"));
         //noinspection WrongConstant
-        showNotification(oldTitle, newTitle, status);
-//        if (remoteMessage.getData().containsKey("id")) {
-//            long pubServerId = Long.parseLong(remoteMessage.getData().get("id"));
-//            //noinspection WrongConstant
-//            updatePub(pubServerId, oldTitle, newTitle, status);
-//        }
+        showNotification(oldTitle, newTitle, status, pubServerId);
+        //noinspection WrongConstant
+        updatePub(pubServerId, oldTitle, newTitle, status);
     }
 
     private void updatePub(long pubServerId, String oldTitle, String newTitle, @UpdateStatus int status) {
@@ -58,7 +56,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 null);
     }
 
-    private void showNotification(String oldTitle, String newTitle, @UpdateStatus int status) {
+    private void showNotification(String oldTitle, String newTitle, @UpdateStatus int status, long pubServerId) {
         String title = "";
         String message = "";
         switch (status) {
@@ -101,6 +99,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationManager mNotifyMgr = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         // Builds the notification and issues it.
         // Once parse's sdk stops sending a notification we'll send one.
-        mNotifyMgr.notify((int) System.currentTimeMillis(), mBuilder.build());
+        mNotifyMgr.notify((int) pubServerId, mBuilder.build());
     }
 }

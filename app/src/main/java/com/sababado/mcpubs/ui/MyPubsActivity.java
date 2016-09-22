@@ -19,7 +19,6 @@ import android.widget.Spinner;
 import com.sababado.mcpubs.R;
 import com.sababado.mcpubs.models.Constants;
 import com.sababado.mcpubs.models.Pub;
-import com.sababado.mcpubs.network.PubService;
 
 import java.util.Arrays;
 
@@ -90,7 +89,8 @@ public class MyPubsActivity extends AppCompatActivity implements MyPubsFragment.
                         // the title has changed.
                         if (!TextUtils.isEmpty(savedTitle)) {
                             savedPub.setPubType(String.valueOf(spn.getSelectedItem()));
-                            savedTitle = savedPub.getPubTypeString() + " " + savedTitle.toUpperCase();
+                            String spacer = savedPub.getPubType() == Constants.MCO_P ? "" : " ";
+                            savedTitle = savedPub.getPubTypeString() + spacer + savedTitle.toUpperCase();
                             if (!TextUtils.equals(pub == null ? "" : pub.getTitle(), savedTitle)) {
                                 savedPub.setTitle(savedTitle);
                                 pushPubUpdate(savedPub, pubId);
