@@ -100,7 +100,7 @@ public class PubCheck extends HttpServlet {
                     if (watchedPub != null) {
                         UpdateStatus updateStatus = comparePub(watchedPub, mostRecentPub);
                         if (updateStatus != UpdateStatus.NO_CHANGE) {
-                            mostRecentPub.setOldTitle(watchedPub.getOldTitle());
+                            mostRecentPub.setOldTitle(watchedPub.getTitle());
                             mostRecentPub.setUpdateStatus(updateStatus.ordinal());
                             mostRecentPub.setId(watchedPub.getId());
                             changesList.add(mostRecentPub);
