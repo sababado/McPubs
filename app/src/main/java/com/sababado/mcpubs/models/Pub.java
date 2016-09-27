@@ -45,6 +45,7 @@ public class Pub implements Parcelable {
 
     public Pub() {
         saveStatus = Constants.SAVE_STATUS_SAVING;
+        lastUpdated = 0L;
     }
 
     public Pub(Cursor cursor) {
