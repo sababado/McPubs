@@ -100,4 +100,17 @@ public class PubCheckParserTest {
             fail(e.getMessage());
         }
     }
+
+    @Test
+    public void parseNotAvailable() {
+        try {
+            Document document = Jsoup.parse(FileUtils.readFile("orders_dirs_not_available.html"), "UTF-8");
+            List<Pub> pubs = PubCheckParser.parseSearchResults(document, Pub.NAVMC);
+            assertEquals(0, pubs.size());
+            String[] pageLinks = PubCheckParser.parsePageLinks(document);
+            assertEquals(0, pageLinks.length);
+        } catch (IOException e) {
+            fail(e.getMessage());
+        }
+    }
 }

@@ -27,9 +27,11 @@ public class PubCheckParser {
      * @return A list of pubs, or none if none exist or none were recognized.
      */
     public static List<Pub> parseSearchResults(Document document, int pubType) {
-        Elements pubList = document.getElementsByClass("alist-pub")
-                .first()
-                .getAllElements();
+        Elements pubList = document.getElementsByClass("alist-pub");
+        if (pubList == null || pubList.size() == 0) {
+            return new ArrayList<>(0);
+        }
+        pubList = pubList.first().getAllElements();
         int listCount = pubList.size();
         ArrayList<Pub> pubs = new ArrayList<>(listCount);
 
@@ -64,9 +66,11 @@ public class PubCheckParser {
      * @return An array of links, one item for each page.
      */
     public static String[] parsePageLinks(Document document) {
-        Elements paginationElements = document.getElementsByClass("article-task-bar")
-                .first()
-                .getElementsByClass("pagination");
+        Elements paginationElements = document.getElementsByClass("article-task-bar");
+        if(paginationElements == null || paginationElements.size() == 0) {
+            return new String[]{};
+        }
+        paginationElements = paginationElements.first().getElementsByClass("pagination");
         String[] pageLinks;
         if (paginationElements.size() == 0) {
             pageLinks = new String[0];
