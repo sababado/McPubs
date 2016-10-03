@@ -1,14 +1,12 @@
 <resources>
     <string name="app_name">McPubs</string>
     <string name="app_engine_name">voltaic-flag-141523</string>
-    <string name="action_settings">Settings</string>
     <string name="last_updated_at">Last updated: %s</string>
     <string name="updated">Updated</string>
     <string name="updated_but_deleted">Updated but deleted</string>
     <string name="deleted">Deleted</string>
     <string name="empty_pub_list_text">Add pubs to watch for updates.</string>
     <string name="previously_called">Previously called \"%s\"</string>
-    <string name="edit">Edit</string>
     <string name="retry">Retry</string>
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>

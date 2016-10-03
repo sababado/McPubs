@@ -1,6 +1,5 @@
 package com.sababado.mcpubs.ui;
 
-import android.app.Activity;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -33,15 +32,8 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
     public static final String TAG = MyPubsFragment.class.getSimpleName();
 
     private PubAdapter pubAdapter;
-    private Callbacks callbacks;
 
     public MyPubsFragment() {
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        callbacks = (Callbacks) activity;
     }
 
     @Override
@@ -68,11 +60,6 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
         pub.setId(ContentUris.parseId(uri));
         PubService.startActionSavePub(getContext(), pub);
     }
-
-//    public void editPub(long pubId, Pub pub) {
-//        savePub(pubId, pub);
-//        doUpdatePub(pub);
-//    }
 
     private void savePub(long pubId, Pub pub) {
         ContentValues values = pub.toContentValues();
@@ -106,11 +93,6 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
         cursor.moveToPosition(info.position);
         final Pub clickedPub = new Pub(cursor);
         switch (item.getItemId()) {
-//            case R.id.action_edit:
-//                if (callbacks != null) {
-//                    callbacks.editPub(clickedPub, info.id);
-//                }
-//                return true;
             case R.id.action_delete:
                 new AlertDialog.Builder(getContext())
                         .setTitle(R.string.delete_pub)
@@ -141,12 +123,6 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
     }
 
     @Override
-    public void onDetach() {
-        callbacks = null;
-        super.onDetach();
-    }
-
-    @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         getListView().showContextMenuForChild(v);
     }
@@ -171,9 +147,5 @@ public class MyPubsFragment extends ListFragment implements LoaderManager.Loader
         if (pubAdapter != null) {
             pubAdapter.swapCursor(null);
         }
-    }
-
-    public interface Callbacks {
-//        void editPub(Pub pub, long pubId);
     }
 }
