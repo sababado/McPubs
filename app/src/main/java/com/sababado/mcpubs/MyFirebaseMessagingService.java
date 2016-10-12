@@ -35,20 +35,22 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         String oldTitle = remoteMessage.getData().get("oldTitle");
         String newTitle = remoteMessage.getData().get("title");
+        String readableTitle = remoteMessage.getData().get("readableTitle");
         long pubServerId = Long.parseLong(remoteMessage.getData().get("id"));
         //noinspection WrongConstant
         int status = Integer.parseInt(remoteMessage.getData().get("updateStatus"));
         //noinspection WrongConstant
         showNotification(oldTitle, newTitle, status, pubServerId);
         //noinspection WrongConstant
-        updatePub(pubServerId, oldTitle, newTitle, status);
+        updatePub(pubServerId, oldTitle, newTitle, status, readableTitle);
     }
 
-    private void updatePub(long pubServerId, String oldTitle, String newTitle, @UpdateStatus int status) {
-        ContentValues values = new ContentValues(3);
+    private void updatePub(long pubServerId, String oldTitle, String newTitle, @UpdateStatus int status, String readableTitle) {
+        ContentValues values = new ContentValues(4);
         values.put("oldTitle", oldTitle);
         values.put("title", newTitle);
         values.put("updateStatus", status);
+        values.put("readableTitle", readableTitle);
 
         Contracts.Contract contract = Contracts.getContract(Pub.class);
         getContentResolver().update(contract.CONTENT_URI, values,
