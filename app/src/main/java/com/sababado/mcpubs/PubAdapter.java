@@ -50,7 +50,7 @@ public class PubAdapter extends CursorAdapter {
         String date = Utils.DATE_FORMAT.format(new Date(pub.getLastUpdated()));
         vh.lastUpdated.setText(
                 context.getResources().getString(R.string.last_updated_at, date));
-        vh.lastUpdated.setVisibility(pub.getLastUpdated() == 0 ? View.GONE : View.VISIBLE);
+        vh.lastUpdated.setVisibility(pub.getLastUpdated() == 0L ? View.GONE : View.VISIBLE);
 
         if (pub.getUpdateStatus() == Constants.NO_CHANGE) {
             vh.status.setVisibility(View.GONE);
