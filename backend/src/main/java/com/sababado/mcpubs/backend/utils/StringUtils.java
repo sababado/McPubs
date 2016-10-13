@@ -1,10 +1,14 @@
 package com.sababado.mcpubs.backend.utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 /**
  * Created by robert on 9/16/15.
  */
 public class StringUtils {
 
+    public static final SimpleDateFormat SQL_FORMAT = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.US);
     public static final String PROD_DB = "jdbc:google:mysql://voltaic-flag-141523:mcpubs-db/mcpubsdb?user=root&zeroDateTimeBehavior=convertToNull";
     public static final String DEV_DB = "jdbc:mysql://127.0.0.1:8889/mcPubsDev?user=root&zeroDateTimeBehavior=convertToNull";
     public static final String HEADER_DEVICE_TOKEN = "dT";

@@ -1,11 +1,9 @@
 package com.sababado.mcpubs.backend.cron;
 
-import com.sababado.mcpubs.backend.db.PubQueryHelper;
 import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.factory.FactoryHelper;
 import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.utils.PubUtils.UpdateStatus;
-import com.sababado.mcpubs.backend.utils.Tuple;
 import com.sababado.mcpubs.backend.utils.UnrecognizedPubException;
 
 import org.junit.After;
@@ -13,14 +11,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * Created by robert on 8/27/16.

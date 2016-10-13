@@ -17,6 +17,7 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
@@ -57,7 +58,8 @@ public class PubCheck extends HttpServlet {
      */
     void checkPubs(int pubType) {
         Connection connection = DbUtils.openConnection();
-        List<String> distinctRootCodes = PubQueryHelper.getDistinctRootCodes(connection, pubType);
+        String where = "(" + Pub.LAST_UPDATED + " IS NULL or" + Pub.LAST_UPDATED + "= '" + getLastMonthDate() + "')";
+        List<String> distinctRootCodes = PubQueryHelper.getDistinctRootCodes(connection, pubType, where);
 
         int count = distinctRootCodes == null ? 0 : distinctRootCodes.size();
         _logger.info("Checking pubs (type " + pubType + ") with " + count + " distinct code(s).");
@@ -132,6 +134,12 @@ public class PubCheck extends HttpServlet {
         DbUtils.closeConnection(connection);
     }
 
+    static String getLastMonthDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, -1);
+        return StringUtils.SQL_FORMAT.format(calendar.getTime());
+    }
+
     /**
      * Compare two pubs.
      *
@@ -175,8 +183,6 @@ public class PubCheck extends HttpServlet {
             Messaging.sendMessage(pubNotification);
         }
     }
-
-    // TODO only check pubs that haven't been checked in the past month.
 
     List<Pub> getPubsFromSearch(String pubRootCode, int pubType) {
         String searchUrl = String.format(Locale.US, SEARCH_URL, pubType, pubRootCode);
