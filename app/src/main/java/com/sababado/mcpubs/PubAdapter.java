@@ -52,13 +52,17 @@ public class PubAdapter extends CursorAdapter {
                 context.getResources().getString(R.string.last_updated_at, date));
         vh.lastUpdated.setVisibility(pub.getLastUpdated() == 0L ? View.GONE : View.VISIBLE);
 
+        boolean handled = false;
         if (pub.getUpdateStatus() == Constants.NO_CHANGE) {
             vh.status.setVisibility(View.GONE);
+            handled = true;
         } else if (pub.getUpdateStatus() == Constants.UPDATED) {
             vh.status.setVisibility(View.VISIBLE);
             vh.status.setTextColor(context.getResources().getColor(R.color.gold));
             vh.status.setText(R.string.updated);
-        } else {
+            handled = true;
+        }
+        if (!handled || !pub.isActive()) {
             vh.status.setVisibility(View.VISIBLE);
             vh.status.setTextColor(context.getResources().getColor(R.color.red));
             int textId = pub.getUpdateStatus() == Constants.DELETED ? R.string.deleted : R.string.updated_but_deleted;
