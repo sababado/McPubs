@@ -18,7 +18,11 @@ public class MyApp extends Application {
         super.attachBaseContext(base);
         EasyProvider.init(this, DatabaseHelper.class, Pub.class);
         Constants.init(this);
+    }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
         // check last keep alive flag.
         long lastKeepAliveTime = Utils.getLongMetaData(this, Utils.LAST_KEEP_ALIVE);
         if (!Utils.isPastTimeWithinTime(lastKeepAliveTime, Utils.WEEK)) {
