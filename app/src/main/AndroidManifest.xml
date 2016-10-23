@@ -25,12 +25,14 @@
             </intent-filter>
         </activity>
 
+        <!-- TODO If changing the package name then change it here.-->
         <provider
             android:name="com.sababado.ezprovider.EasyProvider"
             android:authorities="com.sababado.mcpubs.EasyProvider"
             android:enabled="true"
             android:exported="false" />
 
+        <!-- TODO If changing the package name then change it here.-->
         <meta-data
             android:name="EasyProvider_Authority"
             android:value="com.sababado.mcpubs.EasyProvider" />
