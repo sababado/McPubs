@@ -22,6 +22,27 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_7
         targetCompatibility JavaVersion.VERSION_1_7
     }
+
+    signingConfigs {
+        release {
+            // Android signing info.
+            storeFile file("keystore.jks")
+            storePassword getPwd()
+            keyAlias getAlias()
+            keyPassword getPwd()
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+        debug {
+            versionNameSuffix = ".debug"
+            testCoverageEnabled = true
+        }
+    }
 }
 
 dependencies {
