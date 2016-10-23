@@ -1,5 +1,5 @@
 # McPubs
-App to notify about Marine Corps pub updates.
+App to notify about Marine Corps MCPEL pub updates.
 
 ## Requirements
 This app requires a backend in order to process when pubs are updated and to send notifications to devices.
@@ -22,8 +22,17 @@ This app requires a backend in order to process when pubs are updated and to sen
 ### MySQL Database
 
 
-## Building the App
+## Building the Project
 Import the project into Android Studio (AS). An internet connection is to build the backend and the app.
+
+After the backend is setup then grab the App Engine Name. It can be found here:
+
+Replace the value for the App Engine Name with yours in the following files:
+
++ `app/src/main/res/values/strings.xml`
++ `backend/src/main/webapp/WEB-INF/appengine-web.xml`
+
+If the app package name changes then update the package name where specified in the `AndroidManifest.xml`.
 
 ### Backend
 In AS, click `Build` and `Deploy Module to App Engine`. In the popup enter the information as follows:
@@ -35,9 +44,10 @@ TODO Screenshot of popup
 
 ![](/readme_screnshots/build_deploy_backend.png "popup")
 
+TODO Show console output
+
 ![](/readme_screnshots/deploy_backend.png "popup")
 
-TODO Show console output
 
 ### Android Client
 
@@ -86,3 +96,14 @@ saved in the database. It will check for an updated status and for updated versi
 
 Every week another cron job runs to clean up the database and remove any pubs
 that are no longer being watched by devices.
+
+## Quick End-To-End Test
+Using Google Cloud Console the app can be tested end-to-end without waiting two days for cron job to run.
+
++ Run the app and add a pub that exists on MCPEL but hasn't been watched by the app yet.
++ Open Google Cloud Console and go to `App Engine -> Task Queues -> Cron Jobs`
++ Find the cron job called `Pub Check`. Click the `Run` button for this cron job.
++ The cron job will finish within a few minutes. As long as the pub exists on MCPEL then a notification will be sent to the device.
+
+## Unit Tests
+Junit tests are written for the backend code.
