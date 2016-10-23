@@ -58,7 +58,7 @@ public class Utils {
     }
 
     public static String getDt(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Utils.SP_FIREBASE_PUSH, context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Utils.SP_FIREBASE_PUSH, Context.MODE_PRIVATE);
         return sharedPreferences.getString(Utils.DEVICE_TOKEN, null);
     }
 
