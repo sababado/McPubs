@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">McPubs</string>
-    <string name="app_engine_name">voltaic-flag-141523</string><!-- TODO REPLACE WITH APP_ENGINE_NAME -->
+    <string name="app_engine_name">voltaic-flag-141523</string><!-- TODO REPLACE WITH APP_ENGINE_ID -->
     <string name="last_updated_at">Last updated: %s</string>
     <string name="updated">Updated</string>
     <string name="updated_but_deleted">Updated but deleted</string>

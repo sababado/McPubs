@@ -1,62 +1,8 @@
 # McPubs
 App to notify about Marine Corps MCPEL pub updates.
 
-## Requirements
-This app requires a backend in order to process when pubs are updated and to send notifications to devices.
-
-### Backend
-+ Android Studio (AS) 2.2.2 or higher
-+ Google Cloud with a MySQL database
-+ Firebase Project
-+ Java 7
-
-### Android Client
-+ Android Studio (AS) 2.2.2 or higher
-+ Minimum SDK 19 Kitkat
-+ Target SDK 23 Marshmallow
-+ Java 7
-
-## Setting up the Backend
-### Google Cloud Project
-### Firebase
-### MySQL Database
-
-
-## Building the Project
-Import the project into Android Studio (AS). An internet connection is to build the backend and the app.
-
-After the backend is setup then grab the App Engine Name. It can be found here:
-
-Replace the value for the App Engine Name with yours in the following files:
-
-+ `app/src/main/res/values/strings.xml`
-+ `backend/src/main/webapp/WEB-INF/appengine-web.xml`
-
-If the app package name changes then update the package name where specified in the `AndroidManifest.xml`.
-
-### Backend
-In AS, click `Build` and `Deploy Module to App Engine`. In the popup enter the information as follows:
-+ **Module:** backend
-+ **Deploy To:** <your_google_code_project_id>
-+ **Version:** 1
-
-TODO Screenshot of popup
-
-![](/readme_screnshots/build_deploy_backend.png "popup")
-
-TODO Show console output
-
-![](/readme_screnshots/deploy_backend.png "popup")
-
-
-### Android Client
-
-In AS, select the `app` build configuration and click `Run`.
-
-TODO Screenshot of config and run button
-![](/readme_screnshots/app_run_config.png "App Config")
-
-This will ask which device or emulator to deploy to. The device or emulator must be running at least Kitkat (SDK 19).
+Download the demo from the
+[Play Store](https://play.google.com/store/apps/details?id=com.sababado.mcpubs).
 
 ## Using the App
 On the android client app tap the add button to watch a pub. The app supports watching specific types of pubs.
@@ -71,6 +17,82 @@ The pub may be updated or it may be deleted. The status will show on the user's 
 taken by the user. This will serve as a reminder that some action needs to be taken.
 
 Users can stop watching pubs at any time by tapping on the pub and deleting it from their list.
+
+## Build Requirements
+This app requires a backend in order to process when pubs are updated and to send notifications to devices.
+
+The app can be built and tested as is without the need to deploy the backend code to a custom server.
+
+### Backend
++ Android Studio (AS) 2.2.2 or higher
++ Google Cloud with a MySQL database
++ Firebase Project
++ Java 7
++ For local server testing a MAMP server with a MySQL instance is sufficient.
+
+### Android Client
++ Android Studio (AS) 2.2.2 or higher
++ Minimum SDK 19 Kitkat
++ Target SDK 23 Marshmallow
++ Java 7
+
+## Setting up the Backend
+### Google Cloud Project and MySQL Database
+Before a Google Cloud project can be created, a billing profile needs to be setup.
+Visit [https://console.cloud.google.com/billing](https://console.cloud.google.com/billing) and sign in with a google account to get started.
+
+1. Create a new billing account. Under `My Billing Accounts` select `New Billing Account`. Enter the required information.
+2. Create a new project and provide a name and the billing account from Step 1. Note the project ID. This will be needed later.
+    + Once you click "Create Project" go get a coffee, this may take a minute.
+3. Create a Cloud SQL instance.
+    + Choose First Generation, provide a name such as `mcpubs-db`. This name will be the instance id.
+    + Tier of D0 - 128 MB Ram is enough for this test.
+    + No need to configure advanced options unless an IPv4 address is desired.
+    + Once you click "Create" go get a second cup of coffee.
+    + Open the instance's overview and click on the `Databases` tab. Create a database called `mcpubsdb` or another desired name.
+4. Define connection information in the `backend/../StringUtils.java` file.
+    + Replace the Project ID with the newly created project id.
+    + Replace the DB Instance name with the instance name used in Step 3.
+    + Replace the DB Name with the name used for the database at the end of Step 3.
+    + Replace the user connection info if necessary.
+5. Use any method of connecting to the database, such as MySQL Workbench.
+    + Initialize the database using the SQL found in `backend/createDb.sql`.
+
+
+### Firebase
+Create a Firebase application that is linked to the Google Cloud project in order to use push notifications.
+
+1. Visit [https://console.firebase.google.com/](https://console.firebase.google.com/)
+2. Click `Import Google Project` and select the project.
+3. After the project has been imported successfully you'll see the Overview page. Click `Add Firebase to your Android App`
+    + Provide the package name `com.sababado.mcpubs`.
+    + Provide an app nickname `McPubs`
+    + Click `Add App`
+    + Follow the steps to replace the existing `google-services.json` with the new one.
+    + Ignore the third step in the wizard. Firebase dependencies have already been added to the build.gradle files.
+
+## Building the Project
+Import the project into Android Studio (AS). An internet connection is to build the backend and the app.
+
+If a new backend is created be sure to update references in the following files:
+
++ `app/src/main/res/values/strings.xml`
++ `backend/src/main/webapp/WEB-INF/appengine-web.xml`
++ `backend/src/main/java/com/sababado/mcpubs/backend/utils/StringUtils.java`
+
+If the app package name changes then update the package name where specified in the `AndroidManifest.xml`.
+
+### Backend
+In AS, click `Build` and `Deploy Module to App Engine`. In the popup enter the information as follows:
++ **Module:** backend
++ **Deploy To:** <your_google_code_project_id>
++ **Version:** 1
+
+### Android Client
+
+In AS, select the `app` build configuration and click `Run`.
+This will ask which device or emulator to deploy to.
+The device or emulator must be running at least Kitkat (SDK 19).
 
 ## Technical Details
 ### Firebase Cloud Messaging (FCM)
