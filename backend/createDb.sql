@@ -10,7 +10,7 @@ CREATE SCHEMA `MCPUBS` ;
     `pubType` INT(4) UNSIGNED NOT NULL COMMENT 'Int type of the pub, ex MCO is 2005',
     `title` text COMMENT 'MCWP 3-12',
     `readableTitle` text COMMENT 'Marine Corps Tank Employment',
-    `lastUpdated` timestamp DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last time this pub was updated.',
+    `lastUpdated` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last time this pub was updated.',
     PRIMARY KEY (`id`),
     UNIQUE KEY `fullCode_UNIQUE` (`fullCode` ASC)
   );
