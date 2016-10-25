@@ -12,7 +12,7 @@ public class StringUtils {
 
     private static final String PROD_PROJECT_ID = "voltaic-flag-141523"; // TODO Replace with APP_ENGINE_ID
     private static final String PROD_DB_INSTANCE = "mcpubs-db2"; // TODO Replace with Prod DB instance name
-    private static final String PROD_DB_NAME = "mcpubsdb"; // TODO Replace with Prod DB name
+    private static final String PROD_DB_NAME = "MCPUBS"; // TODO Replace with Prod DB name
     private static final String PROD_DB_USER = "user=root"; // TODO Replace with PROD user connection info.
     public static final String PROD_DB = "jdbc:google:mysql://" +
             PROD_PROJECT_ID + ":" + PROD_DB_INSTANCE + "/" + PROD_DB_NAME + "?" + PROD_DB_USER + "&zeroDateTimeBehavior=convertToNull";
