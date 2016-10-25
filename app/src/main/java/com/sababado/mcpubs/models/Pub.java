@@ -105,7 +105,7 @@ public class Pub implements Parcelable {
         title = p.getTitle();
         readableTitle = p.getReadableTitle();
         isActive = p.getActive();
-        lastUpdated = p.getLastUpdated();
+        lastUpdated = p.getLastUpdated() == 0L ? System.currentTimeMillis() : p.getLastUpdated();
         pubServerId = p.getId();
         //noinspection WrongConstant
         pubType = p.getPubType();
