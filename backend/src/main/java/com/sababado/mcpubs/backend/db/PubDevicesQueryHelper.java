@@ -1,7 +1,7 @@
 package com.sababado.mcpubs.backend.db;
 
-import com.sababado.mcpubs.backend.db.utils.DbUtils;
-import com.sababado.mcpubs.backend.db.utils.QueryHelper;
+import com.sababado.ezdb.DbHelper;
+import com.sababado.ezdb.QueryHelper;
 import com.sababado.mcpubs.backend.models.PubDevices;
 
 import java.sql.Connection;
@@ -49,7 +49,7 @@ public class PubDevicesQueryHelper extends QueryHelper {
 
     public static PubDevices getPubDevicesRecord(Connection connection, long id) {
         String where = QueryHelper.buildWhereQuery(new String[]{PubDevices.PUB_DEVICES_ID}, new Object[]{id}, true);
-        List<PubDevices> pubDevicesList = DbUtils.getList(connection, PubDevices.class, true, where);
+        List<PubDevices> pubDevicesList = DbHelper.getList(connection, PubDevices.class, true, where);
         if (pubDevicesList != null && pubDevicesList.size() > 0) {
             return pubDevicesList.get(0);
         }

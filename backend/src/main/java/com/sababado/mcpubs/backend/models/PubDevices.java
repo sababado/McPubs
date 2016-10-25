@@ -1,10 +1,10 @@
 package com.sababado.mcpubs.backend.models;
 
 import com.googlecode.objectify.annotation.Id;
-import com.sababado.mcpubs.backend.db.utils.Column;
-import com.sababado.mcpubs.backend.db.utils.DbRecord;
-import com.sababado.mcpubs.backend.db.utils.Fk;
-import com.sababado.mcpubs.backend.db.utils.TableName;
+import com.sababado.ezdb.Column;
+import com.sababado.ezdb.DbRecord;
+import com.sababado.ezdb.Fk;
+import com.sababado.ezdb.TableName;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

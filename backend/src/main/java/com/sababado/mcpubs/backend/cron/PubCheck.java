@@ -1,7 +1,8 @@
 package com.sababado.mcpubs.backend.cron;
 
+import com.sababado.ezdb.DbHelper;
+import com.sababado.mcpubs.backend.db.MyConnectionParams;
 import com.sababado.mcpubs.backend.db.PubQueryHelper;
-import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.factory.Factory;
 import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.models.PubNotification;
@@ -57,7 +58,7 @@ public class PubCheck extends HttpServlet {
      * @param pubType
      */
     void checkPubs(int pubType) {
-        Connection connection = DbUtils.openConnection();
+        Connection connection = DbHelper.openConnection(MyConnectionParams.getInstance());
         String where = "(" + Pub.LAST_UPDATED + " IS NULL or" + Pub.LAST_UPDATED + "= '" + getLastMonthDate() + "')";
         List<String> distinctRootCodes = PubQueryHelper.getDistinctRootCodes(connection, pubType, where);
 
@@ -73,7 +74,7 @@ public class PubCheck extends HttpServlet {
             // We're assuming the pubsFromSearch list is sorted by fullCode and version, ascending.
             if (pubsFromSearch.size() > 0) {
                 // only continue if we found any pubs.
-                List<Pub> watchedPubs = DbUtils.getList(connection, Pub.class,
+                List<Pub> watchedPubs = DbHelper.getList(connection, Pub.class,
                         "where " + PubQueryHelper.ACTIVE_PUB_WHERE_CLAUSE +
                                 " and " + Pub.ROOT_CODE + "='" + rootCode + "'" +
                                 " and " + Pub.PUB_TYPE + "=" + pubType + " ");
@@ -131,7 +132,7 @@ public class PubCheck extends HttpServlet {
             PubQueryHelper.batchUpdate(connection, dataChangedPubs);
         }
 
-        DbUtils.closeConnection(connection);
+        DbHelper.closeConnection(connection);
     }
 
     static String getLastMonthDate() {

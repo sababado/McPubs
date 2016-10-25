@@ -1,6 +1,4 @@
-package com.sababado.mcpubs.backend.db.utils;
-
-import com.sababado.mcpubs.backend.models.Pub;
+package com.sababado.ezdb;
 
 import org.junit.Test;
 

@@ -31,6 +31,7 @@ dependencies {
     compile 'mysql:mysql-connector-java:5.1.36'
     compile 'org.jsoup:jsoup:1.9.2'
     testCompile 'junit:junit:4.10'
+    compile project(':ezdb')
 }
 
 appengine {

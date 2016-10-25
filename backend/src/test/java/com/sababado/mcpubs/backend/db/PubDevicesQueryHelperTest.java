@@ -1,7 +1,7 @@
 package com.sababado.mcpubs.backend.db;
 
 import com.google.api.server.spi.response.BadRequestException;
-import com.sababado.mcpubs.backend.db.utils.DbUtils;
+import com.sababado.ezdb.DbHelper;
 import com.sababado.mcpubs.backend.models.Device;
 import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.models.PubDevices;
@@ -30,9 +30,9 @@ public class PubDevicesQueryHelperTest {
     @Before
     public void setup() {
         try {
-            connection = DbUtils.openConnection();
+            connection = DbHelper.openConnection(MyConnectionParams.getInstance());
         } catch (Exception e) {
-            DbUtils.closeConnection(connection);
+            DbHelper.closeConnection(connection);
             throw new RuntimeException(e);
         }
     }
@@ -53,7 +53,7 @@ public class PubDevicesQueryHelperTest {
         PubDevicesQueryHelper.insertPubDevicesRecord(connection, device.getId(), pub.getId());
         PubDevicesQueryHelper.insertPubDevicesRecord(connection, device.getId(), pub.getId());
         PubDevicesQueryHelper.insertPubDevicesRecord(connection, device.getId(), pub.getId());
-        List<PubDevices> pubDevicesList = DbUtils.getList(connection, PubDevices.class, " where deviceId=" + device.getId() + " and pubId=" + pub.getId());
+        List<PubDevices> pubDevicesList = DbHelper.getList(connection, PubDevices.class, " where deviceId=" + device.getId() + " and pubId=" + pub.getId());
         assertEquals(1, pubDevicesList.size());
     }
 
@@ -97,9 +97,9 @@ public class PubDevicesQueryHelperTest {
             connection.prepareStatement("DELETE FROM Device WHERE " + Device.DEVICE_TOKEN + " LIKE 'AAA%';").execute();
             connection.prepareStatement("DELETE FROM PUB WHERE " + Pub.FULL_CODE + " LIKE 'AAA%';").execute();
         } catch (Exception e) {
-            DbUtils.closeConnection(connection);
+            DbHelper.closeConnection(connection);
             throw new RuntimeException(e);
         }
-        DbUtils.closeConnection(connection);
+        DbHelper.closeConnection(connection);
     }
 }

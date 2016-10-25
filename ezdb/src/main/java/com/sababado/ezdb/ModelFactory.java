@@ -1,4 +1,4 @@
-package com.sababado.mcpubs.backend.utils;
+package com.sababado.ezdb;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;

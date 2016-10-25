@@ -1,8 +1,4 @@
-package com.sababado.mcpubs.backend.db.utils;
-
-import com.google.appengine.api.utils.SystemProperty;
-import com.sababado.mcpubs.backend.utils.ModelFactory;
-import com.sababado.mcpubs.backend.utils.StringUtils;
+package com.sababado.ezdb;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -18,25 +14,27 @@ import java.util.logging.Logger;
 /**
  * Created by robert on 9/15/15.
  */
-public class DbUtils {
-    private static final Logger _logger = Logger.getLogger(DbUtils.class.getName());
+public class DbHelper {
+    private static final Logger _logger = Logger.getLogger(DbHelper.class.getName());
     public static HashMap<Class, String> classQueryMap = new HashMap<>(5);
     public static HashMap<Class, TableName> classTableNameMap = new HashMap<>(5);
 
-    public static Connection openConnection() {
-        String url = null;
-        try {
-            if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
-                // Load the class that provides the new "jdbc:google:mysql://" prefix.
-                Class.forName("com.mysql.jdbc.GoogleDriver");
-                url = StringUtils.PROD_DB;
-            } else {
-                // Local MySQL instance to use during development.
-                Class.forName("com.mysql.jdbc.Driver");
-                url = StringUtils.DEV_DB;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+    /**
+     * An interface providing necessary parameters in order to connect to the database.
+     */
+    public interface ConnectionParams {
+        /**
+         * Specify the DB's URL to use for connection.
+         *
+         * @return The URL to use to connect to the database.
+         */
+        String getConnectionUrl();
+    }
+
+    public static Connection openConnection(ConnectionParams options) {
+        String url = options.getConnectionUrl();
+
+        if (url == null) {
             return null;
         }
 

@@ -1,7 +1,5 @@
-package com.sababado.mcpubs.backend.db.utils;
+package com.sababado.ezdb;
 
-import com.sababado.mcpubs.backend.models.Device;
-import com.sababado.mcpubs.backend.models.Pub;
 
 import org.junit.Test;
 

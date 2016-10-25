@@ -1,4 +1,4 @@
-package com.sababado.mcpubs.backend.db.utils;
+package com.sababado.ezdb;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

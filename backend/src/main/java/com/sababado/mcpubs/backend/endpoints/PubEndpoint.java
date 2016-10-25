@@ -12,10 +12,11 @@ import com.google.api.server.spi.response.BadRequestException;
 import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.ConflictException;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.sababado.ezdb.DbHelper;
 import com.sababado.mcpubs.backend.db.DeviceQueryHelper;
+import com.sababado.mcpubs.backend.db.MyConnectionParams;
 import com.sababado.mcpubs.backend.db.PubDevicesQueryHelper;
 import com.sababado.mcpubs.backend.db.PubQueryHelper;
-import com.sababado.mcpubs.backend.db.utils.DbUtils;
 import com.sababado.mcpubs.backend.models.Device;
 import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.models.PubDevices;
@@ -62,7 +63,7 @@ public class PubEndpoint {
                       @Named("pubTitle") String pubTitle,
                       @Named("pubType") int pubType)
             throws UnauthorizedException, BadRequestException, ConflictException {
-        Connection connection = DbUtils.openConnection();
+        Connection connection = DbHelper.openConnection(MyConnectionParams.getInstance());
         Pub pub = null;
         try {
             String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
@@ -97,17 +98,17 @@ public class PubEndpoint {
                 Messaging.subscribeToTopic(deviceToken, pub.getFullCode());
             }
         } catch (Exception e) {
-            DbUtils.closeConnection(connection);
+            DbHelper.closeConnection(connection);
             throw e;
         }
-        DbUtils.closeConnection(connection);
+        DbHelper.closeConnection(connection);
         return pub;
     }
 
     public void deletePub(HttpServletRequest req, @Named("pubId") long pubId) throws UnauthorizedException {
         String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
 
-        Connection connection = DbUtils.openConnection();
+        Connection connection = DbHelper.openConnection(MyConnectionParams.getInstance());
         try {
             Pub pub = PubQueryHelper.getPubRecord(connection, pubId, null, null);
             if (pub != null) {
@@ -117,25 +118,25 @@ public class PubEndpoint {
             boolean success = PubDevicesQueryHelper.deletePubDevicesRecord(connection, deviceToken, pubId);
             log.info("deleting PubDevice record success: " + success);
         } catch (Exception e) {
-            DbUtils.closeConnection(connection);
+            DbHelper.closeConnection(connection);
             throw e;
         }
 
-        DbUtils.closeConnection(connection);
+        DbHelper.closeConnection(connection);
     }
 
     public CollectionResponse<Pub> getPubs(@Named("pubIds") String pubIds) {
         // expecting a comma separated string of pubIds.
-        Connection connection = DbUtils.openConnection();
+        Connection connection = DbHelper.openConnection(MyConnectionParams.getInstance());
         List<Pub> pubList;
         try {
-            pubList = DbUtils.getList(connection, Pub.class, " where " + Pub.ID + " in (" + pubIds + ")");
+            pubList = DbHelper.getList(connection, Pub.class, " where " + Pub.ID + " in (" + pubIds + ")");
         } catch (Exception e) {
-            DbUtils.closeConnection(connection);
+            DbHelper.closeConnection(connection);
             throw e;
         }
 
-        DbUtils.closeConnection(connection);
+        DbHelper.closeConnection(connection);
         return CollectionResponse.<Pub>builder()
                 .setItems(pubList)
                 .build();

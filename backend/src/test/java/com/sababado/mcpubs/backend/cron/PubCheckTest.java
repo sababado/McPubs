@@ -1,6 +1,7 @@
 package com.sababado.mcpubs.backend.cron;
 
-import com.sababado.mcpubs.backend.db.utils.DbUtils;
+import com.sababado.ezdb.DbHelper;
+import com.sababado.mcpubs.backend.db.MyConnectionParams;
 import com.sababado.mcpubs.backend.factory.FactoryHelper;
 import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.utils.PubUtils.UpdateStatus;
@@ -26,7 +27,7 @@ public class PubCheckTest {
     @Before
     public void setup() {
         FactoryHelper.setMockNetworkHelper();
-        connection = DbUtils.openConnection();
+        connection = DbHelper.openConnection(MyConnectionParams.getInstance());
     }
 
     @Test
@@ -105,10 +106,10 @@ public class PubCheckTest {
         try {
             connection.prepareStatement("DELETE FROM PUB WHERE " + Pub.FULL_CODE + " LIKE 'AAA%';").execute();
         } catch (Exception e) {
-            DbUtils.closeConnection(connection);
+            DbHelper.closeConnection(connection);
             throw new RuntimeException(e);
         }
-        DbUtils.closeConnection(connection);
+        DbHelper.closeConnection(connection);
         FactoryHelper.removeMockNetworkHelper();
     }
 }

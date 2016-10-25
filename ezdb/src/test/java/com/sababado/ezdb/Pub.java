@@ -1,16 +1,7 @@
-package com.sababado.mcpubs.backend.models;
-
-import com.googlecode.objectify.annotation.Id;
-import com.sababado.ezdb.Column;
-import com.sababado.ezdb.DbHelper;
-import com.sababado.ezdb.DbRecord;
-import com.sababado.ezdb.TableName;
-import com.sababado.mcpubs.backend.utils.StringUtils;
-import com.sababado.mcpubs.backend.utils.UnrecognizedPubException;
+package com.sababado.ezdb;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 
 /**
  * Created by robert on 8/25/16.
@@ -27,13 +18,6 @@ public class Pub extends DbRecord {
     public static final String READABLE_TITLE = "readableTitle";
     public static final String LAST_UPDATED = "lastUpdated";
 
-    public static final int DOCTRINE_UNSUPPORTED = 2002;
-    public static final int MCO = 2005;
-    public static final int MCO_P = 2006;
-    public static final int NAVMC = 2008;
-    public static final int NAVMC_DIR = 2009;
-
-    @Id
     @Column(Column.ID)
     long id;
     @Column(FULL_CODE)
@@ -61,14 +45,6 @@ public class Pub extends DbRecord {
         code = -1;
     }
 
-    public Pub(String title, String readableTitle, boolean isActive, int pubType) throws UnrecognizedPubException {
-        this();
-        this.isActive = isActive;
-        this.readableTitle = readableTitle;
-        this.pubType = pubType;
-        setTitle(title);
-    }
-
     public Pub(ResultSet resultSet) throws SQLException {
         this(resultSet, false);
     }
@@ -84,9 +60,7 @@ public class Pub extends DbRecord {
         pubType = resultSet.getInt(PUB_TYPE);
         title = resultSet.getString(TITLE);
         readableTitle = resultSet.getString(READABLE_TITLE);
-
-        Timestamp lastUpdatedTimestamp = resultSet.getTimestamp(LAST_UPDATED);
-        lastUpdated = lastUpdatedTimestamp == null ? 0L : lastUpdatedTimestamp.getTime();
+        lastUpdated = resultSet.getTimestamp(LAST_UPDATED).getTime();
     }
 
     @Override
@@ -151,34 +125,8 @@ public class Pub extends DbRecord {
         return title;
     }
 
-    public void setTitle(String title) throws UnrecognizedPubException {
+    public void setTitle(String title) {
         this.title = title;
-
-        String[] titleParts = title.split("\\s");
-        try {
-            if (titleParts.length > 1) {
-                fullCode = titleParts[1];
-                String secondLine = titleParts[1];
-
-                if (pubType == MCO ||
-                        pubType == MCO_P ||
-                        pubType == NAVMC) {
-                    fullCode = secondLine;
-                    parseMcoTitle(fullCode);
-                } else if (pubType == NAVMC_DIR) {
-                    fullCode = titleParts[2];
-                    parseMcoTitle(fullCode);
-                } else if (pubType == DOCTRINE_UNSUPPORTED) {
-                    rootCode = fullCode = secondLine;
-                } else {
-                    throw new UnrecognizedPubException(toString());
-                }
-            } else {
-                throw new UnrecognizedPubException(toString());
-            }
-        } catch (Exception e) {
-            throw new UnrecognizedPubException(toString() + "\n" + e.getMessage());
-        }
     }
 
     public String getReadableTitle() {
@@ -219,25 +167,6 @@ public class Pub extends DbRecord {
 
     public void setOldTitle(String oldTitle) {
         this.oldTitle = oldTitle;
-    }
-
-    /**
-     * Helper method to parse a title that appears to be an MCO or MCO P
-     *
-     * @param fullCode
-     */
-    private void parseMcoTitle(String fullCode) {
-        String[] parts = fullCode.trim().split("\\.");
-        rootCode = parts[0];
-
-        String temp = parts[1].split(StringUtils.REGEX_ANY_LETTER)[0];
-        code = Integer.parseInt(temp);
-        version = parts[1].replace(temp, "");
-        if (version.length() == 0) {
-            version = null;
-        }
-
-        this.fullCode = rootCode + "." + code;
     }
 
     @Override

@@ -1,6 +1,4 @@
-package com.sababado.mcpubs.backend.db.utils;
-
-import com.sababado.mcpubs.backend.utils.StringUtils;
+package com.sababado.ezdb;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,9 +35,9 @@ public abstract class DbRecord {
             return statement;
         }
 
-        String tableName = DbUtils.getTableName(cls).value();
+        String tableName = DbHelper.getTableName(cls).value();
         // TODO make that ID more generic, it doesn't support custom ID field names.
-        String fields = DbUtils.getSelectColumns(cls, false, tableName, false).replace(tableName + "." + Column.ID + ",", "");
+        String fields = DbHelper.getSelectColumns(cls, false, tableName, false).replace(tableName + "." + Column.ID + ",", "");
         int numFields = fields.split(",").length;
         statement = "INSERT INTO " + tableName +
                 " (" + fields + ") " +
@@ -55,8 +53,8 @@ public abstract class DbRecord {
             return statement;
         }
 
-        String tableName = DbUtils.getTableName(cls).value();
-        String fields = DbUtils.getSelectColumns(cls, false, tableName, false)
+        String tableName = DbHelper.getTableName(cls).value();
+        String fields = DbHelper.getSelectColumns(cls, false, tableName, false)
                 .replace(tableName + "." + Column.ID + ",", "")
                 .replace(",", "=?,")
                 + "=?";

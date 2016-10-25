@@ -9,8 +9,9 @@ package com.sababado.mcpubs.backend.endpoints;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.sababado.ezdb.DbHelper;
 import com.sababado.mcpubs.backend.db.DeviceQueryHelper;
-import com.sababado.mcpubs.backend.db.utils.DbUtils;
+import com.sababado.mcpubs.backend.db.MyConnectionParams;
 import com.sababado.mcpubs.backend.models.Device;
 import com.sababado.mcpubs.backend.utils.EndpointUtils;
 
@@ -48,16 +49,16 @@ public class DeviceEndpoint {
      * @param oldToken Old token that was being used.
      */
     public void register(HttpServletRequest req, @Named("oldToken") String oldToken) throws UnauthorizedException {
-        Connection connection = DbUtils.openConnection();
+        Connection connection = DbHelper.openConnection(MyConnectionParams.getInstance());
 
         try {
             String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
             register(connection, oldToken, deviceToken);
         } catch (Exception e) {
-            DbUtils.closeConnection(connection);
+            DbHelper.closeConnection(connection);
             throw e;
         }
-        DbUtils.closeConnection(connection);
+        DbHelper.closeConnection(connection);
     }
 
     static Device register(Connection connection, String oldToken, String newToken) {
@@ -69,15 +70,15 @@ public class DeviceEndpoint {
      * Remind the server that this device is still in use.
      */
     public void keepAlive(HttpServletRequest req) throws UnauthorizedException {
-        Connection connection = DbUtils.openConnection();
+        Connection connection = DbHelper.openConnection(MyConnectionParams.getInstance());
 
         try {
             String deviceToken = EndpointUtils.getDeviceTokenFromHeader(req);
             DeviceQueryHelper.updateDeviceKeepAlive(connection, deviceToken);
         } catch (Exception e) {
-            DbUtils.closeConnection(connection);
+            DbHelper.closeConnection(connection);
             throw e;
         }
-        DbUtils.closeConnection(connection);
+        DbHelper.closeConnection(connection);
     }
 }

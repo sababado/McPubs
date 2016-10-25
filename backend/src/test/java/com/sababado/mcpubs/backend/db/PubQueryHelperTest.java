@@ -1,7 +1,7 @@
 package com.sababado.mcpubs.backend.db;
 
 import com.google.api.server.spi.response.BadRequestException;
-import com.sababado.mcpubs.backend.db.utils.DbUtils;
+import com.sababado.ezdb.DbHelper;
 import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.utils.PubUtils;
 import com.sababado.mcpubs.backend.utils.UnrecognizedPubException;
@@ -31,9 +31,9 @@ public class PubQueryHelperTest {
     @Before
     public void setup() {
         try {
-            connection = DbUtils.openConnection();
+            connection = DbHelper.openConnection(MyConnectionParams.getInstance());
         } catch (Exception e) {
-            DbUtils.closeConnection(connection);
+            DbHelper.closeConnection(connection);
             throw new RuntimeException(e);
         }
     }
@@ -52,7 +52,7 @@ public class PubQueryHelperTest {
         assertNotNull(newPubRecord.getId());
         assertTrue(newPubRecord.getId() > 0);
         newPub.setId(newPubRecord.getId());
-        assertTrue(newPubRecord.getLastUpdated() > 0);
+        assertTrue(newPubRecord.getLastUpdated() == 0);
         newPub.setLastUpdated(newPubRecord.getLastUpdated());
         assertEquals(newPub, newPubRecord);
 
@@ -114,7 +114,7 @@ public class PubQueryHelperTest {
             assertNotNull(newPubRecord.getId());
             assertTrue(newPubRecord.getId() > 0);
             newPub.setId(newPubRecord.getId());
-            assertTrue(newPubRecord.getLastUpdated() > 0);
+            assertTrue(newPubRecord.getLastUpdated() == 0);
             newPub.setLastUpdated(newPubRecord.getLastUpdated());
             assertEquals(newPub, newPubRecord);
 
@@ -196,9 +196,9 @@ public class PubQueryHelperTest {
         try {
             connection.prepareStatement("DELETE FROM PUB WHERE " + Pub.FULL_CODE + " LIKE 'AAA%';").execute();
         } catch (Exception e) {
-            DbUtils.closeConnection(connection);
+            DbHelper.closeConnection(connection);
             throw new RuntimeException(e);
         }
-        DbUtils.closeConnection(connection);
+        DbHelper.closeConnection(connection);
     }
 }

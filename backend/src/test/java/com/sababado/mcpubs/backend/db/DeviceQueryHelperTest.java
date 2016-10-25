@@ -1,6 +1,6 @@
 package com.sababado.mcpubs.backend.db;
 
-import com.sababado.mcpubs.backend.db.utils.DbUtils;
+import com.sababado.ezdb.DbHelper;
 import com.sababado.mcpubs.backend.models.Device;
 
 import org.junit.After;
@@ -24,9 +24,9 @@ public class DeviceQueryHelperTest {
     @Before
     public void setup() {
         try {
-            connection = DbUtils.openConnection();
+            connection = DbHelper.openConnection(MyConnectionParams.getInstance());
         } catch (Exception e) {
-            DbUtils.closeConnection(connection);
+            DbHelper.closeConnection(connection);
             throw new RuntimeException(e);
         }
     }
@@ -90,9 +90,9 @@ public class DeviceQueryHelperTest {
         try {
             connection.prepareStatement("DELETE FROM Device WHERE " + Device.DEVICE_TOKEN + " LIKE 'AAA%';").execute();
         } catch (Exception e) {
-            DbUtils.closeConnection(connection);
+            DbHelper.closeConnection(connection);
             throw new RuntimeException(e);
         }
-        DbUtils.closeConnection(connection);
+        DbHelper.closeConnection(connection);
     }
 }

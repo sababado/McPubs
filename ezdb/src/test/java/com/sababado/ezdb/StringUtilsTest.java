@@ -1,4 +1,4 @@
-package com.sababado.mcpubs.backend.utils;
+package com.sababado.ezdb;
 
 import org.junit.Test;
 
@@ -14,5 +14,14 @@ public class StringUtilsTest {
         assertEquals(true, StringUtils.isEmptyOrWhitespace("    "));
         assertEquals(true, StringUtils.isEmptyOrWhitespace(null));
         assertEquals(false, StringUtils.isEmptyOrWhitespace("nope"));
+    }
+
+    @Test
+    public void testGenerateQuestionString() {
+        assertEquals("", StringUtils.generateQuestionString(-124));
+        assertEquals("", StringUtils.generateQuestionString(0));
+        assertEquals("?", StringUtils.generateQuestionString(1));
+        assertEquals("?,?", StringUtils.generateQuestionString(2));
+        assertEquals("?,?,?,?,?", StringUtils.generateQuestionString(5));
     }
 }

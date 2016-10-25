@@ -1,7 +1,7 @@
 package com.sababado.mcpubs.backend.db;
 
-import com.sababado.mcpubs.backend.db.utils.DbUtils;
-import com.sababado.mcpubs.backend.db.utils.QueryHelper;
+import com.sababado.ezdb.DbHelper;
+import com.sababado.ezdb.QueryHelper;
 import com.sababado.mcpubs.backend.models.Device;
 import com.sababado.mcpubs.backend.utils.StringUtils;
 
@@ -44,7 +44,7 @@ public class DeviceQueryHelper extends QueryHelper {
     public static Device getDevice(Connection connection, String deviceToken) {
         Object values[] = {deviceToken};
         String where = QueryHelper.buildWhereQuery(new String[]{Device.DEVICE_TOKEN}, values, true);
-        List<Device> deviceList = DbUtils.getList(connection, Device.class, where);
+        List<Device> deviceList = DbHelper.getList(connection, Device.class, where);
         if (deviceList != null && deviceList.size() > 0) {
             return deviceList.get(0);
         }

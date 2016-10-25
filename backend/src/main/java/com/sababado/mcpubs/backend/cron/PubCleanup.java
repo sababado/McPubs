@@ -1,7 +1,8 @@
 package com.sababado.mcpubs.backend.cron;
 
+import com.sababado.ezdb.DbHelper;
+import com.sababado.mcpubs.backend.db.MyConnectionParams;
 import com.sababado.mcpubs.backend.db.PubDevicesQueryHelper;
-import com.sababado.mcpubs.backend.db.utils.DbUtils;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -28,9 +29,9 @@ public class PubCleanup extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         _logger.setLevel(Level.ALL);
-        Connection connection = DbUtils.openConnection();
+        Connection connection = DbHelper.openConnection(MyConnectionParams.getInstance());
         int pubsRemoved = PubDevicesQueryHelper.cleanupUnwatchedPubs(connection);
         _logger.info("Cleaning up " + pubsRemoved + " pub(s).");
-        DbUtils.closeConnection(connection);
+        DbHelper.closeConnection(connection);
     }
 }

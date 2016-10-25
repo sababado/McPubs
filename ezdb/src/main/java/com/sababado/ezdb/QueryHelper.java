@@ -1,4 +1,4 @@
-package com.sababado.mcpubs.backend.db.utils;
+package com.sababado.ezdb;
 
 import java.util.logging.Logger;
 
@@ -6,7 +6,7 @@ import java.util.logging.Logger;
  * Created by robert on 9/16/15.
  */
 public abstract class QueryHelper {
-    protected static final Logger _logger = Logger.getLogger(DbUtils.class.getName());
+    protected static final Logger _logger = Logger.getLogger(DbHelper.class.getName());
 
     static String appendValue(String where, String columnName, DbRecord dbRecord) {
         if (dbRecord != null) {
@@ -53,7 +53,7 @@ public abstract class QueryHelper {
 
     protected static <T extends DbRecord> String buildDeleteQuery(Class<T> cls, String[] columnNames, Object[] values) {
         assert columnNames.length > 0;
-        return "DELETE FROM " + DbUtils.getTableName(cls).value()
+        return "DELETE FROM " + DbHelper.getTableName(cls).value()
                 + " " + buildWhereQuery(columnNames, values, false)
                 + ";";
     }

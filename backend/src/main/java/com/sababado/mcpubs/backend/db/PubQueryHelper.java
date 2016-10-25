@@ -1,9 +1,9 @@
 package com.sababado.mcpubs.backend.db;
 
 import com.google.api.server.spi.response.BadRequestException;
-import com.sababado.mcpubs.backend.db.utils.Column;
-import com.sababado.mcpubs.backend.db.utils.DbUtils;
-import com.sababado.mcpubs.backend.db.utils.QueryHelper;
+import com.sababado.ezdb.Column;
+import com.sababado.ezdb.DbHelper;
+import com.sababado.ezdb.QueryHelper;
 import com.sababado.mcpubs.backend.models.Pub;
 
 import java.sql.Connection;
@@ -135,7 +135,7 @@ public class PubQueryHelper extends QueryHelper {
     public static Pub getPubRecord(Connection connection, Long id, String fullCode, Boolean isActive) {
         Object[] values = {id, fullCode, isActive};
         String where = QueryHelper.buildWhereQuery(SHORT_PUB_QUERY_WHERE_COLUMNS, values, true);
-        List<Pub> recordList = DbUtils.getList(connection, Pub.class, where);
+        List<Pub> recordList = DbHelper.getList(connection, Pub.class, where);
         if (recordList != null && recordList.size() > 0) {
             return recordList.get(0);
         }
@@ -149,7 +149,7 @@ public class PubQueryHelper extends QueryHelper {
                 " and " + Pub.PUB_TYPE + "=" + pubType + " " +
                 where;
 
-        List<Object> distinctValues = DbUtils.getDistinctList(connection, Pub.class,
+        List<Object> distinctValues = DbHelper.getDistinctList(connection, Pub.class,
                 Pub.ROOT_CODE,
                 where);
 

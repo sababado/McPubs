@@ -1,10 +1,5 @@
-package com.sababado.mcpubs.backend.models;
+package com.sababado.ezdb;
 
-import com.googlecode.objectify.annotation.Id;
-import com.sababado.ezdb.Column;
-import com.sababado.ezdb.DbRecord;
-import com.sababado.ezdb.DbHelper;
-import com.sababado.ezdb.TableName;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,12 +9,11 @@ import java.sql.Timestamp;
  * Created by robert on 8/31/16.
  */
 @TableName("Device")
-public class Device extends DbRecord {
+class Device extends DbRecord {
     public static final String DEVICE_TOKEN = "deviceToken";
     public static final String LAST_NOTIFICATION_FAIL = "lastNotificationFail";
     public static final String KEEP_ALIVE = "keepAlive";
 
-    @Id
     @Column(ID)
     private long id;
     @Column(DEVICE_TOKEN)
@@ -80,26 +74,6 @@ public class Device extends DbRecord {
 
     public void setKeepAlive(long keepAlive) {
         this.keepAlive = keepAlive;
-    }
-
-    public static String getInsertQuery() {
-        return getInsertQuery(Device.class);
-    }
-
-    public static String getUpdateQuery() {
-        return getUpdateQuery(Device.class);
-    }
-
-    public static String getUpdateByDeviceTokenQuery() {
-        return "UPDATE Device " +
-                "SET Device.deviceToken=? " +
-                "WHERE Device.deviceToken=?;";
-    }
-
-    public static String getUpdateKeepAliveByDeviceTokenQuery() {
-        return "UPDATE Device " +
-                "SET Device.keepAlive=CURRENT_TIMESTAMP " +
-                "WHERE Device.deviceToken=?;";
     }
 
     @Override
