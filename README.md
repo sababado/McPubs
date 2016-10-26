@@ -84,6 +84,7 @@ If the app package name changes then update the package name where specified in 
 
 ### Backend
 In AS, click `Build` and `Deploy Module to App Engine`. In the popup enter the information as follows:
+
 + **Module:** backend
 + **Deploy To:** <your_google_code_project_id>
 + **Version:** 1
