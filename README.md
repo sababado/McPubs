@@ -1,8 +1,8 @@
 # McPubs
 App to notify about Marine Corps MCPEL pub updates.
 
-Download the demo from the
-[Play Store](https://play.google.com/store/apps/details?id=com.sababado.mcpubs).
+Download the demo from the Play Store at
+[https://play.google.com/store/apps/details?id=com.sababado.mcpubs](https://play.google.com/store/apps/details?id=com.sababado.mcpubs)
 
 ## Using the App
 On the android client app tap the add button to watch a pub. The app supports watching specific types of pubs.
