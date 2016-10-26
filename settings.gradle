@@ -1,1 +1,1 @@
-include ':app', ':backend', ':ezdb'
+include ':app', ':backend'
