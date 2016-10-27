@@ -59,7 +59,7 @@ public class PubCheck extends HttpServlet {
      */
     void checkPubs(int pubType) {
         Connection connection = DbHelper.openConnection(MyConnectionParams.getInstance());
-        String where = "(" + Pub.LAST_UPDATED + " IS NULL or" + Pub.LAST_UPDATED + "= '" + getLastMonthDate() + "')";
+        String where = "(" + Pub.LAST_UPDATED + " IS NULL or " + Pub.LAST_UPDATED + "= '" + getLastMonthDate() + "')";
         List<String> distinctRootCodes = PubQueryHelper.getDistinctRootCodes(connection, pubType, where);
 
         int count = distinctRootCodes == null ? 0 : distinctRootCodes.size();

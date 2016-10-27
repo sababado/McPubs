@@ -159,10 +159,6 @@ public class PubQueryHelper extends QueryHelper {
         return (ArrayList<String>) (ArrayList<?>) distinctValues;
     }
 
-    public static List<String> getDistinctRootCodes(Connection connection, int pubType) {
-        return getDistinctRootCodes(connection, pubType, null);
-    }
-
     public static boolean deletePub(Connection connection, long pubId) {
         try {
             String deleteQuery = QueryHelper.buildDeleteQuery(

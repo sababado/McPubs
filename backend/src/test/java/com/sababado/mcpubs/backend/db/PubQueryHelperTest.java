@@ -4,6 +4,7 @@ import com.google.api.server.spi.response.BadRequestException;
 import com.sababado.ezdb.DbHelper;
 import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.utils.PubUtils;
+import com.sababado.mcpubs.backend.utils.StringUtils;
 import com.sababado.mcpubs.backend.utils.UnrecognizedPubException;
 
 import org.junit.After;
@@ -13,6 +14,7 @@ import org.junit.Test;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -71,6 +73,19 @@ public class PubQueryHelperTest {
         //Inserting a new record with the same id should return the same result.
         newPubRecord = PubQueryHelper.insertRecordIfNonExistent(connection, newPubRecord);
         assertEquals(newPubRecord.getId(), existingRecord.getId());
+    }
+
+    @Test
+    public void testDistinctRootCodesNoSQLError() {
+        String where = "(" + Pub.LAST_UPDATED + " IS NULL or " + Pub.LAST_UPDATED + "= '" + getLastMonthDate() + "')";
+        List<String> distinctRootCodes = PubQueryHelper.getDistinctRootCodes(connection, Pub.MCO, where);
+        assertNotNull(distinctRootCodes);
+    }
+
+    private static String getLastMonthDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, -1);
+        return StringUtils.SQL_FORMAT.format(calendar.getTime());
     }
 
     @Test
