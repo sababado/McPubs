@@ -230,14 +230,18 @@ public class Pub extends DbRecord {
         String[] parts = fullCode.trim().split("\\.");
         rootCode = parts[0];
 
-        String temp = parts[1].split(StringUtils.REGEX_ANY_LETTER)[0];
-        code = Integer.parseInt(temp);
-        version = parts[1].replace(temp, "");
-        if (version.length() == 0) {
-            version = null;
-        }
+        if (parts.length > 0) {
+            String temp = parts[1].split(StringUtils.REGEX_ANY_LETTER)[0];
+            code = Integer.parseInt(temp);
+            version = parts[1].replace(temp, "");
+            if (version.length() == 0) {
+                version = null;
+            }
 
-        this.fullCode = rootCode + "." + code;
+            this.fullCode = rootCode + "." + code;
+        } else {
+            this.fullCode = rootCode;
+        }
     }
 
     @Override
