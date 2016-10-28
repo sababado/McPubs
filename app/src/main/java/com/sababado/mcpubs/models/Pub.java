@@ -8,6 +8,7 @@ import android.os.Parcelable;
 import com.sababado.ezprovider.Column;
 import com.sababado.ezprovider.Id;
 import com.sababado.ezprovider.Table;
+import com.sababado.mcpubs.Utils;
 import com.sababado.mcpubs.models.Constants.PubType;
 import com.sababado.mcpubs.models.Constants.SaveStatus;
 import com.sababado.mcpubs.models.Constants.UpdateStatus;
@@ -213,7 +214,8 @@ public class Pub implements Parcelable {
     }
 
     public String getPubTypeString() {
-        int i = Arrays.binarySearch(Constants.PUB_TYPE_VALS, pubType);
+        int pubType = this.pubType == Constants.MCO_P ? Constants.MCO : this.pubType;
+        int i = Utils.sequentialSearch(Constants.PUB_TYPE_VALS, pubType);
         return Constants.PUB_TYPES[i];
     }
 

@@ -15,10 +15,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.sababado.mcpubs.R;
+import com.sababado.mcpubs.Utils;
 import com.sababado.mcpubs.models.Constants;
 import com.sababado.mcpubs.models.Pub;
-
-import java.util.Arrays;
 
 public class MyPubsActivity extends AppCompatActivity {
 
@@ -55,13 +54,18 @@ public class MyPubsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Pub savedPub = pub == null ? new Pub() : pub;
-                        String savedTitle = tv.getText().toString().trim();
                         // Only save changes if there are changes to save, or if editing a pub and
                         // the title has changed.
-                        if (!TextUtils.isEmpty(savedTitle)) {
-                            savedPub.setPubType(String.valueOf(spn.getSelectedItem()));
-                            String spacer = savedPub.getPubType() == Constants.MCO_P ? "" : " ";
-                            savedTitle = savedPub.getPubTypeString() + spacer + savedTitle.toUpperCase();
+                        String savedTitle;
+                        if (!TextUtils.isEmpty(tv.getText()) &&
+                                !TextUtils.isEmpty((savedTitle = tv.getText().toString().trim()))) {
+                            boolean isMcoP = savedTitle.startsWith("p") || savedTitle.startsWith("P");
+                            if (isMcoP) {
+                                savedPub.setPubType(Constants.MCO_P);
+                            } else {
+                                savedPub.setPubType(String.valueOf(spn.getSelectedItem()));
+                            }
+                            savedTitle = savedPub.getPubTypeString() + " " + savedTitle.toUpperCase();
                             if (!TextUtils.equals(pub == null ? "" : pub.getTitle(), savedTitle)) {
                                 savedPub.setTitle(savedTitle);
                                 pushPubUpdate(savedPub);
@@ -72,7 +76,7 @@ public class MyPubsActivity extends AppCompatActivity {
                 .create();
         if (pub != null) {
             tv.setText(pub.getTitle());
-            int i = Arrays.binarySearch(Constants.PUB_TYPE_VALS, pub.getPubType());
+            int i = Utils.sequentialSearch(Constants.PUB_TYPE_VALS, pub.getPubType());
             spn.setSelection(i);
         }
 

@@ -32,7 +32,8 @@ public class Constants {
         PUB_TYPES = context.getResources().getStringArray(R.array.pub_types);
     }
 
-    public static final int[] PUB_TYPE_VALS = {MCO, MCO_P, NAVMC, NAVMC_DIR};
+    // This lineup must match the lineup in arrays/pub_types
+    public static final int[]  PUB_TYPE_VALS = {MCO, NAVMC, NAVMC_DIR, MCO_P};
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({MCO, MCO_P, NAVMC, NAVMC_DIR})
