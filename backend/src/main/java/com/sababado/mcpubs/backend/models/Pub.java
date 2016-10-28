@@ -230,7 +230,7 @@ public class Pub extends DbRecord {
         String[] parts = fullCode.trim().split("\\.");
         rootCode = parts[0];
 
-        if (parts.length > 0) {
+        if (parts.length > 1) {
             String temp = parts[1].split(StringUtils.REGEX_ANY_LETTER)[0];
             code = Integer.parseInt(temp);
             version = parts[1].replace(temp, "");

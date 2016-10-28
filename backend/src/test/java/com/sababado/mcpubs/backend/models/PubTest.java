@@ -92,4 +92,13 @@ public class PubTest {
             assertTrue(true);
         }
     }
+
+    @Test
+    public void parseSingleDigitMco() {
+        try {
+            new Pub("MCO 124", "AAATest", true, 2005);
+        } catch (UnrecognizedPubException e) {
+            fail();
+        }
+    }
 }
