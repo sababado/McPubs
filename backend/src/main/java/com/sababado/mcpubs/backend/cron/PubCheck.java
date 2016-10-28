@@ -59,7 +59,12 @@ public class PubCheck extends HttpServlet {
      */
     void checkPubs(int pubType) {
         Connection connection = DbHelper.openConnection(MyConnectionParams.getInstance());
-        String where = "(" + Pub.LAST_UPDATED + " IS NULL or " + Pub.LAST_UPDATED + "= '" + getLastMonthDate() + "')";
+        /*
+         * TODO For production uncomment the following line. This is so that this service isn't bombarding MCPEL
+         * The intention is to check for updates on the pubs that haven't been updated in the last month.
+         */
+//        String where = "(" + Pub.LAST_UPDATED + " IS NULL or " + Pub.LAST_UPDATED + "= '" + getLastMonthDate() + "')";
+        String where = null;
         List<String> distinctRootCodes = PubQueryHelper.getDistinctRootCodes(connection, pubType, where);
 
         int count = distinctRootCodes == null ? 0 : distinctRootCodes.size();
