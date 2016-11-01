@@ -206,6 +206,19 @@ public class PubQueryHelperTest {
         assertNull(PubQueryHelper.getPubRecord(connection, newPubRecord.getId(), null, null));
     }
 
+    @Test
+    public void testInsertNavmcAndMco() throws UnrecognizedPubException, BadRequestException {
+        String mco = "MCO AAA1200.1A";
+        Pub pub = new Pub(mco, "A readable title ohyeah", true, Pub.MCO);
+        Pub savedPub = PubQueryHelper.insertOrUpdateRecord(connection, pub);
+
+        String navmcTitle = "NAVMC AAA1200.1A";
+        pub = new Pub(navmcTitle, "A readable title ohyeah", true, Pub.NAVMC);
+        savedPub = PubQueryHelper.insertOrUpdateRecord(connection, pub);
+
+        assertEquals(navmcTitle, savedPub.getTitle());
+    }
+
     @After
     public void cleanup() {
         try {

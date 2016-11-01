@@ -12,7 +12,7 @@ CREATE SCHEMA `MCPUBS` ;
     `readableTitle` text COMMENT 'Marine Corps Tank Employment',
     `lastUpdated` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP COMMENT 'Last time this pub was updated.',
     PRIMARY KEY (`id`),
-    UNIQUE KEY `fullCode_UNIQUE` (`fullCode` ASC)
+    UNIQUE KEY `fullCode_UNIQUE` (`pubType`,`fullCode`)
   );
 
   CREATE TABLE `Device` (
