@@ -96,6 +96,7 @@ public class PubQueryHelperTest {
                     "(`fullCode`,`rootCode`,`code`,`version`,`isActive`,`pubType`)\n" +
                     "VALUES\n" +
                     "('AAA4200.43','AAA4200',43,'B',true, 2005),\n" +
+                    "('AAA4200.43','AAA4200',43,'B',true, 2008),\n" +
                     "('AAA4200.19','AAA4200',19,'B',true, 2005),\n" +
                     "('AAA4500.10','AAA4500',10,'A',false, 2005),\n" +
                     "('AAA4500.11','AAA4500',11,'A',true, 2005),\n" +
@@ -194,6 +195,33 @@ public class PubQueryHelperTest {
             pubBeforeSave.setUpdateStatus(newPub.getUpdateStatus());
             assertEquals(changes.get(i), newPub);
         }
+    }
+
+    @Test
+    public void testUpdateLastUpdated() throws UnrecognizedPubException, BadRequestException, InterruptedException {
+        Pub existingPub1 = new Pub("MCO AAA6600.42A", "A readable title", true, 2005);
+        existingPub1 = PubQueryHelper.insertOrUpdateRecord(connection, existingPub1);
+        Pub existingPub2 = new Pub("NAVMC AAA6600.42A", "A readable title", true, 2008);
+        existingPub2 = PubQueryHelper.insertOrUpdateRecord(connection, existingPub2);
+        Pub existingPub3 = new Pub("MCO AAA5700.4B", "A readable title", true, 2005);
+        existingPub3 = PubQueryHelper.insertOrUpdateRecord(connection, existingPub3);
+        Pub existingPub4 = new Pub("MCO AAA6410.424A", "A readable title", true, 2005);
+        existingPub4 = PubQueryHelper.insertOrUpdateRecord(connection, existingPub4);
+
+        Thread.sleep(1000L);
+
+        List<String> distinctCodes = PubQueryHelper.getDistinctRootCodes(connection, Pub.MCO, Pub.ROOT_CODE + " like 'AAA%'");
+        PubQueryHelper.updateLastUpdated(connection, distinctCodes, Pub.MCO);
+
+        Pub existingPub12 = PubQueryHelper.getPubRecord(connection, existingPub1.getId(), null, true);
+        Pub existingPub22 = PubQueryHelper.getPubRecord(connection, existingPub2.getId(), null, true);
+        Pub existingPub32 = PubQueryHelper.getPubRecord(connection, existingPub3.getId(), null, true);
+        Pub existingPub42 = PubQueryHelper.getPubRecord(connection, existingPub4.getId(), null, true);
+
+        assertTrue(existingPub1.getLastUpdated() < existingPub12.getLastUpdated());
+        assertEquals(existingPub2.getLastUpdated(), existingPub22.getLastUpdated());
+        assertTrue(existingPub3.getLastUpdated() < existingPub32.getLastUpdated());
+        assertTrue(existingPub4.getLastUpdated() < existingPub42.getLastUpdated());
     }
 
     @Test

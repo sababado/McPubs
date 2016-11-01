@@ -1,6 +1,7 @@
 package com.sababado.mcpubs.backend.cron;
 
 import com.sababado.ezdb.DbHelper;
+import com.sababado.ezdb.QueryHelper;
 import com.sababado.mcpubs.backend.db.MyConnectionParams;
 import com.sababado.mcpubs.backend.db.PubQueryHelper;
 import com.sababado.mcpubs.backend.factory.Factory;
@@ -61,9 +62,9 @@ public class PubCheck extends HttpServlet {
         Connection connection = DbHelper.openConnection(MyConnectionParams.getInstance());
         /*
          * TODO For production uncomment the following line. This is so that this service isn't bombarding MCPEL
-         * The intention is to check for updates on the pubs that haven't been updated in the last month.
+         * The intention is to check for updates on the pubs that haven't been updated recently.
          */
-//        String where = "(" + Pub.LAST_UPDATED + " IS NULL or " + Pub.LAST_UPDATED + "= '" + getLastMonthDate() + "')";
+//        String where = "(" + Pub.LAST_UPDATED + " IS NULL or " + Pub.LAST_UPDATED + "= '" + getDateDaysPrior(20) + "')";
         String where = null;
         List<String> distinctRootCodes = PubQueryHelper.getDistinctRootCodes(connection, pubType, where);
 
@@ -137,12 +138,15 @@ public class PubCheck extends HttpServlet {
             PubQueryHelper.batchUpdate(connection, dataChangedPubs);
         }
 
+        // Catch all, update the lastUpdated date for the pubs we just looked at.
+        PubQueryHelper.updateLastUpdated(connection, distinctRootCodes, pubType);
+
         DbHelper.closeConnection(connection);
     }
 
-    static String getLastMonthDate() {
+    static String getDateDaysPrior(int daysPrior) {
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MONTH, -1);
+        calendar.add(Calendar.DAY_OF_MONTH, -daysPrior);
         return StringUtils.SQL_FORMAT.format(calendar.getTime());
     }
 

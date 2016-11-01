@@ -5,6 +5,7 @@ import com.sababado.ezdb.Column;
 import com.sababado.ezdb.DbHelper;
 import com.sababado.ezdb.QueryHelper;
 import com.sababado.mcpubs.backend.models.Pub;
+import com.sababado.mcpubs.backend.utils.StringUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -157,6 +158,26 @@ public class PubQueryHelper extends QueryHelper {
             return null;
         }
         return (ArrayList<String>) (ArrayList<?>) distinctValues;
+    }
+
+    public static void updateLastUpdated(Connection connection, List<String> distinctRootCodes, int pubType) {
+        if (distinctRootCodes == null || distinctRootCodes.size() == 0) {
+            return;
+        }
+        String csv = StringUtils.toCsv(distinctRootCodes, true);
+        try {
+            String updateQuery = "UPDATE Pub" +
+                    " SET " + Pub.LAST_UPDATED + " = NOW()" +
+                    " WHERE " + Pub.ROOT_CODE + " in (" + csv + ")" +
+                    " and " + Pub.PUB_TYPE + "=" + pubType + ";";
+            PreparedStatement statement = connection.prepareStatement(updateQuery);
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("There was an issue updating pubs' lastUpdated date");
+            }
+        } catch (SQLException e) {
+            _logger.severe("Couldn't update lastUpdated: " + csv + "\n" + e.getMessage());
+        }
     }
 
     public static boolean deletePub(Connection connection, long pubId) {

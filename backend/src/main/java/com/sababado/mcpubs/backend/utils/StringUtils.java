@@ -1,6 +1,7 @@
 package com.sababado.mcpubs.backend.utils;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -25,5 +26,23 @@ public class StringUtils {
 
     public static boolean isEmptyOrWhitespace(String string) {
         return string == null || string.trim().equals("");
+    }
+
+    public static <E extends List<?>> String toCsv(E values, boolean isStringValue) {
+        String csv = "";
+        if (values != null && values.size() >= 0) {
+            int size = values.size();
+            for (int i = 0; i < size; i++) {
+                String val = String.valueOf(values.get(i));
+                if (isStringValue) {
+                    val = "'" + val + "'";
+                }
+                csv += val;
+                if (i + 1 < size) {
+                    csv += ",";
+                }
+            }
+        }
+        return csv;
     }
 }
