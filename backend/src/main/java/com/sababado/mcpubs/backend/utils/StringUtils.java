@@ -1,5 +1,7 @@
 package com.sababado.mcpubs.backend.utils;
 
+import com.sababado.ezdb.DbRecord;
+
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
@@ -38,6 +40,20 @@ public class StringUtils {
                     val = "'" + val + "'";
                 }
                 csv += val;
+                if (i + 1 < size) {
+                    csv += ",";
+                }
+            }
+        }
+        return csv;
+    }
+
+    public static <E extends List<? extends DbRecord>> String idToCsv(E values) {
+        String csv = "";
+        if (values != null && values.size() >= 0) {
+            int size = values.size();
+            for (int i = 0; i < size; i++) {
+                csv += String.valueOf(values.get(i).getId());
                 if (i + 1 < size) {
                     csv += ",";
                 }

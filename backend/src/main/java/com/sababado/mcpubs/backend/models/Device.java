@@ -2,8 +2,8 @@ package com.sababado.mcpubs.backend.models;
 
 import com.googlecode.objectify.annotation.Id;
 import com.sababado.ezdb.Column;
-import com.sababado.ezdb.DbRecord;
 import com.sababado.ezdb.DbHelper;
+import com.sababado.ezdb.DbRecord;
 import com.sababado.ezdb.TableName;
 
 import java.sql.ResultSet;
@@ -18,6 +18,7 @@ public class Device extends DbRecord {
     public static final String DEVICE_TOKEN = "deviceToken";
     public static final String LAST_NOTIFICATION_FAIL = "lastNotificationFail";
     public static final String KEEP_ALIVE = "keepAlive";
+    public static final String CAN_SYNC = "canSync";
 
     @Id
     @Column(ID)
@@ -28,6 +29,8 @@ public class Device extends DbRecord {
     private long lastNotificationFail;
     @Column(value = KEEP_ALIVE, ignoreInQueryGenerator = true)
     private long keepAlive;
+    @Column(value = CAN_SYNC, ignoreInQueryGenerator = true)
+    private boolean canSync;
 
     public Device(String deviceToken) {
         this.deviceToken = deviceToken;
@@ -46,6 +49,7 @@ public class Device extends DbRecord {
             lastNotificationFail = timestamp.getTime();
         }
         keepAlive = resultSet.getTimestamp(KEEP_ALIVE).getTime();
+        canSync = resultSet.getBoolean(CAN_SYNC);
     }
 
     @Override
@@ -82,6 +86,14 @@ public class Device extends DbRecord {
         this.keepAlive = keepAlive;
     }
 
+    public boolean isCanSync() {
+        return canSync;
+    }
+
+    public void setCanSync(boolean canSync) {
+        this.canSync = canSync;
+    }
+
     public static String getInsertQuery() {
         return getInsertQuery(Device.class);
     }
@@ -112,6 +124,7 @@ public class Device extends DbRecord {
         if (id != device.id) return false;
         if (lastNotificationFail != device.lastNotificationFail) return false;
         if (keepAlive != device.keepAlive) return false;
+        if (canSync != device.canSync) return false;
         return deviceToken != null ? deviceToken.equals(device.deviceToken) : device.deviceToken == null;
 
     }
@@ -122,6 +135,7 @@ public class Device extends DbRecord {
         result = 31 * result + (deviceToken != null ? deviceToken.hashCode() : 0);
         result = 31 * result + (int) (lastNotificationFail ^ (lastNotificationFail >>> 32));
         result = 31 * result + (int) (keepAlive ^ (keepAlive >>> 32));
+        result = 31 * result + (canSync ? 1 : 0);
         return result;
     }
 
@@ -132,6 +146,7 @@ public class Device extends DbRecord {
                 ", deviceToken='" + deviceToken + '\'' +
                 ", lastNotificationFail=" + lastNotificationFail +
                 ", keepAlive=" + keepAlive +
+                ", canSync=" + canSync +
                 "} " + super.toString();
     }
 }

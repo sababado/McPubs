@@ -20,6 +20,7 @@ CREATE SCHEMA `MCPUBS` ;
     `deviceToken` varchar(255) NOT NULL COMMENT 'Token used to identify the device for notifications.',
     `lastNotificationFail` timestamp NOT NULL DEFAULT 0 COMMENT 'Timestamp of the last time this token attempted to be used but it failed. This is indicative that the device may have uninstalled the app.',
     `keepAlive` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'This is the last time the device used this app.',
+    `canSync` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'This value should be set to true if the device should trigger a sync.',
     PRIMARY KEY (`id`),
     UNIQUE KEY `deviceToken_UNIQUE` (`deviceToken`)
   );

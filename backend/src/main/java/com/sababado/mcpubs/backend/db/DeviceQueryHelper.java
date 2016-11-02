@@ -3,6 +3,7 @@ package com.sababado.mcpubs.backend.db;
 import com.sababado.ezdb.DbHelper;
 import com.sababado.ezdb.QueryHelper;
 import com.sababado.mcpubs.backend.models.Device;
+import com.sababado.mcpubs.backend.models.Pub;
 import com.sababado.mcpubs.backend.utils.StringUtils;
 
 import java.sql.Connection;
@@ -85,6 +86,46 @@ public class DeviceQueryHelper extends QueryHelper {
             return true;
         } catch (SQLException e) {
             _logger.severe("Couldn't keep alive device: " + deviceToken + "\n" + e.getMessage());
+            return false;
+        }
+    }
+
+    public static List<Device> getDevicesToSync(Connection connection) {
+        String where = "where canSync = 1 limit 1000";
+        return DbHelper.getList(connection, Device.class, where);
+    }
+
+    public static void resetCanSyncFlag(Connection connection, List<Device> devices) {
+        if (devices == null || devices.size() == 0) {
+            return;
+        }
+        String idCsv = StringUtils.idToCsv(devices);
+        String updateQuery = "update Device set canSync = 0 where id in (" + idCsv + ");";
+        updateDeviceNoArgs(connection, updateQuery);
+    }
+
+    public static void updateDeviceCanSync(Connection connection, List<Pub> pubs) {
+        if (pubs == null || pubs.size() == 0) {
+            return;
+        }
+        String idCsv = StringUtils.idToCsv(pubs);
+        String updateQuery = "update Device set canSync = 1" +
+                " where Device.id in" +
+                " (select PubDevices.deviceId from PubDevices where pubId in (" + idCsv + ") group by(PubDevices.deviceId));";
+        updateDeviceNoArgs(connection, updateQuery);
+    }
+
+    private static boolean updateDeviceNoArgs(Connection connection, String updateQuery) {
+        try {
+            PreparedStatement statement = connection.prepareStatement(updateQuery);
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows == 0) {
+                _logger.warning("Updating device failed, no devices affected.");
+                return false;
+            }
+            return true;
+        } catch (SQLException e) {
+            _logger.severe("Problem updating device. " + "\n" + e.getMessage());
             return false;
         }
     }
