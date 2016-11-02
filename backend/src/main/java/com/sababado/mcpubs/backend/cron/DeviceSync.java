@@ -1,9 +1,12 @@
 package com.sababado.mcpubs.backend.cron;
 
+import com.sababado.ezdb.DbHelper;
 import com.sababado.mcpubs.backend.db.DeviceQueryHelper;
+import com.sababado.mcpubs.backend.db.MyConnectionParams;
 import com.sababado.mcpubs.backend.models.Device;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -27,11 +30,14 @@ public class DeviceSync extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Connection connection = DbHelper.openConnection(MyConnectionParams.getInstance());
         // get 1000 devices that need a sync
-        List<Device> devices; // TODO get device list
+        List<Device> devices = DeviceQueryHelper.getDevicesToSync(connection);
 
-        // send notification
+        // TODO send notification
 
         // set devices to no longer need a sync
+        DeviceQueryHelper.resetCanSyncFlag(connection, devices);
+        DbHelper.closeConnection(connection);
     }
 }

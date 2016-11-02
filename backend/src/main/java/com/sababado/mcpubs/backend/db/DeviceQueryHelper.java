@@ -90,11 +90,23 @@ public class DeviceQueryHelper extends QueryHelper {
         }
     }
 
+    /**
+     * Get all devices (limit 1000) that have their canSync flag set to true.
+     *
+     * @param connection database connection.
+     * @return Up to 1000 devices that have their canSync flag set to true.
+     */
     public static List<Device> getDevicesToSync(Connection connection) {
         String where = "where canSync = 1 limit 1000";
         return DbHelper.getList(connection, Device.class, where);
     }
 
+    /**
+     * Reset the canSync flag to false for all of the given devices.
+     *
+     * @param connection database connection
+     * @param devices    Devices that need their flag reset.
+     */
     public static void resetCanSyncFlag(Connection connection, List<Device> devices) {
         if (devices == null || devices.size() == 0) {
             return;
@@ -104,6 +116,12 @@ public class DeviceQueryHelper extends QueryHelper {
         updateDeviceNoArgs(connection, updateQuery);
     }
 
+    /**
+     * Update the canSync flag for all devices watching any of the given pubs.
+     *
+     * @param connection database connection.
+     * @param pubs       Pubs that devices may be watching.
+     */
     public static void updateDeviceCanSync(Connection connection, List<Pub> pubs) {
         if (pubs == null || pubs.size() == 0) {
             return;

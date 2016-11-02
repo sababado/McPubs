@@ -1,6 +1,7 @@
 package com.sababado.mcpubs.backend.cron;
 
 import com.sababado.ezdb.DbHelper;
+import com.sababado.mcpubs.backend.db.DeviceQueryHelper;
 import com.sababado.mcpubs.backend.db.MyConnectionParams;
 import com.sababado.mcpubs.backend.db.PubQueryHelper;
 import com.sababado.mcpubs.backend.factory.Factory;
@@ -136,7 +137,7 @@ public class PubCheck extends HttpServlet {
         if (numDataChangesSize > 0) {
             // These pubs are not new, and had a piece or two of data updated.
             PubQueryHelper.batchUpdate(connection, dataChangedPubs);
-            // TODO Update all devices watching these pubs.
+            DeviceQueryHelper.updateDeviceCanSync(connection, dataChangedPubs);
         }
 
         // Catch all, update the lastUpdated date for the pubs we just looked at.
