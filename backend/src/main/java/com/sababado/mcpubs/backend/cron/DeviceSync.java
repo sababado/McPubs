@@ -30,6 +30,8 @@ public class DeviceSync extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // TODO For future, more cost effective and efficient implementations, use Ofy and the datastore.
+        // It is probably plenty big enough to accommodate this amount of data.
         Connection connection = DbHelper.openConnection(MyConnectionParams.getInstance());
         // get 1000 devices that need a sync
         List<Device> devices = DeviceQueryHelper.getDevicesToSync(connection);

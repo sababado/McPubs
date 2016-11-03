@@ -10,4 +10,10 @@
         <description>Remove any pubs not being watched.</description>
         <schedule>every 168 hours</schedule>
     </cron>
+
+    <cron>
+        <url>/cron/deviceSync</url>
+        <description>Notify devices if they need to have a sync.</description>
+        <schedule>every 12 hours</schedule>
+    </cron>
 </cronentries>
