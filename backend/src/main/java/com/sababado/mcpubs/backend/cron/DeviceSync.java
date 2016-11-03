@@ -4,6 +4,8 @@ import com.sababado.ezdb.DbHelper;
 import com.sababado.mcpubs.backend.db.DeviceQueryHelper;
 import com.sababado.mcpubs.backend.db.MyConnectionParams;
 import com.sababado.mcpubs.backend.models.Device;
+import com.sababado.mcpubs.backend.models.notifications.NotifyDeviceNotification;
+import com.sababado.mcpubs.backend.utils.Messaging;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -36,7 +38,9 @@ public class DeviceSync extends HttpServlet {
         // get 1000 devices that need a sync
         List<Device> devices = DeviceQueryHelper.getDevicesToSync(connection);
 
-        // TODO send notification
+        // send notification
+        NotifyDeviceNotification notification = new NotifyDeviceNotification(devices);
+        Messaging.sendMessage(notification);
 
         // set devices to no longer need a sync
         DeviceQueryHelper.resetCanSyncFlag(connection, devices);

@@ -6,7 +6,7 @@ import com.sababado.mcpubs.backend.db.MyConnectionParams;
 import com.sababado.mcpubs.backend.db.PubQueryHelper;
 import com.sababado.mcpubs.backend.factory.Factory;
 import com.sababado.mcpubs.backend.models.Pub;
-import com.sababado.mcpubs.backend.models.PubNotification;
+import com.sababado.mcpubs.backend.models.notifications.PubNotification;
 import com.sababado.mcpubs.backend.rss.PubCheckParser;
 import com.sababado.mcpubs.backend.utils.Messaging;
 import com.sababado.mcpubs.backend.utils.PubSorter;

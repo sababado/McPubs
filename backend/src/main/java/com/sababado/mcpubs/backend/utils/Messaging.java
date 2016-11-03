@@ -2,8 +2,9 @@ package com.sababado.mcpubs.backend.utils;
 
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.repackaged.com.google.gson.Gson;
-import com.sababado.mcpubs.backend.models.PubNotification;
-import com.sababado.mcpubs.backend.models.SubscribeResponse;
+import com.sababado.mcpubs.backend.models.notifications.FcmResponse;
+import com.sababado.mcpubs.backend.models.notifications.Notification;
+import com.sun.tools.javac.util.Pair;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,11 +51,11 @@ public class Messaging {
                 writeBytes(data, con);
 
                 // Send post request
-                String responseString = getResponse(con);
+                String responseString = getResponse(con).snd;
                 log.info("Response: " + responseString);
 
-                SubscribeResponse subscribeResponse = gson.fromJson(responseString, SubscribeResponse.class);
-                for (SubscribeResponse.ErrorResponse resp : subscribeResponse.results) {
+                FcmResponse fcmResponse = gson.fromJson(responseString, FcmResponse.class);
+                for (FcmResponse.ErrorResponse resp : fcmResponse.results) {
                     if (!StringUtils.isEmptyOrWhitespace(resp.error)) {
                         // TODO handle an error
                         log.warning("Failed to un/subscribe to " + topic);
@@ -69,29 +70,52 @@ public class Messaging {
         return true;
     }
 
-    public static boolean sendMessage(PubNotification pubNotification) {
+    public static <T extends Notification> boolean sendMessage(T notification) {
         log.setLevel(Level.ALL);
-        if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
-            String data = gson.toJson(pubNotification);
-            try {
-                URL obj = new URL("https://fcm.googleapis.com/fcm/send");
-                HttpURLConnection con = preparePostRequest(obj);
+        notification.dry_run = SystemProperty.environment.value() != SystemProperty.Environment.Value.Production;
+        String data = gson.toJson(notification);
+        try {
+            URL obj = new URL("https://fcm.googleapis.com/fcm/send");
+            HttpURLConnection con = preparePostRequest(obj);
 
-                log.info("Sending 'POST' request to send notification.");
-                log.info("Post parameters : " + data);
-                writeBytes(data, con);
+            log.info("Sending 'POST' request to send notification.");
+            log.info("Post parameters : " + data);
+            writeBytes(data, con);
 
-                // Send post request
-                String responseString = getResponse(con);
-                log.info("Response: " + responseString);
-            } catch (Exception e) {
-                // TODO handle an exception un/subscribing to a topic.
-                log.severe("Failed to send a message " + data + "\n" + e.getMessage());
-                return false;
-            }
+            // Send post request
+            Pair<Integer, String> response = getResponse(con);
+            log.info("Response: " + response.snd);
+        } catch (Exception e) {
+            // TODO handle an exception un/subscribing to a topic.
+            log.severe("Failed to send a message " + data + "\n" + e.getMessage());
+            return false;
         }
         return true;
     }
+
+//    public static boolean sendMessage(PubNotification pubNotification) {
+//        log.setLevel(Level.ALL);
+//        if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
+//            String data = gson.toJson(pubNotification);
+//            try {
+//                URL obj = new URL("https://fcm.googleapis.com/fcm/send");
+//                HttpURLConnection con = preparePostRequest(obj);
+//
+//                log.info("Sending 'POST' request to send notification.");
+//                log.info("Post parameters : " + data);
+//                writeBytes(data, con);
+//
+//                // Send post request
+//                String responseString = getResponse(con);
+//                log.info("Response: " + responseString);
+//            } catch (Exception e) {
+//                // TODO handle an exception un/subscribing to a topic.
+//                log.severe("Failed to send a message " + data + "\n" + e.getMessage());
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
     private static HttpURLConnection preparePostRequest(URL url) throws IOException {
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -114,7 +138,7 @@ public class Messaging {
         }
     }
 
-    private static String getResponse(HttpURLConnection con) throws IOException {
+    private static Pair<Integer, String> getResponse(HttpURLConnection con) throws IOException {
         int responseCode = con.getResponseCode();
         log.info("Response Code : " + responseCode);
         BufferedReader in = new BufferedReader(
@@ -126,7 +150,9 @@ public class Messaging {
             response.append(inputLine);
         }
         in.close();
+
+        Pair<Integer, String> responsePair = new Pair<>(con.getResponseCode(), response.toString().trim());
         //print result
-        return response.toString().trim();
+        return responsePair;
     }
 }
