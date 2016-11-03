@@ -4,7 +4,6 @@ import com.google.appengine.api.utils.SystemProperty;
 import com.google.appengine.repackaged.com.google.gson.Gson;
 import com.sababado.mcpubs.backend.models.notifications.FcmResponse;
 import com.sababado.mcpubs.backend.models.notifications.Notification;
-import com.sun.tools.javac.util.Pair;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -85,37 +84,15 @@ public class Messaging {
             // Send post request
             Pair<Integer, String> response = getResponse(con);
             log.info("Response: " + response.snd);
+
+            if (response.fst == 200)
+                return true;
         } catch (Exception e) {
             // TODO handle an exception un/subscribing to a topic.
             log.severe("Failed to send a message " + data + "\n" + e.getMessage());
-            return false;
         }
-        return true;
+        return false;
     }
-
-//    public static boolean sendMessage(PubNotification pubNotification) {
-//        log.setLevel(Level.ALL);
-//        if (SystemProperty.environment.value() == SystemProperty.Environment.Value.Production) {
-//            String data = gson.toJson(pubNotification);
-//            try {
-//                URL obj = new URL("https://fcm.googleapis.com/fcm/send");
-//                HttpURLConnection con = preparePostRequest(obj);
-//
-//                log.info("Sending 'POST' request to send notification.");
-//                log.info("Post parameters : " + data);
-//                writeBytes(data, con);
-//
-//                // Send post request
-//                String responseString = getResponse(con);
-//                log.info("Response: " + responseString);
-//            } catch (Exception e) {
-//                // TODO handle an exception un/subscribing to a topic.
-//                log.severe("Failed to send a message " + data + "\n" + e.getMessage());
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
 
     private static HttpURLConnection preparePostRequest(URL url) throws IOException {
         HttpURLConnection con = (HttpURLConnection) url.openConnection();

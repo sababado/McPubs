@@ -9,8 +9,8 @@ import java.util.List;
  */
 
 public class NotifyDeviceNotification extends Notification {
-    final private String data = "{\"sync\":true}";
-    final private String[] registration_ids;
+    private final String[] registration_ids;
+    private final Data data = new Data();
 
     public NotifyDeviceNotification(List<Device> devices) {
         super();
@@ -19,5 +19,9 @@ public class NotifyDeviceNotification extends Notification {
             registration_ids[i] = devices.get(i).getDeviceToken();
         }
         dry_run = false;
+    }
+
+    class Data {
+        boolean sync = true;
     }
 }

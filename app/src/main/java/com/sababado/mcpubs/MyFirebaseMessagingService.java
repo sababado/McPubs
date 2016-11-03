@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -14,6 +15,7 @@ import com.sababado.ezprovider.Contracts;
 import com.sababado.mcpubs.models.Constants;
 import com.sababado.mcpubs.models.Constants.UpdateStatus;
 import com.sababado.mcpubs.models.Pub;
+import com.sababado.mcpubs.network.PubService;
 import com.sababado.mcpubs.ui.MyPubsActivity;
 
 /**
@@ -24,16 +26,25 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        String oldTitle = remoteMessage.getData().get("oldTitle");
-        String newTitle = remoteMessage.getData().get("title");
-        String readableTitle = remoteMessage.getData().get("readableTitle");
-        long pubServerId = Long.parseLong(remoteMessage.getData().get("id"));
-        //noinspection WrongConstant
-        int status = Integer.parseInt(remoteMessage.getData().get("updateStatus"));
-        //noinspection WrongConstant
-        showNotification(oldTitle, newTitle, status, pubServerId);
-        //noinspection WrongConstant
-        updatePub(pubServerId, oldTitle, newTitle, status, readableTitle);
+        if (remoteMessage.getData().containsKey("sync")) {
+            handleSync();
+        } else {
+            String oldTitle = remoteMessage.getData().get("oldTitle");
+            String newTitle = remoteMessage.getData().get("title");
+            String readableTitle = remoteMessage.getData().get("readableTitle");
+            long pubServerId = Long.parseLong(remoteMessage.getData().get("id"));
+            //noinspection WrongConstant
+            int status = Integer.parseInt(remoteMessage.getData().get("updateStatus"));
+            //noinspection WrongConstant
+            showNotification(oldTitle, newTitle, status, pubServerId);
+            //noinspection WrongConstant
+            updatePub(pubServerId, oldTitle, newTitle, status, readableTitle);
+        }
+    }
+
+    private void handleSync() {
+        Log.v(TAG, "preparing to sync pubs");
+        PubService.startActionSyncPubs(this, false);
     }
 
     private void updatePub(long pubServerId, String oldTitle, String newTitle, @UpdateStatus int status, String readableTitle) {

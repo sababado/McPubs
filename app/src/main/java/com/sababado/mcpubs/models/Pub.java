@@ -110,6 +110,8 @@ public class Pub implements Parcelable {
         pubServerId = p.getId();
         //noinspection WrongConstant
         pubType = p.getPubType();
+        //noinspection WrongConstant
+        updateStatus = p.getUpdateStatus();
     }
 
     @Override

@@ -27,6 +27,7 @@ public class PubService extends IntentService {
     private static final String ACTION_SAVE = "com.sababado.mcpubs.action.save";
     private static final String ACTION_DELETE = "com.sababado.mcpubs.action.delete";
     private static final String ACTION_SYNC = "com.sababado.mcpubs.action.sync";
+    private static final String ARG_OVERRIDE_LOCAL = "arg_override_local";
 
     private static final String ARG_PUB = "arg_pub";
 
@@ -48,9 +49,10 @@ public class PubService extends IntentService {
         context.startService(intent);
     }
 
-    public static void startActionSyncPubs(Context context) {
+    public static void startActionSyncPubs(Context context, boolean overrideLocal) {
         Intent intent = new Intent(context, PubService.class);
         intent.setAction(ACTION_SYNC);
+        intent.putExtra(ARG_OVERRIDE_LOCAL, overrideLocal);
         context.startService(intent);
     }
 
@@ -64,7 +66,7 @@ public class PubService extends IntentService {
             } else if (ACTION_DELETE.equals(action)) {
                 handleActionDelete(pub);
             } else if (ACTION_SYNC.equals(action)) {
-                handleActionSync();
+                handleActionSync(intent.getBooleanExtra(ARG_OVERRIDE_LOCAL, true));
             }
         }
     }
@@ -120,10 +122,11 @@ public class PubService extends IntentService {
         }
     }
 
-    private void handleActionSync() {
+    private void handleActionSync(boolean overrideLocal) {
+        String extraWhere = overrideLocal ? "" : "and updateStatus = " + Constants.NO_CHANGE;
         Contracts.Contract contract = Contracts.getContract(Pub.class);
         Cursor cursor = getContentResolver().query(contract.CONTENT_URI,
-                contract.COLUMNS, "pubServerId IS NOT NULL", null, null);
+                contract.COLUMNS, "pubServerId IS NOT NULL " + extraWhere, null, null);
 
         if (cursor != null && cursor.getCount() > 0) {
             List<Pub> savedPubs = new ArrayList<>(cursor.getCount());
@@ -149,7 +152,7 @@ public class PubService extends IntentService {
                         ops.add(ContentProviderOperation.newUpdate(contract.CONTENT_URI)
                                 .withValues(savedPub.toContentValues())
                                 .withYieldAllowed(true)
-                                .withSelection(contract.ID_COLUMN_NAME+"="+String.valueOf(savedPub.getId()),null)
+                                .withSelection(contract.ID_COLUMN_NAME + "=" + String.valueOf(savedPub.getId()), null)
                                 .build());
                     }
                 }
