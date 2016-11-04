@@ -4,6 +4,9 @@ App to notify about Marine Corps MCPEL pub updates.
 Download the demo from the Play Store at
 [https://play.google.com/store/apps/details?id=com.sababado.mcpubs](https://play.google.com/store/apps/details?id=com.sababado.mcpubs)
 
+The code is open source and can be found at
+[https://github.com/sababado/McPubs](https://github.com/sababado/McPubs)
+
 ## Using the App
 On the android client app tap the add button to watch a pub. The app supports watching specific types of pubs.
 Select the type of pub and then enter the pub number. For example `MCO P1020.34G` can be entered in as that or as `MCO P1020.34`.
@@ -15,6 +18,8 @@ If updates are found then the server will send a notification to the devices tha
 The notification will update the device with any new information and also provide a status to the user.
 The pub may be updated or it may be deleted. The status will show on the user's list until an action is
 taken by the user. This will serve as a reminder that some action needs to be taken.
+If small changes are found, such as a typo fix, the app will get a message from the server that new data
+is available. In which case the app will sync with the server in order to have the most up-to-date information.
 
 Users can stop watching pubs at any time by tapping on the pub and deleting it from their list.
 
